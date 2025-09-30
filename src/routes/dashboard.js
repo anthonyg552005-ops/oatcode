@@ -7,7 +7,9 @@ const router = express.Router();
 router.get('/stats', async (req, res) => {
   try {
     // Check if system is running (autonomous engine active)
-    const systemRunning = process.env.OPERATION_MODE === 'continuous' && process.env.ENABLE_AUTOMATION === 'true';
+    // Check BOTH environment variables AND global.autonomousBusiness (set by autonomous-engine.js)
+    const systemRunning = !!global.autonomousBusiness || !!global.autonomousMetrics ||
+                          (process.env.OPERATION_MODE === 'continuous' && process.env.ENABLE_AUTOMATION === 'true');
 
     // Get stats from database (when models are ready)
     // For now, return mock data structure
@@ -41,11 +43,13 @@ router.get('/stats', async (req, res) => {
       // Alerts
       alerts: [],
 
-      // Recent activity
-      recentActivity: [
+      // Recent activity - pull from autonomous engine if running
+      recentActivity: global.autonomousBusiness?.recentActivity || global.autonomousMetrics?.recentActivity || [
         {
           timestamp: new Date().toISOString(),
-          message: 'System in preview mode - no autonomous operations yet'
+          message: systemRunning ?
+            '🤖 Autonomous engine running - 7-day research phase in progress' :
+            'System in preview mode - no autonomous operations yet'
         }
       ]
     };
@@ -54,8 +58,16 @@ router.get('/stats', async (req, res) => {
     if (!systemRunning) {
       stats.alerts.push({
         title: 'System Not Running',
-        message: 'The autonomous engine is currently stopped. Switch from simple-server.js to autonomous-engine.js to start.'
+        message: 'The autonomous engine is currently stopped. Deploy autonomous-engine.js to Railway to start.'
       });
+    } else {
+      // System is running - check if we're in research phase
+      if (process.env.SKIP_RESEARCH !== 'true') {
+        stats.alerts.push({
+          title: '🔬 Research Phase Active',
+          message: '7-day testing phase in progress. Testing full business pipeline before production launch.'
+        });
+      }
     }
 
     res.json(stats);
