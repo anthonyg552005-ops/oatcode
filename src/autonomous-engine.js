@@ -17,11 +17,17 @@ require('dotenv').config();
 
 // Validate critical environment variables before starting
 console.log('🔍 Validating environment variables...');
+console.log('Environment check:');
+console.log('- OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? `Set (${process.env.OPENAI_API_KEY.substring(0, 20)}...)` : 'MISSING');
+console.log('- NODE_ENV:', process.env.NODE_ENV || 'not set');
+console.log('- PORT:', process.env.PORT || '3000');
+
 const requiredVars = ['OPENAI_API_KEY'];
-const missingVars = requiredVars.filter(v => !process.env[v]);
+const missingVars = requiredVars.filter(v => !process.env[v] || process.env[v].trim() === '');
 if (missingVars.length > 0) {
   console.error(`❌ Missing required environment variables: ${missingVars.join(', ')}`);
   console.error('Please set these in Railway dashboard > Variables tab');
+  console.error('All env vars:', Object.keys(process.env).filter(k => k.includes('API') || k.includes('KEY')).join(', '));
   process.exit(1);
 }
 console.log('✅ All required environment variables present\n');
