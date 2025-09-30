@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OatCode System Status</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .status-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-value {
+            font-family: 'Courier New', monospace;
+            color: #666;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-running {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-stopped {
+            background: #ef4444;
+            color: white;
+        }
+
+        .status-starting {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .last-updated {
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+
+        .metric {
+            display: inline-block;
+            margin: 10px 15px;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 2em;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 OatCode System Status</h1>
+        <p class="subtitle">Real-time autonomous engine monitoring</p>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Checking system status...</p>
+        </div>
+
+        <div id="error" style="display: none;"></div>
+
+        <div id="content" style="display: none;">
+            <div class="status-box">
+                <h3 style="margin-bottom: 15px;">🤖 Autonomous Engine</h3>
+                <div class="status-item">
+                    <span class="status-label">Status</span>
+                    <span id="engineStatus" class="status-badge">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Uptime</span>
+                    <span id="uptime" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Phase</span>
+                    <span id="phase" class="status-value">-</span>
+                </div>
+            </div>
+
+            <div class="status-box">
+                <h3 style="margin-bottom: 15px;">💼 Business Automation</h3>
+                <div class="status-item">
+                    <span class="status-label">Status</span>
+                    <span id="businessStatus" class="status-badge">Checking...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Paused</span>
+                    <span id="paused" class="status-value">-</span>
+                </div>
+            </div>
+
+            <div class="status-box">
+                <h3 style="margin-bottom: 15px;">📊 Metrics</h3>
+                <div style="text-align: center; padding: 20px;">
+                    <div class="metric">
+                        <span id="leads" class="metric-value">0</span>
+                        <span class="metric-label">Leads Generated</span>
+                    </div>
+                    <div class="metric">
+                        <span id="emails" class="metric-value">0</span>
+                        <span class="metric-label">Emails Sent</span>
+                    </div>
+                    <div class="metric">
+                        <span id="demos" class="metric-value">0</span>
+                        <span class="metric-label">Demos Created</span>
+                    </div>
+                    <div class="metric">
+                        <span id="customers" class="metric-value">0</span>
+                        <span class="metric-label">Customers Signed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-box">
+                <h3 style="margin-bottom: 15px;">🔌 Services</h3>
+                <div class="status-item">
+                    <span class="status-label">OpenAI</span>
+                    <span id="openai" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">SendGrid</span>
+                    <span id="sendgrid" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Stripe</span>
+                    <span id="stripe" class="status-value">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="last-updated">
+            Last updated: <span id="lastUpdated">Never</span><br>
+            Auto-refreshes every 10 seconds
+        </div>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            try {
+                const response = await fetch('/health/detailed');
+                const data = await response.json();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+                // Autonomous Engine Status
+                const engineRunning = data.autonomousEngine?.running;
+                const engineStatus = document.getElementById('engineStatus');
+                engineStatus.textContent = engineRunning ? 'Running' : 'Starting';
+                engineStatus.className = 'status-badge ' + (engineRunning ? 'status-running' : 'status-starting');
+
+                // Uptime
+                const uptime = Math.floor(data.system.uptime);
+                const hours = Math.floor(uptime / 3600);
+                const minutes = Math.floor((uptime % 3600) / 60);
+                document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+
+                // Phase
+                document.getElementById('phase').textContent = data.autonomousEngine?.phase === 'research' ? '7-Day Research Phase' : 'Production';
+
+                // Business Status
+                const businessRunning = data.business?.running;
+                const businessStatus = document.getElementById('businessStatus');
+                businessStatus.textContent = businessRunning ? 'Running' : 'Starting';
+                businessStatus.className = 'status-badge ' + (businessRunning ? 'status-running' : 'status-starting');
+
+                document.getElementById('paused').textContent = data.business?.paused ? 'Yes' : 'No';
+
+                // Metrics
+                document.getElementById('leads').textContent = data.business?.stats?.leadsGenerated || 0;
+                document.getElementById('emails').textContent = data.business?.stats?.emailsSent || 0;
+                document.getElementById('demos').textContent = data.business?.stats?.demosCreated || 0;
+                document.getElementById('customers').textContent = data.business?.stats?.customersSigned || 0;
+
+                // Services
+                document.getElementById('openai').textContent = data.services?.openai === 'configured' ? '✅ Configured' : '❌ Missing';
+                document.getElementById('sendgrid').textContent = data.services?.sendgrid === 'configured' ? '✅ Configured' : '❌ Missing';
+                document.getElementById('stripe').textContent = data.services?.stripe === 'configured' ? '✅ Configured' : '❌ Missing';
+
+                // Last updated
+                document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'none';
+                const errorDiv = document.getElementById('error');
+                errorDiv.style.display = 'block';
+                errorDiv.className = 'error';
+                errorDiv.innerHTML = `<strong>Error:</strong> ${error.message}<br><small>The system may still be starting up. Refresh in a few seconds.</small>`;
+            }
+        }
+
+        // Check status on load
+        checkStatus();
+
+        // Auto-refresh every 10 seconds
+        setInterval(checkStatus, 10000);
+    </script>
+</body>
+</html>

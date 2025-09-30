@@ -13,6 +13,7 @@ require('dotenv').config();
 const demoRoutes = require('./routes/demoRoutes');
 const dashboardRoutes = require('./routes/dashboard');
 const monitoringRoutes = require('./routes/monitoring');
+const healthRoutes = require('./routes/health');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,10 +57,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+// Public status page
+app.get('/status', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/status.html'));
+});
+
 // Routes
 app.use('/demo', demoRoutes);
 app.use('/api/dashboard', dashboardAuth, dashboardRoutes);
 app.use('/api/monitoring', dashboardAuth, monitoringRoutes);
+app.use('/health', healthRoutes); // Public health checks
 
 // Dashboard route (protected)
 app.get('/dashboard', dashboardAuth, (req, res) => {

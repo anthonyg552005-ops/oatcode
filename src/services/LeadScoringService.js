@@ -1,5 +1,4 @@
-```javascript
-class AutonomousWebsiteSellingService {
+class WebsiteSellingService {
   constructor() {
     this.scoringRules = {
       business_quality: {
@@ -23,15 +22,11 @@ class AutonomousWebsiteSellingService {
         affluent_area: { condition: 'medianIncome >= 60000', points: 10 },
         business_district: { condition: 'isBusinessDistrict', points: 15 }
       },
-      customer_willingness: {
-        high_willingness: { condition: 'willingnessToPay >= 197', points: 30 },
-        medium_willingness: { condition: 'willingnessToPay >= 150', points: 20 },
-        low_willingness: { condition: 'willingnessToPay >= 100', points: 10 }
-      },
-      technical_knowledge: {
-        high_knowledge: { condition: 'technicalKnowledge >= 4', points: 10 },
-        medium_knowledge: { condition: 'technicalKnowledge >= 3', points: 5 },
-        low_knowledge: { condition: 'technicalKnowledge >= 2', points: 2 }
+      engagement_potential: {
+        responsive_hours: { condition: 'hasBusinessHours', points: 10 },
+        active_social: { condition: 'hasSocialMedia', points: 10 },
+        recent_reviews: { condition: 'latestReview <= 30days', points: 15 },
+        responds_to_reviews: { condition: 'respondsToReviews', points: 20 }
       }
     };
 
@@ -47,40 +42,184 @@ class AutonomousWebsiteSellingService {
     };
   }
 
-  // ... rest of the code remains the same ...
+  calculateWebsiteScore(business) {
+    let totalScore = 0;
+    const scoringDetails = {};
 
-  /**
-   * Generate actionable recommendations
-   */
+    for (const [category, rules] of Object.entries(this.scoringRules)) {
+      let categoryScore = 0;
+      scoringDetails[category] = {};
+
+      for (const [ruleName, rule] of Object.entries(rules)) {
+        if (this.evaluateCondition(rule.condition, business)) {
+          categoryScore += rule.points;
+          scoringDetails[category][ruleName] = rule.points;
+        }
+      }
+
+      totalScore += categoryScore;
+    }
+
+    const industryMultiplier = this.industryMultipliers[business.businessType] || 1.0;
+    totalScore = Math.round(totalScore * industryMultiplier);
+
+    const priority = this.calculatePriority(totalScore);
+
+    return {
+      score: Math.min(totalScore, 100),
+      priority,
+      industryMultiplier,
+      scoringDetails,
+      recommendations: this.generateRecommendations(business, totalScore)
+    };
+  }
+
+  evaluateCondition(condition, business) {
+    try {
+      const conditions = {
+        'rating >= 4.5': business.rating >= 4.5,
+        'rating >= 4.0': business.rating >= 4.0,
+        'rating >= 3.5': business.rating >= 3.5,
+        'reviewCount >= 100': business.reviewCount >= 100,
+        'reviewCount >= 20': business.reviewCount >= 20,
+        '!hasWebsite': !business.hasWebsite,
+        'websiteQuality === "poor"': business.websiteQuality === 'poor',
+        'hasBusinessHours': business.businessHours && Object.keys(business.businessHours).length > 0
+      };
+
+      return conditions[condition] || false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  calculatePriority(score) {
+    if (score >= 80) return 'hot';
+    if (score >= 60) return 'warm';
+    if (score >= 40) return 'qualified';
+    if (score >= 20) return 'cold';
+    return 'unqualified';
+  }
+
   generateRecommendations(business, score) {
     const recommendations = [];
 
-    // ... rest of the code remains the same ...
-
-    if (business.willingnessToPay >= 197) {
+    if (score >= 80) {
       recommendations.push({
-        type: 'value_prop',
-        message: 'Emphasize the cost-effectiveness and value of our service',
-        action: 'cost_effectiveness_pitch',
+        type: 'immediate_action',
+        message: 'HIGH PRIORITY: Contact immediately with premium offer',
+        action: 'call_immediately',
+        urgency: 'high'
+      });
+    }
+
+    if (!business.hasWebsite) {
+      recommendations.push({
+        type: 'opportunity',
+        message: 'No website detected - prime candidate for our service',
+        action: 'demo_website',
         urgency: 'medium'
       });
     }
 
-    if (business.technicalKnowledge < 3) {
+    if (business.rating >= 4.5) {
       recommendations.push({
         type: 'approach',
-        message: 'Simplify technical jargon - they may not have high technical knowledge',
-        action: 'simplified_technical_pitch',
+        message: 'Use social proof and testimonials - they care about reputation',
+        action: 'social_proof_campaign',
         urgency: 'low'
+      });
+    }
+
+    if (business.reviewCount < 20) {
+      recommendations.push({
+        type: 'value_prop',
+        message: 'Emphasize review generation and local SEO benefits',
+        action: 'review_generation_pitch',
+        urgency: 'medium'
       });
     }
 
     return recommendations;
   }
 
-  // ... rest of the code remains the same ...
+  segmentLeads(businesses) {
+    const segments = {
+      hot_prospects: [],
+      warm_leads: [],
+      qualified_leads: [],
+      nurture_leads: [],
+      unqualified: []
+    };
+
+    businesses.forEach(business => {
+      const scoring = this.calculateWebsiteScore(business);
+      const leadData = { ...business, scoring };
+
+      switch (scoring.priority) {
+        case 'hot':
+          segments.hot_prospects.push(leadData);
+          break;
+        case 'warm':
+          segments.warm_leads.push(leadData);
+          break;
+        case 'qualified':
+          segments.qualified_leads.push(leadData);
+          break;
+        case 'cold':
+          segments.nurture_leads.push(leadData);
+          break;
+        default:
+          segments.unqualified.push(leadData);
+      }
+    });
+
+    return segments;
+  }
+
+  generateCampaignStrategy(business, score) {
+    const strategies = {
+      hot: {
+        approach: 'direct_call',
+        timeline: 'immediate',
+        template: 'premium_offer',
+        follow_up_frequency: 'daily',
+        max_attempts: 10,
+        offer_type: 'full_service',
+        urgency_level: 'high'
+      },
+      warm: {
+        approach: 'email_then_call',
+        timeline: '24_hours',
+        template: 'value_proposition',
+        follow_up_frequency: 'every_2_days',
+        max_attempts: 7,
+        offer_type: 'demo_focused',
+        urgency_level: 'medium'
+      },
+      qualified: {
+        approach: 'email_sequence',
+        timeline: '3_days',
+        template: 'educational',
+        follow_up_frequency: 'weekly',
+        max_attempts: 5,
+        offer_type: 'standard',
+        urgency_level: 'low'
+      },
+      cold: {
+        approach: 'nurture_sequence',
+        timeline: '1_week',
+        template: 'awareness',
+        follow_up_frequency: 'bi_weekly',
+        max_attempts: 3,
+        offer_type: 'basic',
+        urgency_level: 'very_low'
+      }
+    };
+
+    const priority = this.calculatePriority(score);
+    return strategies[priority] || strategies.cold;
+  }
 }
 
-module.exports = AutonomousWebsiteSellingService;
-```
-This adapted code includes the necessary modifications to match the specifics of your autonomous website selling business. It adds two new factors - customer's willingness to pay and their technical knowledge - into the scoring rules. The scoring rules and industry multipliers have been customized to reflect your target market. The code maintains full autonomy, integrates with your services, and follows your coding patterns.
+module.exports = WebsiteSellingService;
