@@ -1,0 +1,44 @@
+{
+  "name": "autonomous-website-seller",
+  "version": "2.0.0",
+  "description": "Autonomous AI that continuously runs and improves a website selling business",
+  "main": "src/autonomous-engine.js",
+  "scripts": {
+    "start": "node src/autonomous-engine.js",
+    "dev": "nodemon src/autonomous-engine.js",
+    "test": "node src/testing/run-all-tests.js",
+    "deploy": "node src/deployment/deploy-to-cloud.js"
+  },
+  "keywords": ["autonomous", "AI", "website-seller", "self-improving", "automation"],
+  "author": "Anthony Garcia",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "puppeteer": "^21.5.0",
+    "openai": "^4.20.1",
+    "@anthropic-ai/sdk": "^0.9.1",
+    "@sendgrid/mail": "^8.1.6",
+    "twilio": "^4.19.0",
+    "nodemailer": "^6.9.7",
+    "dotenv": "^16.3.1",
+    "sequelize": "^6.35.0",
+    "sqlite3": "^5.1.7",
+    "pg": "^8.11.3",
+    "node-cron": "^4.2.1",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "winston": "^3.11.0",
+    "googleapis": "^128.0.0",
+    "stripe": "^14.7.0",
+    "redis": "^4.6.0",
+    "bull": "^4.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0"
+  }
+}

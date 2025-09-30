@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OatCode - AI-Powered Websites for Small Businesses</title>
+    <meta name="description" content="OatCode provides AI-powered websites for small businesses. $197/month includes design, hosting, maintenance, and 24/7 support. 30-day money-back guarantee.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: #2563eb;
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #2563eb;
+            padding: 18px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .guarantee {
+            margin-top: 30px;
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: #f9fafb;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 60px;
+            color: #1e40af;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #1e40af;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .pricing-box {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border: 3px solid #2563eb;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .price {
+            font-size: 4em;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 20px 0;
+        }
+
+        .price-period {
+            font-size: 1.5em;
+            color: #666;
+        }
+
+        .whats-included {
+            text-align: left;
+            margin: 30px 0;
+        }
+
+        .whats-included li {
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 1.1em;
+        }
+
+        .whats-included li:before {
+            content: "✓ ";
+            color: #16a34a;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 0;
+            background: #f9fafb;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .step h3 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #1e40af;
+        }
+
+        /* Contact/CTA Section */
+        .final-cta {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .final-cta p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+        }
+
+        /* Footer */
+        footer {
+            background: #1e293b;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        footer a {
+            color: #93c5fd;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .hero p {
+                font-size: 1.2em;
+            }
+
+            nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">OatCode</div>
+                <nav>
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Professional Websites for Small Businesses</h1>
+            <p>AI-Powered Design. Professional Quality. Affordable Pricing.</p>
+            <a href="mailto:anthonyg552005@gmail.com?subject=Website%20Inquiry" class="cta-button">Get Started Today</a>
+            <p class="guarantee">✅ 30-Day Money-Back Guarantee • ✅ No Setup Fees • ✅ Cancel Anytime</p>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Everything Your Business Needs</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Professional Design</h3>
+                    <p>AI-powered website design that looks stunning and converts visitors into customers. Mobile-responsive and modern.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast Delivery</h3>
+                    <p>Your website goes live in 24-48 hours. No waiting months for development. Start attracting customers immediately.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Secure Hosting</h3>
+                    <p>Enterprise-grade hosting with 99.9% uptime, SSL security, daily backups, and lightning-fast load times.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Regular Updates</h3>
+                    <p>Up to 5 content updates per month included. Keep your website fresh with new photos, text, and information.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎧</div>
+                    <h3>24/7 Support</h3>
+                    <p>AI-powered customer support available anytime. Questions answered quickly. Technical issues resolved fast.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>No Hidden Fees</h3>
+                    <p>$197/month includes everything. No setup fees, no surprise charges, no contracts. Cancel anytime.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Simple, Transparent Pricing</h2>
+            <div class="pricing-box">
+                <h3>Complete Website Solution</h3>
+                <div class="price">$197<span class="price-period">/month</span></div>
+
+                <ul class="whats-included">
+                    <li>Professional website design & development</li>
+                    <li>Secure, fast hosting (99.9% uptime)</li>
+                    <li>SSL certificate (HTTPS security)</li>
+                    <li>Mobile-responsive design</li>
+                    <li>Up to 5 content updates/month</li>
+                    <li>24/7 AI-powered support</li>
+                    <li>Daily backups</li>
+                    <li>Performance optimization</li>
+                    <li>SEO best practices</li>
+                    <li>No contracts - cancel anytime</li>
+                </ul>
+
+                <a href="mailto:anthonyg552005@gmail.com?subject=Get%20Started" class="cta-button">Get Started</a>
+
+                <p style="margin-top: 30px; color: #16a34a; font-weight: bold;">✅ 30-Day Money-Back Guarantee</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sign Up</h3>
+                    <p>Tell us about your business. Provide your business info, photos, and what you want on your site.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>We Build</h3>
+                    <p>Our AI creates your professional website in 24-48 hours. Beautiful design, optimized for conversions.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>You Review</h3>
+                    <p>Preview your website. Request any changes. We'll perfect it until you're 100% satisfied.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Go Live</h3>
+                    <p>We launch your website. You start getting customers. We handle hosting, updates, and support.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <div class="container">
+            <h2>Ready to Get Your Professional Website?</h2>
+            <p>Join hundreds of small businesses with stunning websites</p>
+            <a href="mailto:anthonyg552005@gmail.com?subject=Website%20Inquiry" class="cta-button">Get Started Today</a>
+            <p style="margin-top: 20px;">Or call us: (714) 824-1045</p>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="logo" style="margin-bottom: 20px;">OatCode</div>
+            <div class="contact-info">
+                <p><strong>Email:</strong> anthonyg552005@gmail.com</p>
+                <p><strong>Phone:</strong> (714) 824-1045</p>
+                <p style="margin-top: 20px;">
+                    <strong>Business:</strong> OatCode LLC<br>
+                    <strong>Website:</strong> oatcode.com
+                </p>
+            </div>
+            <div style="margin-top: 30px;">
+                <a href="/terms-of-service">Terms of Service</a>
+                <a href="/privacy-policy">Privacy Policy</a>
+                <a href="/refund-policy">Refund Policy</a>
+            </div>
+            <p style="margin-top: 20px; opacity: 0.7;">&copy; 2025 OatCode LLC. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
