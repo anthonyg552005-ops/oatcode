@@ -625,8 +625,18 @@ class AutonomousEngine {
     });
 
     const PORT = process.env.PORT || 3000;
-    app.listen(PORT, '0.0.0.0', () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       this.logger.info(`🌐 Monitoring server running on port ${PORT}`);
+    });
+
+    server.on('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        this.logger.warn(`⚠️  Port ${PORT} is already in use. Server may already be running.`);
+        // Don't crash - the autonomous engine can still run without the monitoring server
+      } else {
+        this.logger.error(`❌ Server error: ${error.message}`);
+        throw error;
+      }
     });
   }
 
