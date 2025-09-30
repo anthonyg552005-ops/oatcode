@@ -4,8 +4,8 @@
   "description": "Autonomous AI that continuously runs and improves a website selling business",
   "main": "src/autonomous-engine.js",
   "scripts": {
-    "start": "node simple-server.js",
-    "autonomous": "node src/autonomous-engine.js",
+    "start": "node src/autonomous-engine.js",
+    "preview": "node simple-server.js",
     "dev": "nodemon src/autonomous-engine.js",
     "test": "node src/testing/run-all-tests.js",
     "deploy": "node src/deployment/deploy-to-cloud.js"

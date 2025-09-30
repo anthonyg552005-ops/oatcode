@@ -7,12 +7,24 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const basicAuth = require('express-basic-auth');
 require('dotenv').config();
 
 const demoRoutes = require('./routes/demoRoutes');
+const dashboardRoutes = require('./routes/dashboard');
+const monitoringRoutes = require('./routes/monitoring');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Password protection for dashboard
+const dashboardAuth = basicAuth({
+  users: {
+    [process.env.DASHBOARD_USERNAME || 'admin']: process.env.DASHBOARD_PASSWORD || 'changeme123'
+  },
+  challenge: true,
+  realm: 'OatCode Dashboard'
+});
 
 // Middleware
 app.use(cors());
@@ -46,6 +58,13 @@ app.get('/', (req, res) => {
 
 // Routes
 app.use('/demo', demoRoutes);
+app.use('/api/dashboard', dashboardAuth, dashboardRoutes);
+app.use('/api/monitoring', dashboardAuth, monitoringRoutes);
+
+// Dashboard route (protected)
+app.get('/dashboard', dashboardAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dashboard.html'));
+});
 
 // API Control endpoints
 app.post('/api/control/pause', (req, res) => {
