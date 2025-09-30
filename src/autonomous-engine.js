@@ -50,6 +50,7 @@ const CriticalNeedsMonitor = require('./services/CriticalNeedsMonitor');
 const PreLaunchResearchPhase = require('./services/PreLaunchResearchPhase');
 const ProjectLearningService = require('./services/ProjectLearningService');
 const MarketExpansionService = require('./services/MarketExpansionService');
+const BusinessStatusReportService = require('./services/BusinessStatusReportService');
 
 class AutonomousEngine {
   constructor() {
@@ -96,7 +97,8 @@ class AutonomousEngine {
       opportunityMonitor: new AIOpportunityMonitor(this.logger),
       criticalNeeds: new CriticalNeedsMonitor(this.logger),
       projectLearning: new ProjectLearningService(this.logger),
-      marketExpansion: new MarketExpansionService(this.logger)
+      marketExpansion: new MarketExpansionService(this.logger),
+      statusReports: new BusinessStatusReportService(this.logger)
     };
 
     // Performance metrics
@@ -246,6 +248,10 @@ class AutonomousEngine {
       // Initialize Project Learning Service
       await this.services.projectLearning.initialize();
       this.logger.info('   ✓ Project Learning Service ready (monitoring website-scraper)');
+
+      // Start Business Status Reports (3-hour updates to Anthony)
+      this.services.statusReports.start();
+      this.logger.info('   ✓ Business Status Reports enabled (every 3 hours)');
 
       // Load existing knowledge
       await this.loadKnowledgeBase();
@@ -655,6 +661,12 @@ class AutonomousEngine {
     this.isRunning = false;
     this.logger.info('');
     this.logger.info('🛑 Stopping Autonomous Engine...');
+
+    // Stop status reports
+    if (this.services.statusReports) {
+      this.services.statusReports.stop();
+    }
+
     this.logger.info('');
     this.logger.info('📊 Final Statistics:');
     this.logger.info(`   • Total decisions made: ${this.metrics.totalDecisionsMade}`);
