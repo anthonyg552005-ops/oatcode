@@ -5,7 +5,7 @@ nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = [
-  "npm install --production"
+  "npm ci --production --prefer-offline --no-audit"
 ]
 
 [start]
