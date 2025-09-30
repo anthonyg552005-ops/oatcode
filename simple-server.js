@@ -5,6 +5,7 @@
 
 const express = require('express');
 const path = require('path');
+const basicAuth = require('express-basic-auth');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,19 +14,29 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API Routes
+// Password protection for dashboard and API routes
+const dashboardAuth = basicAuth({
+  users: {
+    [process.env.DASHBOARD_USERNAME || 'admin']: process.env.DASHBOARD_PASSWORD || 'changeme123'
+  },
+  challenge: true,
+  realm: 'OatCode Dashboard'
+});
+
+// API Routes (protected)
 const dashboardRoutes = require('./src/routes/dashboard');
 const monitoringRoutes = require('./src/routes/monitoring');
 
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/monitoring', monitoringRoutes);
+app.use('/api/dashboard', dashboardAuth, dashboardRoutes);
+app.use('/api/monitoring', dashboardAuth, monitoringRoutes);
 
 // Static Page Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
-app.get('/dashboard', (req, res) => {
+// Dashboard route (protected)
+app.get('/dashboard', dashboardAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'public/dashboard.html'));
 });
 
