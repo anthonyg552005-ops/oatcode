@@ -1,6 +1,6 @@
 const moment = require('moment-timezone');
-const SendGridService = require('./services/SendGridService');
-const GooglePlacesService = require('./services/GooglePlacesService');
+const SendGridService = require('./SendGridService');
+const GooglePlacesService = require('./GooglePlacesService');
 
 class AutonomousWebsiteSellingService {
   constructor() {
