@@ -57,8 +57,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Public status page
-app.get('/status', (req, res) => {
+// Protected status page (requires same password as dashboard)
+app.get('/status', dashboardAuth, (req, res) => {
   res.sendFile(path.join(__dirname, '../public/status.html'));
 });
 

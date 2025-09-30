@@ -1,11 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const basicAuth = require('express-basic-auth');
 
 /**
  * Health check endpoints for monitoring
  */
 
-// Simple health check
+// Password protection for detailed metrics
+const detailedAuth = basicAuth({
+  users: {
+    [process.env.DASHBOARD_USERNAME || 'admin']: process.env.DASHBOARD_PASSWORD || 'changeme123'
+  },
+  challenge: true,
+  realm: 'OatCode Health Metrics'
+});
+
+// Simple health check (PUBLIC - needed for Railway)
 router.get('/', (req, res) => {
   res.json({
     status: 'ok',
@@ -15,8 +25,8 @@ router.get('/', (req, res) => {
   });
 });
 
-// Detailed health check
-router.get('/detailed', (req, res) => {
+// Detailed health check (PROTECTED - sensitive metrics)
+router.get('/detailed', detailedAuth, (req, res) => {
   const autonomousEngine = global.autonomousMetrics || {};
   const autonomousBusiness = global.autonomousBusiness;
 
