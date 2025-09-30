@@ -15,6 +15,17 @@ const moment = require('moment-timezone');
 const winston = require('winston');
 require('dotenv').config();
 
+// Validate critical environment variables before starting
+console.log('🔍 Validating environment variables...');
+const requiredVars = ['OPENAI_API_KEY'];
+const missingVars = requiredVars.filter(v => !process.env[v]);
+if (missingVars.length > 0) {
+  console.error(`❌ Missing required environment variables: ${missingVars.join(', ')}`);
+  console.error('Please set these in Railway dashboard > Variables tab');
+  process.exit(1);
+}
+console.log('✅ All required environment variables present\n');
+
 // Core AI Agents
 const CompetitorIntelligenceAgent = require('./ai-agents/CompetitorIntelligenceAgent');
 const ContinuousOptimizationAgent = require('./ai-agents/ContinuousOptimizationAgent');

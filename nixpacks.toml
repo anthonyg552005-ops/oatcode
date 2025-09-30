@@ -1,11 +1,12 @@
-# Nixpacks configuration for faster Railway builds
+# Nixpacks configuration for Railway deployment
+# Optimized for reliability over speed
 
 [phases.setup]
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = [
-  "npm ci --production --prefer-offline --no-audit"
+  "npm install"
 ]
 
 [start]
