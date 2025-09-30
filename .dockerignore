@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+.env
+data/
+*.log
+.DS_Store
+.git
+.gitignore
+README.md
+.vscode
+.idea
+*.md
+public/*.backup.*.html
+data/demos/
+data/logs/
+data/metrics/
