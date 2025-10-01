@@ -496,6 +496,40 @@ class AutonomousEngine {
         startDate: this.startTime.toISOString()
       });
 
+      // Generate demo websites for Anthony to test (Standard + Premium)
+      this.logger.info('   🎨 Creating test demo websites for business review...');
+      try {
+        const DemoComparisonService = require('./services/DemoComparisonService');
+        const demoService = new DemoComparisonService(this.logger);
+
+        const testBusiness = {
+          businessName: 'Daily Test Restaurant',
+          industry: 'restaurant',
+          location: 'Orange County, CA',
+          description: 'Fine dining restaurant serving fresh, local cuisine'
+        };
+
+        const demoComparison = await demoService.generateDemoComparison(testBusiness);
+
+        this.services.dailyPresentation.addWebsiteExample(
+          'Test Restaurant (Standard Plan)',
+          'Restaurant',
+          demoComparison.standardUrl,
+          ['Stock photos', 'Professional design', 'Mobile responsive', 'SEO optimized', '$197/month']
+        );
+
+        this.services.dailyPresentation.addWebsiteExample(
+          'Test Restaurant (Premium Plan)',
+          'Restaurant',
+          demoComparison.premiumUrl,
+          ['Runway AI videos', 'DALL-E 3 custom images', 'AI branding', 'Premium features', '$297/month']
+        );
+
+        this.logger.info(`   ✅ Demo comparison ready: ${demoComparison.comparisonUrl}`);
+      } catch (error) {
+        this.logger.error(`   ⚠️  Demo generation failed: ${error.message}`);
+      }
+
       // Add future plans
       this.services.dailyPresentation.addFuturePlan(
         'Continue Autonomous Growth',
