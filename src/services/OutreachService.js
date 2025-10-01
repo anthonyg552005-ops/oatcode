@@ -7,6 +7,7 @@ const OpenAI = require('openai');
 const SendGridService = require('./SendGridService');
 const GooglePlacesService = require('./GooglePlacesService');
 const AIWebsiteGenerationService = require('./AIWebsiteGenerationService');
+const MultiSourceBusinessDiscovery = require('./MultiSourceBusinessDiscovery');
 
 class OutreachService {
   constructor(logger) {
@@ -15,14 +16,22 @@ class OutreachService {
     this.sendGrid = new SendGridService();
     this.googlePlaces = new GooglePlacesService();
     this.websiteGenerator = new AIWebsiteGenerationService(logger);
+    this.multiSourceDiscovery = new MultiSourceBusinessDiscovery(logger);
 
     this.testMode = process.env.SKIP_RESEARCH !== 'true'; // Test mode during research phase
   }
 
   /**
-   * Generate personalized outreach email for a business
+   * Generate HYPER-PERSONALIZED outreach email using gathered intelligence
+   * Uses AI to research the business and craft a unique, compelling email
    */
-  async generateOutreachEmail(business) {
+  async generateOutreachEmail(business, intelligence = null) {
+    // If no intelligence provided, gather it now
+    if (!intelligence) {
+      this.logger.info(`   🔬 Gathering intelligence for personalized email...`);
+      intelligence = await this.multiSourceDiscovery.gatherBusinessIntelligence(business);
+    }
+
     const prompt = `You are a friendly, helpful website provider reaching out to a small business.
 
 Business Info:
@@ -32,12 +41,39 @@ Business Info:
 - Rating: ${business.rating || 'N/A'} stars
 - Has website: ${business.hasWebsite ? 'Yes (poor quality)' : 'No'}
 
-Write a personalized, conversational outreach email that:
-1. Mentions something specific about their business (location, rating, etc.)
-2. Offers to build them a free demo website
-3. Explains the benefit clearly (get more customers)
-4. Keeps it short and friendly (3-4 sentences)
-5. Includes a clear call-to-action
+PERSONALIZATION INTELLIGENCE (use this to make email HIGHLY relevant):
+${intelligence.emailHooks && intelligence.emailHooks.length > 0 ? `
+Email Hooks (USE THESE):
+${intelligence.emailHooks.map(hook => `- ${hook}`).join('\n')}
+` : ''}
+
+${intelligence.ownerName ? `Owner: ${intelligence.ownerName}` : ''}
+${intelligence.yearsInBusiness ? `Years in Business: ${intelligence.yearsInBusiness}` : ''}
+
+${intelligence.reviews ? `
+Customer Feedback:
+- Average Rating: ${intelligence.reviews.average}
+- Customers Love: ${intelligence.reviews.commonPraises?.join(', ')}
+- Common Issues: ${intelligence.reviews.commonComplaints?.join(', ')}
+` : ''}
+
+${intelligence.personalizedInsights && intelligence.personalizedInsights.length > 0 ? `
+Unique Insights:
+${intelligence.personalizedInsights.map(i => `- ${i}`).join('\n')}
+` : ''}
+
+Write a HYPER-PERSONALIZED, conversational outreach email that:
+1. Uses 1-2 of the email hooks above (if available) to show you researched them
+2. ${intelligence.ownerName ? `Addresses ${intelligence.ownerName} by name` : 'Addresses the business owner'}
+3. References something SPECIFIC (their great reviews, award, years in business, etc.)
+4. Identifies their pain point (no website, hard to find online, outdated site)
+5. Offers a free demo website as solution
+6. Explains clear benefit (more customers finding them)
+7. Keeps it warm, conversational, and SHORT (3-5 sentences max)
+8. Includes clear call-to-action
+
+TONE: Friendly, helpful, like a local business owner helping another business owner
+AVOID: Corporate speak, sales jargon, generic templates
 
 Return JSON with: { subject, body }`;
 
@@ -70,12 +106,20 @@ Return JSON with: { subject, body }`;
   }
 
   /**
-   * Full outreach workflow: generate email + create demo + send
+   * Full outreach workflow: research + generate email + create demo + send
+   * NOW WITH INTELLIGENCE GATHERING for hyper-personalization
    */
-  async executeOutreach(business) {
+  async executeOutreach(business, options = {}) {
     try {
-      // Step 1: Generate personalized email
-      const email = await this.generateOutreachEmail(business);
+      // Step 0: Gather intelligence on business (if not in quick mode)
+      let intelligence = null;
+      if (!options.skipIntelligence) {
+        this.logger.info(`   🔬 Researching ${business.name} for personalization...`);
+        intelligence = await this.multiSourceDiscovery.gatherBusinessIntelligence(business);
+      }
+
+      // Step 1: Generate HYPER-PERSONALIZED email using intelligence
+      const email = await this.generateOutreachEmail(business, intelligence);
 
       // Step 2: Create demo website
       const demo = await this.websiteGenerator.generateWebsiteForBusiness({
