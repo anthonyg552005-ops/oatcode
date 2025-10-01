@@ -5,9 +5,10 @@
  * 1. Detects when services are down or crashing
  * 2. Analyzes PM2 logs to find the error
  * 3. Attempts automated fixes (git pull, npm install, restart)
- * 4. If fix fails, notifies you via email/SMS
+ * 4. NEVER GIVES UP - keeps trying different recovery strategies
+ * 5. Only notifies you after exhausting ALL options
  *
- * This ensures the business keeps running even when you're away.
+ * PERSISTENCE MODE: Will try indefinitely until service is healthy
  */
 
 const { exec } = require('child_process');
@@ -24,8 +25,10 @@ class AutoDeploymentMonitorService {
     this.crashCount = 0;
     this.lastRestartTime = Date.now();
     this.recoveryAttempts = 0;
-    this.maxRecoveryAttempts = 3;
+    this.maxRecoveryAttempts = 10; // Increased from 3 to 10 - be persistent!
     this.isRecovering = false;
+    this.recoveryStrategies = []; // Track which strategies we've tried
+    this.consecutiveFailures = 0;
 
     // Track service health
     this.serviceHealth = {
@@ -105,54 +108,137 @@ class AutoDeploymentMonitorService {
 
   /**
    * Handle a service that is stopped or errored
+   * NEVER GIVES UP - tries all possible recovery strategies
    */
   async handleUnhealthyService(serviceName) {
-    this.logger.info(`🔧 Attempting to recover ${serviceName}...`);
+    this.logger.info(`🔧 Recovery attempt #${this.recoveryAttempts + 1} for ${serviceName}...`);
     this.isRecovering = true;
 
     try {
       // Step 1: Get logs to understand the issue
       this.logger.info('   Step 1: Analyzing logs...');
-      const logs = await this.getServiceLogs(serviceName, 50);
+      const logs = await this.getServiceLogs(serviceName, 100);
       const errorAnalysis = this.analyzeError(logs);
 
       this.logger.info(`   Error detected: ${errorAnalysis.type}`);
+      this.logger.info(`   Details: ${errorAnalysis.details}`);
 
-      // Step 2: Attempt automated recovery based on error type
+      // Step 2: Try recovery strategies in order of likelihood to succeed
       let recoverySuccess = false;
+      const strategies = this.getRecoveryStrategies(errorAnalysis.type);
 
-      if (errorAnalysis.type === 'EADDRINUSE') {
-        recoverySuccess = await this.fixPortConflict(serviceName);
-      } else if (errorAnalysis.type === 'MODULE_NOT_FOUND') {
-        recoverySuccess = await this.fixMissingModules(serviceName);
-      } else if (errorAnalysis.type === 'SYNTAX_ERROR') {
-        recoverySuccess = await this.fixSyntaxError(serviceName, errorAnalysis.details);
-      } else if (errorAnalysis.type === 'ENV_MISSING') {
-        recoverySuccess = await this.fixMissingEnvVars(serviceName, errorAnalysis.details);
-      } else {
-        // Generic recovery: pull latest code and restart
-        recoverySuccess = await this.genericRecovery(serviceName);
+      for (let i = 0; i < strategies.length && !recoverySuccess; i++) {
+        const strategy = strategies[i];
+
+        // Skip if we already tried this strategy recently
+        if (this.recoveryStrategies.includes(strategy.name)) {
+          this.logger.info(`   ⏭️  Skipping ${strategy.name} (already tried)`);
+          continue;
+        }
+
+        this.logger.info(`   🔄 Trying: ${strategy.name}...`);
+        this.recoveryStrategies.push(strategy.name);
+
+        recoverySuccess = await strategy.execute(serviceName, errorAnalysis);
+
+        if (recoverySuccess) {
+          this.logger.info(`   ✅ ${strategy.name} worked!`);
+        } else {
+          this.logger.warn(`   ❌ ${strategy.name} didn't work, trying next...`);
+        }
       }
 
+      // Step 3: If all targeted strategies failed, try aggressive recovery
+      if (!recoverySuccess && this.recoveryAttempts < this.maxRecoveryAttempts) {
+        this.logger.warn('   🚨 All standard strategies failed. Trying aggressive recovery...');
+        recoverySuccess = await this.aggressiveRecovery(serviceName);
+      }
+
+      // Step 4: Handle outcome
       if (recoverySuccess) {
-        this.logger.info(`✅ Successfully recovered ${serviceName}`);
+        this.logger.info(`✅ Successfully recovered ${serviceName}!`);
         this.recoveryAttempts = 0;
+        this.recoveryStrategies = [];
+        this.consecutiveFailures = 0;
         await this.notifySuccess(serviceName, errorAnalysis.type);
       } else {
-        this.logger.error(`❌ Failed to recover ${serviceName} automatically`);
         this.recoveryAttempts++;
+        this.consecutiveFailures++;
+        this.logger.error(`❌ Recovery attempt #${this.recoveryAttempts} failed`);
 
+        // Reset recovery strategies every 3 attempts to try them again
+        if (this.recoveryAttempts % 3 === 0) {
+          this.logger.info('   🔄 Resetting recovery strategies to try again...');
+          this.recoveryStrategies = [];
+        }
+
+        // Only notify after many failures - keep trying!
         if (this.recoveryAttempts >= this.maxRecoveryAttempts) {
+          this.logger.error(`   📧 Notifying user after ${this.recoveryAttempts} failed attempts...`);
           await this.notifyFailure(serviceName, errorAnalysis, logs);
+
+          // Still don't give up! Keep trying but less frequently
+          this.recoveryAttempts = Math.floor(this.maxRecoveryAttempts / 2);
         }
       }
 
     } catch (error) {
-      this.logger.error(`Recovery failed: ${error.message}`);
-      await this.notifyFailure(serviceName, { type: 'UNKNOWN', details: error.message });
+      this.logger.error(`Recovery error: ${error.message}`);
+      this.logger.error(`Stack: ${error.stack}`);
+      this.recoveryAttempts++;
+
+      // Don't stop - keep trying!
+      if (this.recoveryAttempts >= this.maxRecoveryAttempts) {
+        await this.notifyFailure(serviceName, { type: 'RECOVERY_ERROR', details: error.message }, error.stack);
+      }
     } finally {
       this.isRecovering = false;
     }
+  }
+
+  /**
+   * Get recovery strategies based on error type
+   */
+  getRecoveryStrategies(errorType) {
+    const allStrategies = [
+      {
+        name: 'Fix Port Conflict',
+        execute: (serviceName) => this.fixPortConflict(serviceName),
+        relevantFor: ['EADDRINUSE']
+      },
+      {
+        name: 'Install Missing Modules',
+        execute: (serviceName) => this.fixMissingModules(serviceName),
+        relevantFor: ['MODULE_NOT_FOUND']
+      },
+      {
+        name: 'Pull Latest Code',
+        execute: (serviceName) => this.fixSyntaxError(serviceName),
+        relevantFor: ['SYNTAX_ERROR']
+      },
+      {
+        name: 'Generic Recovery (Pull + Install + Restart)',
+        execute: (serviceName) => this.genericRecovery(serviceName),
+        relevantFor: ['UNKNOWN', 'SYNTAX_ERROR', 'MODULE_NOT_FOUND']
+      },
+      {
+        name: 'Simple Restart',
+        execute: (serviceName) => this.simpleRestart(serviceName),
+        relevantFor: ['UNKNOWN']
+      },
+      {
+        name: 'Clear PM2 and Restart',
+        execute: (serviceName) => this.clearAndRestart(serviceName),
+        relevantFor: ['UNKNOWN']
+      }
+    ];
+
+    // Get strategies relevant to this error type, plus generic ones
+    const relevant = allStrategies.filter(s =>
+      s.relevantFor.includes(errorType) || s.relevantFor.includes('UNKNOWN')
+    );
+
+    return relevant;
   }
 
   /**
@@ -289,6 +375,70 @@ class AutoDeploymentMonitorService {
       await this.sleep(10000);
       return await this.verifyServiceHealthy(serviceName);
     } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Simple restart - just restart the service
+   */
+  async simpleRestart(serviceName) {
+    this.logger.info('   Fix: Simple restart');
+
+    try {
+      await execPromise(
+        `ssh -i ~/.ssh/droplet_key root@24.144.89.17 'pm2 restart ${serviceName}'`
+      );
+
+      await this.sleep(5000);
+      return await this.verifyServiceHealthy(serviceName);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Clear PM2 and restart
+   */
+  async clearAndRestart(serviceName) {
+    this.logger.info('   Fix: Clear PM2 logs and restart');
+
+    try {
+      await execPromise(
+        `ssh -i ~/.ssh/droplet_key root@24.144.89.17 'pm2 flush && pm2 restart ${serviceName}'`
+      );
+
+      await this.sleep(5000);
+      return await this.verifyServiceHealthy(serviceName);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Aggressive recovery - nuclear option
+   * Stops everything, cleans up, pulls fresh code, reinstalls, restarts
+   */
+  async aggressiveRecovery(serviceName) {
+    this.logger.warn('   ☢️  AGGRESSIVE RECOVERY: Stopping all services, cleaning, fresh install...');
+
+    try {
+      await execPromise(
+        `ssh -i ~/.ssh/droplet_key root@24.144.89.17 'cd /var/www/automatedwebsitescraper && pm2 stop all && pm2 delete all && git reset --hard HEAD && git clean -fd && git pull origin main && npm ci --production && pm2 start src/app.js --name oatcode-web && pm2 start src/autonomous-engine.js --name oatcode-engine'`
+      );
+
+      this.logger.info('   ⏳ Waiting 20 seconds for services to stabilize...');
+      await this.sleep(20000);
+
+      const isHealthy = await this.verifyServiceHealthy(serviceName);
+
+      if (isHealthy) {
+        this.logger.info('   ✅ Aggressive recovery succeeded!');
+      }
+
+      return isHealthy;
+    } catch (error) {
+      this.logger.error(`   ❌ Aggressive recovery failed: ${error.message}`);
       return false;
     }
   }
