@@ -52,6 +52,7 @@ const ProjectLearningService = require('./services/ProjectLearningService');
 const MarketExpansionService = require('./services/MarketExpansionService');
 const BusinessStatusReportService = require('./services/BusinessStatusReportService');
 const DailyPresentationService = require('./services/DailyPresentationService');
+const AutoDeploymentRecoveryService = require('./services/AutoDeploymentRecoveryService');
 
 class AutonomousEngine {
   constructor() {
@@ -100,7 +101,8 @@ class AutonomousEngine {
       projectLearning: new ProjectLearningService(this.logger),
       marketExpansion: new MarketExpansionService(this.logger),
       statusReports: new BusinessStatusReportService(this.logger),
-      dailyPresentation: new DailyPresentationService(this.logger)
+      dailyPresentation: new DailyPresentationService(this.logger),
+      deploymentRecovery: new AutoDeploymentRecoveryService(this.logger)
     };
 
     // Performance metrics
@@ -258,6 +260,10 @@ class AutonomousEngine {
       // Expose daily presentation service globally
       global.dailyPresentation = this.services.dailyPresentation;
       this.logger.info('   ✓ Daily Presentation Service ready');
+
+      // Start Auto-Deployment Recovery (monitors Railway 24/7)
+      this.services.deploymentRecovery.start();
+      this.logger.info('   ✓ Auto-Deployment Recovery monitoring Railway');
 
       // Load existing knowledge
       await this.loadKnowledgeBase();
