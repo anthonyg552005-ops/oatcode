@@ -52,7 +52,6 @@ const ProjectLearningService = require('./services/ProjectLearningService');
 const MarketExpansionService = require('./services/MarketExpansionService');
 const BusinessStatusReportService = require('./services/BusinessStatusReportService');
 const DailyPresentationService = require('./services/DailyPresentationService');
-const AutoDeploymentRecoveryService = require('./services/AutoDeploymentRecoveryService');
 const AIAlignmentMonitor = require('./services/AIAlignmentMonitor');
 const AutoScalingStrategyService = require('./services/AutoScalingStrategyService');
 const LowMaintenanceTargetingService = require('./services/LowMaintenanceTargetingService');
@@ -114,7 +113,6 @@ class AutonomousEngine {
       marketExpansion: new MarketExpansionService(this.logger),
       statusReports: new BusinessStatusReportService(this.logger),
       dailyPresentation: new DailyPresentationService(this.logger),
-      deploymentRecovery: new AutoDeploymentRecoveryService(this.logger),
       alignmentMonitor: new AIAlignmentMonitor(this.logger),
       scalingStrategy: new AutoScalingStrategyService(this.logger),
       lowMaintenanceTargeting: new LowMaintenanceTargetingService(this.logger),
