@@ -54,6 +54,7 @@ const BusinessStatusReportService = require('./services/BusinessStatusReportServ
 const DailyPresentationService = require('./services/DailyPresentationService');
 const AutoDeploymentRecoveryService = require('./services/AutoDeploymentRecoveryService');
 const AIAlignmentMonitor = require('./services/AIAlignmentMonitor');
+const AutoScalingStrategyService = require('./services/AutoScalingStrategyService');
 
 class AutonomousEngine {
   constructor() {
@@ -104,7 +105,8 @@ class AutonomousEngine {
       statusReports: new BusinessStatusReportService(this.logger),
       dailyPresentation: new DailyPresentationService(this.logger),
       deploymentRecovery: new AutoDeploymentRecoveryService(this.logger),
-      alignmentMonitor: new AIAlignmentMonitor(this.logger)
+      alignmentMonitor: new AIAlignmentMonitor(this.logger),
+      scalingStrategy: new AutoScalingStrategyService(this.logger)
     };
 
     // Performance metrics
@@ -270,6 +272,10 @@ class AutonomousEngine {
       // Start AI Alignment Monitor (ensures we stay true to original vision)
       this.services.alignmentMonitor.start();
       this.logger.info('   ✓ AI Alignment Monitor watching original vision');
+
+      // Start Autonomous Scaling Strategy (1 city → 50+ cities → international)
+      await this.services.scalingStrategy.start();
+      this.logger.info('   ✓ Autonomous Scaling Strategy managing expansion');
 
       // Load existing knowledge
       await this.loadKnowledgeBase();
