@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OatCode - AI-Powered Websites for Small Businesses</title>
-    <meta name="description" content="OatCode provides AI-powered websites for small businesses. $197/month includes design, hosting, maintenance, and 24/7 support. 30-day money-back guarantee.">
+    <title>OatCode - AI-Powered Websites That Sell | Advanced Website Solutions</title>
+    <meta name="description" content="Next-generation AI-powered websites with Runway video generation, DALL-E visuals, and autonomous management. Starting at $197/month.">
+
     <style>
         * {
             margin: 0;
@@ -12,428 +13,739 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #EC4899;
+            --accent: #F59E0B;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-glow: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: var(--dark);
+            background: var(--light);
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        header {
-            background: #2563eb;
-            color: white;
-            padding: 20px 0;
-            position: sticky;
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            opacity: 0.05;
         }
 
-        .header-content {
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 1.5em;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 900;
+            background: var(--gradient-glow);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 8s ease infinite;
+            letter-spacing: -1px;
         }
 
-        nav a {
-            color: white;
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--dark);
             text-decoration: none;
-            margin-left: 30px;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
-        nav a:hover {
-            text-decoration: underline;
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-1);
+            transition: width 0.3s ease;
         }
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-            color: white;
-            padding: 100px 0;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.5em;
-            margin-bottom: 40px;
-            opacity: 0.9;
+        .nav-links a:hover:after {
+            width: 100%;
         }
 
         .cta-button {
-            display: inline-block;
-            background: white;
-            color: #2563eb;
-            padding: 18px 40px;
-            font-size: 1.2em;
-            font-weight: bold;
+            background: var(--gradient-1);
+            color: white;
+            padding: 12px 30px;
             border-radius: 50px;
             text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
         }
 
-        .guarantee {
-            margin-top: 30px;
-            font-size: 1.1em;
-            opacity: 0.95;
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 120px 40px 80px;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            background: var(--gradient-glow);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(20px, 3vw, 28px);
+            color: #64748B;
+            margin-bottom: 50px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .primary-cta {
+            background: var(--gradient-1);
+            color: white;
+            padding: 20px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .primary-cta:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .primary-cta:hover:before {
+            left: 100%;
+        }
+
+        .primary-cta:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.6);
+        }
+
+        .secondary-cta {
+            background: white;
+            color: var(--primary);
+            padding: 20px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            border: 2px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .secondary-cta:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
         }
 
         /* Features Section */
         .features {
-            padding: 80px 0;
-            background: #f9fafb;
+            padding: 100px 40px;
+            background: white;
         }
 
         .section-title {
             text-align: center;
-            font-size: 2.5em;
-            margin-bottom: 60px;
-            color: #1e40af;
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 20px;
+            color: #64748B;
+            margin-bottom: 80px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .features-grid {
+            max-width: 1400px;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 40px;
         }
 
         .feature-card {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            padding: 50px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-1);
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
         }
 
         .feature-icon {
-            font-size: 3em;
-            margin-bottom: 20px;
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
 
-        .feature-card h3 {
-            font-size: 1.5em;
+        .feature-title {
+            font-size: 26px;
+            font-weight: 800;
             margin-bottom: 15px;
-            color: #1e40af;
+            color: var(--dark);
+        }
+
+        .feature-description {
+            font-size: 16px;
+            color: #64748B;
+            line-height: 1.8;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 100px 40px;
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .stats-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 60px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            opacity: 0.95;
+        }
+
+        .stat-label {
+            font-size: 20px;
+            opacity: 0.9;
+            font-weight: 600;
         }
 
         /* Pricing Section */
         .pricing {
-            padding: 80px 0;
-            text-align: center;
+            padding: 100px 40px;
+            background: var(--light);
         }
 
-        .pricing-box {
+        .pricing-card {
             max-width: 600px;
             margin: 0 auto;
             background: white;
-            border: 3px solid #2563eb;
-            border-radius: 20px;
-            padding: 50px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 40px;
+            padding: 60px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--gradient-glow);
+            background-size: 300% 300%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        .pricing-badge {
+            background: var(--gradient-2);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 30px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .price {
-            font-size: 4em;
-            font-weight: bold;
-            color: #2563eb;
-            margin: 20px 0;
+            font-size: 80px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .price-period {
-            font-size: 1.5em;
-            color: #666;
+            font-size: 24px;
+            color: #64748B;
+            margin-bottom: 40px;
         }
 
-        .whats-included {
+        .features-list {
             text-align: left;
-            margin: 30px 0;
+            margin: 40px 0;
         }
 
-        .whats-included li {
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 1.1em;
+        .features-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 18px;
         }
 
-        .whats-included li:before {
-            content: "✓ ";
-            color: #16a34a;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        /* How It Works */
-        .how-it-works {
-            padding: 80px 0;
-            background: #f9fafb;
-        }
-
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-top: 50px;
-        }
-
-        .step {
-            text-align: center;
-        }
-
-        .step-number {
-            display: inline-block;
-            width: 80px;
-            height: 80px;
-            line-height: 80px;
-            background: #2563eb;
+        .features-list li:before {
+            content: '✓';
+            background: var(--gradient-1);
             color: white;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
-            margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
-        .step h3 {
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            color: #1e40af;
-        }
-
-        /* Contact/CTA Section */
+        /* CTA Section */
         .final-cta {
-            padding: 80px 0;
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            padding: 120px 40px;
+            background: var(--dark);
             color: white;
             text-align: center;
         }
 
         .final-cta h2 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            font-size: clamp(36px, 6vw, 72px);
+            font-weight: 900;
+            margin-bottom: 30px;
+            line-height: 1.2;
         }
 
         .final-cta p {
-            font-size: 1.3em;
-            margin-bottom: 40px;
+            font-size: 22px;
+            margin-bottom: 50px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         /* Footer */
         footer {
-            background: #1e293b;
+            background: #0A0A0A;
             color: white;
-            padding: 40px 0;
-            text-align: center;
+            padding: 60px 40px 30px;
         }
 
-        footer a {
-            color: #93c5fd;
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .footer-section a {
+            color: #94A3B8;
             text-decoration: none;
-            margin: 0 15px;
+            display: block;
+            margin-bottom: 12px;
+            transition: color 0.3s;
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        .footer-section a:hover {
+            color: white;
         }
 
-        .contact-info {
-            margin-top: 20px;
-            font-size: 1.1em;
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #1F2937;
+            color: #64748B;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2em;
-            }
-
-            .hero p {
-                font-size: 1.2em;
-            }
-
-            nav {
+            .nav-links {
                 display: none;
             }
+
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card {
+                padding: 40px 30px;
+            }
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">OatCode</div>
-                <nav>
-                    <a href="#features">Features</a>
-                    <a href="#pricing">Pricing</a>
-                    <a href="#how-it-works">How It Works</a>
-                    <a href="#contact">Contact</a>
-                </nav>
+    <div class="animated-bg"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">OatCode</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#contact">Contact</a>
+                <a href="#" class="cta-button">Get Started</a>
             </div>
         </div>
-    </header>
+    </nav>
 
+    <!-- Hero Section -->
     <section class="hero">
-        <div class="container">
-            <h1>Professional Websites for Small Businesses</h1>
-            <p>AI-Powered Design. Professional Quality. Affordable Pricing.</p>
-            <a href="https://buy.stripe.com/eVq5kFdx937Z6B4g9D7Re00" class="cta-button">Get Started Today</a>
-            <p class="guarantee">✅ 30-Day Money-Back Guarantee • ✅ No Setup Fees • ✅ Cancel Anytime</p>
-        </div>
-    </section>
-
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Everything Your Business Needs</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Professional Design</h3>
-                    <p>AI-powered website design that looks stunning and converts visitors into customers. Mobile-responsive and modern.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Fast Delivery</h3>
-                    <p>Your website goes live in 24-48 hours. No waiting months for development. Start attracting customers immediately.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Secure Hosting</h3>
-                    <p>Enterprise-grade hosting with 99.9% uptime, SSL security, daily backups, and lightning-fast load times.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
-                    <h3>Regular Updates</h3>
-                    <p>Up to 5 content updates per month included. Keep your website fresh with new photos, text, and information.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🎧</div>
-                    <h3>24/7 Support</h3>
-                    <p>AI-powered customer support available anytime. Questions answered quickly. Technical issues resolved fast.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">💰</div>
-                    <h3>No Hidden Fees</h3>
-                    <p>$197/month includes everything. No setup fees, no surprise charges, no contracts. Cancel anytime.</p>
-                </div>
+        <div class="hero-content">
+            <h1 class="floating">
+                AI-Powered Websites<br>That Actually Sell
+            </h1>
+            <p class="hero-subtitle">
+                Next-generation websites with Runway AI video, DALL-E visuals, and autonomous management.
+                Built by AI, optimized for conversions, managed automatically.
+            </p>
+            <div class="hero-cta-group">
+                <a href="#pricing" class="primary-cta">Start Your Website Today</a>
+                <a href="#features" class="secondary-cta">See How It Works</a>
             </div>
         </div>
     </section>
 
-    <section id="pricing" class="pricing">
-        <div class="container">
-            <h2 class="section-title">Simple, Transparent Pricing</h2>
-            <div class="pricing-box">
-                <h3>Complete Website Solution</h3>
-                <div class="price">$197<span class="price-period">/month</span></div>
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Advanced AI Technology</h2>
+        <p class="section-subtitle">
+            Cutting-edge AI tools that make your website stand out from the competition
+        </p>
 
-                <ul class="whats-included">
-                    <li>Professional website design & development</li>
-                    <li>Secure, fast hosting (99.9% uptime)</li>
-                    <li>SSL certificate (HTTPS security)</li>
-                    <li>Mobile-responsive design</li>
-                    <li>Up to 5 content updates/month</li>
-                    <li>24/7 AI-powered support</li>
-                    <li>Daily backups</li>
-                    <li>Performance optimization</li>
-                    <li>SEO best practices</li>
-                    <li>No contracts - cancel anytime</li>
-                </ul>
-
-                <a href="https://buy.stripe.com/eVq5kFdx937Z6B4g9D7Re00" class="cta-button">Subscribe Now</a>
-
-                <p style="margin-top: 30px; color: #16a34a; font-weight: bold;">✅ 30-Day Money-Back Guarantee</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="how-it-works" class="how-it-works">
-        <div class="container">
-            <h2 class="section-title">How It Works</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Sign Up</h3>
-                    <p>Tell us about your business. Provide your business info, photos, and what you want on your site.</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>We Build</h3>
-                    <p>Our AI creates your professional website in 24-48 hours. Beautiful design, optimized for conversions.</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>You Review</h3>
-                    <p>Preview your website. Request any changes. We'll perfect it until you're 100% satisfied.</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Go Live</h3>
-                    <p>We launch your website. You start getting customers. We handle hosting, updates, and support.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="final-cta">
-        <div class="container">
-            <h2>Ready to Get Your Professional Website?</h2>
-            <p>Join hundreds of small businesses with stunning websites</p>
-            <a href="https://buy.stripe.com/eVq5kFdx937Z6B4g9D7Re00" class="cta-button">Subscribe Now - $197/month</a>
-            <p style="margin-top: 20px;">✅ 30-Day Money-Back Guarantee • 24/7 AI-Powered Support</p>
-        </div>
-    </section>
-
-    <footer id="contact">
-        <div class="container">
-            <div class="logo" style="margin-bottom: 20px;">OatCode</div>
-            <div class="contact-info">
-                <p><strong>Email:</strong> support@oatcode.com</p>
-                <p><strong>Support:</strong> 24/7 AI-Powered Assistance</p>
-                <p style="margin-top: 20px;">
-                    <strong>Business:</strong> OatCode LLC<br>
-                    <strong>Website:</strong> oatcode.com
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎬</div>
+                <h3 class="feature-title">Runway AI Videos</h3>
+                <p class="feature-description">
+                    Professional AI-generated videos using Runway ML's Gen-4 Turbo.
+                    Cinematic quality promotional content created automatically for your business.
                 </p>
             </div>
-            <div style="margin-top: 30px;">
+
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3 class="feature-title">DALL-E 3 Visuals</h3>
+                <p class="feature-description">
+                    Ultra-high quality images, logos, and hero banners generated with OpenAI's DALL-E 3.
+                    Unique, custom visuals designed specifically for your brand.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">Autonomous Management</h3>
+                <p class="feature-description">
+                    AI monitors performance, fixes issues, and continuously improves your website.
+                    Self-healing, self-optimizing, completely hands-free.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Lightning Fast</h3>
+                <p class="feature-description">
+                    Optimized code, CDN delivery, and smart caching ensure your site loads
+                    in under 1 second. Speed equals conversions.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">Mobile First</h3>
+                <p class="feature-description">
+                    Perfectly responsive design that looks stunning on every device.
+                    60% of visitors are mobile - we make sure they convert.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Enterprise Security</h3>
+                <p class="feature-description">
+                    SSL encryption, DDoS protection, automated backups, and 24/7 security monitoring.
+                    Your business is protected.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-number">10X</div>
+                <div class="stat-label">Faster Than Traditional</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Uptime Guarantee</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">AI Monitoring</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Scalability</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-subtitle">
+            Everything you need to dominate your market. No hidden fees.
+        </p>
+
+        <div class="pricing-card">
+            <div class="pricing-badge">Most Popular</div>
+            <div class="price">$197</div>
+            <div class="price-period">per month</div>
+
+            <ul class="features-list">
+                <li>Runway AI video generation</li>
+                <li>DALL-E 3 custom visuals</li>
+                <li>Autonomous AI management</li>
+                <li>Custom domain & SSL</li>
+                <li>99.9% uptime guarantee</li>
+                <li>Unlimited edits & updates</li>
+                <li>SEO optimization</li>
+                <li>Mobile responsive design</li>
+                <li>24/7 AI monitoring</li>
+                <li>Email support integration</li>
+                <li>Analytics dashboard</li>
+                <li>30-day money-back guarantee</li>
+            </ul>
+
+            <a href="#" class="primary-cta">Launch Your Website Now</a>
+
+            <p style="margin-top: 30px; color: #64748B; font-size: 14px;">
+                Setup fee: $0 | Cancel anytime | No contracts
+            </p>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta" id="contact">
+        <h2>Ready to Build Your AI-Powered Website?</h2>
+        <p>
+            Join the future of web design. Let AI create, manage, and optimize
+            your website while you focus on growing your business.
+        </p>
+        <a href="mailto:contact@oatcode.com" class="primary-cta">Get Started Today</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>OatCode</h3>
+                <p style="color: #64748B; line-height: 1.8;">
+                    Next-generation AI-powered websites for businesses that want to win.
+                </p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Product</h3>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="/demo">Demo Sites</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Company</h3>
+                <a href="#contact">Contact</a>
                 <a href="/terms-of-service">Terms of Service</a>
                 <a href="/privacy-policy">Privacy Policy</a>
                 <a href="/refund-policy">Refund Policy</a>
             </div>
-            <p style="margin-top: 20px; opacity: 0.7;">&copy; 2025 OatCode LLC. All rights reserved.</p>
+
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <a href="mailto:contact@oatcode.com">contact@oatcode.com</a>
+                <a href="/dashboard">Dashboard Login</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 OatCode. All rights reserved. Built with AI. Powered by innovation.</p>
         </div>
     </footer>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>
