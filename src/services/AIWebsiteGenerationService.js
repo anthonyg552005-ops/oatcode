@@ -15,6 +15,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
+const SmartVisualService = require('./SmartVisualService');
 
 class AIWebsiteGenerationService {
   constructor(logger) {
@@ -28,6 +29,9 @@ class AIWebsiteGenerationService {
     this.anthropic = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY
     });
+
+    // Initialize Smart Visual Service (uses FREE stock photos by default)
+    this.visualService = new SmartVisualService(logger);
 
     // Track what works best
     this.performanceData = {
@@ -87,12 +91,13 @@ class AIWebsiteGenerationService {
       const content = await this.generateWebsiteContent(business, strategy);
       this.logger.info(`   ✓ Content generated (${content.sections.length} sections)`);
 
-      // Step 3: DALL-E 3 generates custom images
-      const images = await this.generateCustomImages(business, content, strategy);
-      this.logger.info(`   ✓ Custom images generated (${images.length} images)`);
+      // Step 3: Generate visuals (FREE stock photos by default, AI only if premium)
+      const tier = business.tier || 'standard'; // Default to FREE stock photos
+      const visualPackage = await this.visualService.generateWebsiteVisuals(business, tier);
+      this.logger.info(`   ✓ Visuals ready (${tier} tier, cost: $${visualPackage.cost})`);
 
       // Step 4: AI assembles website with Tailwind CSS
-      const website = await this.assembleWebsite(business, content, images, strategy);
+      const website = await this.assembleWebsite(business, content, visualPackage.assets, strategy);
       this.logger.info(`   ✓ Website assembled with Tailwind CSS`);
 
       // Step 5: AI optimizes for SEO and conversions
