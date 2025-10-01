@@ -53,6 +53,7 @@ const MarketExpansionService = require('./services/MarketExpansionService');
 const BusinessStatusReportService = require('./services/BusinessStatusReportService');
 const DailyPresentationService = require('./services/DailyPresentationService');
 const AutoDeploymentMonitorService = require('./services/AutoDeploymentMonitorService');
+const SelfImprovementAIService = require('./services/SelfImprovementAIService');
 const AIAlignmentMonitor = require('./services/AIAlignmentMonitor');
 const AutoScalingStrategyService = require('./services/AutoScalingStrategyService');
 const LowMaintenanceTargetingService = require('./services/LowMaintenanceTargetingService');
@@ -115,6 +116,7 @@ class AutonomousEngine {
       statusReports: new BusinessStatusReportService(this.logger),
       dailyPresentation: new DailyPresentationService(this.logger),
       deploymentMonitor: new AutoDeploymentMonitorService(this.logger, null), // notification service added later
+      selfImprovement: new SelfImprovementAIService(this.logger),
       alignmentMonitor: new AIAlignmentMonitor(this.logger),
       scalingStrategy: new AutoScalingStrategyService(this.logger),
       lowMaintenanceTargeting: new LowMaintenanceTargetingService(this.logger),
@@ -296,6 +298,10 @@ class AutonomousEngine {
       // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
       this.services.deploymentMonitor.start();
       this.logger.info('   ✓ Auto-Deployment Monitor active (checks every 60s)');
+
+      // Start Self-Improvement AI (continuously creates new services to improve business)
+      this.services.selfImprovement.start();
+      this.logger.info('   ✓ Self-Improvement AI active (analyzes daily, creates optimization services)');
 
       // Start AI Alignment Monitor (ensures we stay true to original vision)
       this.services.alignmentMonitor.start();
