@@ -174,7 +174,7 @@ Return ONLY valid JSON:
         { role: 'user', content: prompt }
       ],
       temperature: 0.7,
-      response_format: { type: "json_object" }
+      
     });
 
     const strategy = JSON.parse(response.choices[0].message.content);
@@ -227,7 +227,7 @@ Return ONLY valid JSON with all sections.`;
       ],
       temperature: 0.8,
       max_tokens: 3000,
-      response_format: { type: "json_object" }
+      
     });
 
     return JSON.parse(response.choices[0].message.content);

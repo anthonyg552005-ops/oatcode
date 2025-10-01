@@ -81,7 +81,7 @@ Return JSON with: { subject, body }`;
       model: 'gpt-4',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.8,
-      response_format: { type: "json_object" }
+      
     });
 
     return JSON.parse(response.choices[0].message.content);

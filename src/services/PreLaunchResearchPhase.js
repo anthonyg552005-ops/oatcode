@@ -162,7 +162,7 @@ class PreLaunchResearchPhase {
 
 Provide detailed analysis as JSON.`
         }],
-        response_format: { type: "json_object" }
+        
       });
 
       this.competitorData.wix = JSON.parse(analysis.choices[0].message.content);
@@ -201,7 +201,7 @@ Focus on:
 
 Provide detailed analysis as JSON.`
         }],
-        response_format: { type: "json_object" }
+        
       });
 
       this.competitorData.squarespace = JSON.parse(analysis.choices[0].message.content);
@@ -240,7 +240,7 @@ Research:
 
 What makes top sellers successful? Provide as JSON.`
         }],
-        response_format: { type: "json_object" }
+        
       });
 
       this.competitorData.fiverr = JSON.parse(analysis.choices[0].message.content);
@@ -284,7 +284,7 @@ Focus on:
 
 Provide as JSON with actionable insights.`
         }],
-        response_format: { type: "json_object" }
+        
       });
 
       this.competitorData.upwork = JSON.parse(analysis.choices[0].message.content);
@@ -344,7 +344,7 @@ Research:
 
 Provide actionable insights as JSON.`
         }],
-        response_format: { type: "json_object" }
+        
       });
 
       this.competitorData.agencies.push(JSON.parse(analysis.choices[0].message.content));
@@ -583,7 +583,7 @@ Include:
 
 Make it diverse and realistic. Return as JSON.`
         }],
-        response_format: { type: "json_object" }
+        
       });
 
       personas.push(JSON.parse(response.choices[0].message.content));

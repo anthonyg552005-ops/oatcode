@@ -302,7 +302,7 @@ Return JSON: { subject, body }`
         model: 'gpt-4',
         messages: [{ role: 'user', content: prompts[step] }],
         temperature: 0.8,
-        response_format: { type: "json_object" }
+        
       });
 
       return JSON.parse(response.choices[0].message.content);

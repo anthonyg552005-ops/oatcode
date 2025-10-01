@@ -260,7 +260,7 @@ Rate alignment 1-100 and explain:
       model: 'gpt-4',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
-      response_format: { type: "json_object" }
+      
     });
 
     const analysis = JSON.parse(response.choices[0].message.content);
@@ -320,7 +320,7 @@ Return JSON:
       model: 'gpt-4',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
-      response_format: { type: "json_object" }
+      
     });
 
     const analysis = JSON.parse(response.choices[0].message.content);
@@ -449,7 +449,7 @@ Return JSON array:
         model: 'gpt-4',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.5,
-        response_format: { type: "json_object" }
+        
       });
 
       const result = JSON.parse(response.choices[0].message.content);
