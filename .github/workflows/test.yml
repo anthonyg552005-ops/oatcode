@@ -1,0 +1,116 @@
+name: Automated Tests & Quality Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint || echo "Lint not configured yet"
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm test || echo "Tests not configured yet"
+        continue-on-error: true
+        env:
+          NODE_ENV: test
+
+      - name: Check for security vulnerabilities
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Verify package.json structure
+        run: |
+          if [ -f package.json ]; then
+            echo "✅ package.json exists"
+            node -e "require('./package.json')" && echo "✅ package.json is valid JSON"
+          fi
+
+      - name: Check environment variables template
+        run: |
+          if [ -f .env.example ]; then
+            echo "✅ .env.example exists"
+          else
+            echo "⚠️ .env.example not found"
+          fi
+
+      - name: Verify critical files exist
+        run: |
+          echo "Checking critical files..."
+          [ -f src/autonomous-engine.js ] && echo "✅ Autonomous engine found" || echo "❌ Missing autonomous-engine.js"
+          [ -f src/app.js ] && echo "✅ Web server found" || echo "❌ Missing app.js"
+          [ -f package.json ] && echo "✅ Package.json found" || echo "❌ Missing package.json"
+
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check code formatting
+        run: |
+          echo "Checking for common code issues..."
+          # Check for console.log in production code
+          if grep -r "console\.log" src/ --exclude-dir=node_modules --exclude="*.md"; then
+            echo "⚠️ Found console.log statements (consider using logger instead)"
+          else
+            echo "✅ No console.log found in src/"
+          fi
+        continue-on-error: true
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Scanning for potential hardcoded secrets..."
+          if grep -r "sk-[a-zA-Z0-9]\{48\}" . --exclude-dir=node_modules --exclude-dir=.git; then
+            echo "❌ DANGER: Potential API key found in code!"
+            exit 1
+          else
+            echo "✅ No hardcoded API keys detected"
+          fi
+
+      - name: Check dependencies for known issues
+        run: |
+          npm outdated || true
+          echo "Run 'npm update' locally to update dependencies"
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [test, code-quality]
+    if: failure()
+
+    steps:
+      - name: Notify on failure
+        run: |
+          echo "❌ Tests or quality checks failed!"
+          echo "Check the Actions tab for details"

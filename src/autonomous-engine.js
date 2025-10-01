@@ -60,6 +60,11 @@ const AIDocumentationAssistant = require('./services/AIDocumentationAssistant');
 const EmailSequenceService = require('./services/EmailSequenceService');
 const SendGridService = require('./services/SendGridService');
 
+// Phase 1 Autonomous Services (CRITICAL)
+const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
+const AutoDatabaseBackupService = require('./services/AutoDatabaseBackupService');
+const AutoEmailDeliverabilityService = require('./services/AutoEmailDeliverabilityService');
+
 class AutonomousEngine {
   constructor() {
     this.startTime = new Date();
@@ -124,6 +129,11 @@ class AutonomousEngine {
       this.logger.error(`Failed to initialize EmailSequenceService: ${error.message}`);
       this.services.emailSequence = null;
     }
+
+    // Initialize Phase 1 Critical Autonomous Services
+    this.services.sslRenewal = new AutoSSLRenewalService(this.logger);
+    this.services.databaseBackup = new AutoDatabaseBackupService(this.logger);
+    this.services.emailDeliverability = new AutoEmailDeliverabilityService(this.logger, this.services.sendGrid);
 
     // Performance metrics
     this.metrics = {
@@ -510,6 +520,26 @@ class AutonomousEngine {
       await this.generateDailyReport();
     });
     this.logger.info('   ✓ Daily progress report: Midnight');
+
+    // Initialize Phase 1 Critical Services
+    this.logger.info('');
+    this.logger.info('🔐 Initializing Critical Autonomous Services...');
+
+    // SSL Certificate Renewal Service
+    this.services.sslRenewal.scheduleChecks(cron);
+
+    // Database Backup Service
+    try {
+      await this.services.databaseBackup.initialize();
+      this.services.databaseBackup.scheduleBackups(cron);
+    } catch (error) {
+      this.logger.error(`Failed to initialize backup service: ${error.message}`);
+    }
+
+    // Email Deliverability Monitoring
+    this.services.emailDeliverability.scheduleChecks(cron);
+
+    this.logger.info('   ✅ Critical services initialized');
   }
 
   /**

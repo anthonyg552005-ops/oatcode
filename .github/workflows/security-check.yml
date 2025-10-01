@@ -1,0 +1,118 @@
+name: Security & SSL Monitoring
+
+on:
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  ssl-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check SSL certificate expiration
+        run: |
+          echo "🔒 Checking SSL certificate for oatcode.com..."
+
+          # Get certificate expiration
+          EXPIRY=$(echo | openssl s_client -servername oatcode.com -connect oatcode.com:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+
+          echo "Certificate expires: $EXPIRY"
+
+          # Calculate days until expiration
+          EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s)
+          NOW_EPOCH=$(date +%s)
+          DAYS_REMAINING=$(( ($EXPIRY_EPOCH - $NOW_EPOCH) / 86400 ))
+
+          echo "Days remaining: $DAYS_REMAINING"
+
+          if [ $DAYS_REMAINING -lt 30 ]; then
+            echo "⚠️ WARNING: SSL certificate expires in $DAYS_REMAINING days!"
+            echo "The autonomous engine should renew it automatically."
+            exit 1
+          else
+            echo "✅ SSL certificate valid for $DAYS_REMAINING days"
+          fi
+
+      - name: Check HTTPS accessibility
+        run: |
+          echo "🌐 Checking HTTPS accessibility..."
+
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://oatcode.com)
+
+          if [ $STATUS -eq 200 ]; then
+            echo "✅ Website is accessible via HTTPS"
+          else
+            echo "❌ Website returned status code: $STATUS"
+            exit 1
+          fi
+
+      - name: Check security headers
+        run: |
+          echo "🔍 Checking security headers..."
+
+          curl -I https://oatcode.com 2>&1 | grep -i "strict-transport-security" && echo "✅ HSTS enabled" || echo "⚠️ HSTS not found"
+          curl -I https://oatcode.com 2>&1 | grep -i "x-frame-options" && echo "✅ X-Frame-Options set" || echo "⚠️ X-Frame-Options not found"
+          curl -I https://oatcode.com 2>&1 | grep -i "x-content-type-options" && echo "✅ X-Content-Type-Options set" || echo "⚠️ X-Content-Type-Options not found"
+
+  dependency-security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Run security audit
+        run: |
+          echo "🔍 Running npm security audit..."
+          npm audit --production --audit-level=moderate || true
+
+      - name: Check for critical vulnerabilities
+        run: |
+          echo "🔍 Checking for CRITICAL vulnerabilities..."
+          CRITICAL=$(npm audit --json | grep -c '"severity":"critical"' || true)
+
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "❌ Found $CRITICAL critical vulnerabilities!"
+            echo "Run 'npm audit fix' to resolve"
+            exit 1
+          else
+            echo "✅ No critical vulnerabilities found"
+          fi
+
+  website-health:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check website uptime
+        run: |
+          echo "🏥 Checking website health..."
+
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://oatcode.com/health)
+
+          if [ $STATUS -eq 200 ]; then
+            echo "✅ Health endpoint responding"
+          else
+            echo "⚠️ Health endpoint returned: $STATUS"
+          fi
+
+      - name: Check page load time
+        run: |
+          echo "⏱️ Measuring page load time..."
+
+          TIME=$(curl -o /dev/null -s -w '%{time_total}\n' https://oatcode.com)
+
+          echo "Page load time: ${TIME}s"
+
+          # Alert if > 3 seconds
+          if (( $(echo "$TIME > 3.0" | bc -l) )); then
+            echo "⚠️ WARNING: Page load time is slow (${TIME}s)"
+          else
+            echo "✅ Page load time is acceptable"
+          fi
