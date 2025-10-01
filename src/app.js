@@ -39,8 +39,9 @@ app.use(helmet({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (landing page, legal pages)
+// Serve static files (landing page, legal pages, demos)
 app.use(express.static(path.join(__dirname, '../public')));
+app.use('/demos', express.static(path.join(__dirname, '../demos')));
 
 // Legal pages
 app.get('/terms-of-service', (req, res) => {

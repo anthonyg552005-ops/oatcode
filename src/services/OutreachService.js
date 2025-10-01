@@ -8,6 +8,7 @@ const SendGridService = require('./SendGridService');
 const GooglePlacesService = require('./GooglePlacesService');
 const AIWebsiteGenerationService = require('./AIWebsiteGenerationService');
 const MultiSourceBusinessDiscovery = require('./MultiSourceBusinessDiscovery');
+const DemoComparisonService = require('./DemoComparisonService');
 
 class OutreachService {
   constructor(logger) {
@@ -17,6 +18,7 @@ class OutreachService {
     this.googlePlaces = new GooglePlacesService();
     this.websiteGenerator = new AIWebsiteGenerationService(logger);
     this.multiSourceDiscovery = new MultiSourceBusinessDiscovery(logger);
+    this.demoComparison = new DemoComparisonService(logger);
 
     this.testMode = process.env.SKIP_RESEARCH !== 'true'; // Test mode during research phase
   }
@@ -121,16 +123,22 @@ Return JSON with: { subject, body }`;
       // Step 1: Generate HYPER-PERSONALIZED email using intelligence
       const email = await this.generateOutreachEmail(business, intelligence);
 
-      // Step 2: Create demo website
-      const demo = await this.websiteGenerator.generateWebsiteForBusiness({
+      // Step 2: Create BOTH Standard + Premium demos for comparison
+      this.logger.info(`   🎨 Creating Standard + Premium demo comparison...`);
+      const demoComparison = await this.demoComparison.getDemoForOutreach({
         businessName: business.name,
+        name: business.name,
         industry: business.industry || business.types?.[0] || 'business',
         location: business.city || business.address,
+        city: business.city,
+        address: business.address,
+        phone: business.phone,
+        email: business.email,
         description: `Professional website for ${business.name}`
       });
 
-      // Step 3: Add demo link to email
-      email.body += `\n\nCheck out your demo: ${demo.demoUrl || 'https://oatcode.com/demo/preview'}`;
+      // Step 3: Add demo comparison to email (shows value of Premium tier)
+      email.body += `\n\n${demoComparison.emailText}`;
 
       // Step 4: Send email
       const sendResult = await this.sendOutreach(business, email);
@@ -156,7 +164,7 @@ Return JSON with: { subject, body }`;
         success: true,
         business: business.name,
         email,
-        demo,
+        demoComparison,
         sendResult
       };
 
