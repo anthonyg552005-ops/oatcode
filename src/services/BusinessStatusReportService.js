@@ -187,7 +187,7 @@ P.S. Check the dashboard anytime at: ${process.env.DOMAIN || 'http://localhost:3
       // Send email
       const msg = {
         to: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@oatcode.com',
+        from: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com', // Use same email as verified sender
         subject,
         text: emailBody,
         html: emailBody.replace(/\n/g, '<br>').replace(/━/g, '─')
@@ -293,7 +293,7 @@ This is an immediate update outside the regular 3-hour schedule.
 
       const msg = {
         to: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@oatcode.com',
+        from: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com', // Use same email as verified sender
         subject,
         text: emailBody,
         html: emailBody.replace(/\n/g, '<br>')
