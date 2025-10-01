@@ -361,7 +361,7 @@ class AutonomousEngine {
   /**
    * Schedule all autonomous operations
    */
-  scheduleAutonomousOperations() {
+  async scheduleAutonomousOperations() {
     this.logger.info('');
     this.logger.info('📅 Scheduling Autonomous Operations...');
 
