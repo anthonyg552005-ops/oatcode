@@ -135,6 +135,17 @@ Return JSON with: { subject, body }`;
       // Step 4: Send email
       const sendResult = await this.sendOutreach(business, email);
 
+      // Step 5: Log activity to documentation
+      if (global.documentation) {
+        global.documentation.logActivity('outreach', 'sent_email', {
+          business: business.name,
+          industry: business.industry || business.types?.[0],
+          location: business.city || business.address,
+          hasIntelligence: !!intelligence,
+          emailSubject: email.subject
+        });
+      }
+
       return {
         success: true,
         business: business.name,

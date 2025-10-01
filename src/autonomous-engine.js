@@ -56,6 +56,7 @@ const AutoDeploymentRecoveryService = require('./services/AutoDeploymentRecovery
 const AIAlignmentMonitor = require('./services/AIAlignmentMonitor');
 const AutoScalingStrategyService = require('./services/AutoScalingStrategyService');
 const LowMaintenanceTargetingService = require('./services/LowMaintenanceTargetingService');
+const AIDocumentationAssistant = require('./services/AIDocumentationAssistant');
 
 class AutonomousEngine {
   constructor() {
@@ -108,7 +109,8 @@ class AutonomousEngine {
       deploymentRecovery: new AutoDeploymentRecoveryService(this.logger),
       alignmentMonitor: new AIAlignmentMonitor(this.logger),
       scalingStrategy: new AutoScalingStrategyService(this.logger),
-      lowMaintenanceTargeting: new LowMaintenanceTargetingService(this.logger)
+      lowMaintenanceTargeting: new LowMaintenanceTargetingService(this.logger),
+      documentation: new AIDocumentationAssistant(this.logger)
     };
 
     // Performance metrics
@@ -281,6 +283,11 @@ class AutonomousEngine {
 
       // Initialize Low-Maintenance Targeting (focus on set-and-forget businesses)
       this.logger.info('   ✓ Low-Maintenance Targeting ready (lawyers, dentists, plumbers, etc.)');
+
+      // Start AI Documentation Assistant (your personal note-taker)
+      await this.services.documentation.start();
+      global.documentation = this.services.documentation;
+      this.logger.info('   ✓ AI Documentation Assistant ready (taking notes and organizing)');
 
       // Load existing knowledge
       await this.loadKnowledgeBase();
