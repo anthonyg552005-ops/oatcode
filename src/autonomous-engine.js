@@ -117,8 +117,13 @@ class AutonomousEngine {
       emailSequence: null // Initialized after sendGrid
     };
 
-    // Initialize email sequence (needs sendGrid)
-    this.services.emailSequence = new EmailSequenceService(this.logger, this.services.sendGrid);
+    // Initialize email sequence (needs sendGrid) - wrapped in try/catch for resilience
+    try {
+      this.services.emailSequence = new EmailSequenceService(this.logger, this.services.sendGrid);
+    } catch (error) {
+      this.logger.error(`Failed to initialize EmailSequenceService: ${error.message}`);
+      this.services.emailSequence = null;
+    }
 
     // Performance metrics
     this.metrics = {
@@ -297,9 +302,18 @@ class AutonomousEngine {
       this.logger.info('   ✓ AI Documentation Assistant ready (taking notes and organizing)');
 
       // Start Email Sequence Service (5-email follow-up over 21 days)
-      await this.services.emailSequence.start();
-      global.emailSequence = this.services.emailSequence;
-      this.logger.info('   ✓ Email Sequence Service ready (5 follow-ups over 21 days with smart tracking)');
+      if (this.services.emailSequence) {
+        try {
+          await this.services.emailSequence.start();
+          global.emailSequence = this.services.emailSequence;
+          this.logger.info('   ✓ Email Sequence Service ready (5 follow-ups over 21 days with smart tracking)');
+        } catch (error) {
+          this.logger.error(`Failed to start EmailSequenceService: ${error.message}`);
+          global.emailSequence = null;
+        }
+      } else {
+        this.logger.warn('   ⚠️  Email Sequence Service not available (initialization failed)');
+      }
 
       // Load existing knowledge
       await this.loadKnowledgeBase();
