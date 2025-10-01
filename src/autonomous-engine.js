@@ -52,6 +52,7 @@ const ProjectLearningService = require('./services/ProjectLearningService');
 const MarketExpansionService = require('./services/MarketExpansionService');
 const BusinessStatusReportService = require('./services/BusinessStatusReportService');
 const DailyPresentationService = require('./services/DailyPresentationService');
+const AutoDeploymentMonitorService = require('./services/AutoDeploymentMonitorService');
 const AIAlignmentMonitor = require('./services/AIAlignmentMonitor');
 const AutoScalingStrategyService = require('./services/AutoScalingStrategyService');
 const LowMaintenanceTargetingService = require('./services/LowMaintenanceTargetingService');
@@ -113,6 +114,7 @@ class AutonomousEngine {
       marketExpansion: new MarketExpansionService(this.logger),
       statusReports: new BusinessStatusReportService(this.logger),
       dailyPresentation: new DailyPresentationService(this.logger),
+      deploymentMonitor: new AutoDeploymentMonitorService(this.logger, null), // notification service added later
       alignmentMonitor: new AIAlignmentMonitor(this.logger),
       scalingStrategy: new AutoScalingStrategyService(this.logger),
       lowMaintenanceTargeting: new LowMaintenanceTargetingService(this.logger),
@@ -290,6 +292,10 @@ class AutonomousEngine {
       // Expose daily presentation service globally
       global.dailyPresentation = this.services.dailyPresentation;
       this.logger.info('   ✓ Daily Presentation Service ready');
+
+      // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
+      this.services.deploymentMonitor.start();
+      this.logger.info('   ✓ Auto-Deployment Monitor active (checks every 60s)');
 
       // Start AI Alignment Monitor (ensures we stay true to original vision)
       this.services.alignmentMonitor.start();
