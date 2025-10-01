@@ -53,6 +53,7 @@ const MarketExpansionService = require('./services/MarketExpansionService');
 const BusinessStatusReportService = require('./services/BusinessStatusReportService');
 const DailyPresentationService = require('./services/DailyPresentationService');
 const AutoDeploymentRecoveryService = require('./services/AutoDeploymentRecoveryService');
+const AIAlignmentMonitor = require('./services/AIAlignmentMonitor');
 
 class AutonomousEngine {
   constructor() {
@@ -102,7 +103,8 @@ class AutonomousEngine {
       marketExpansion: new MarketExpansionService(this.logger),
       statusReports: new BusinessStatusReportService(this.logger),
       dailyPresentation: new DailyPresentationService(this.logger),
-      deploymentRecovery: new AutoDeploymentRecoveryService(this.logger)
+      deploymentRecovery: new AutoDeploymentRecoveryService(this.logger),
+      alignmentMonitor: new AIAlignmentMonitor(this.logger)
     };
 
     // Performance metrics
@@ -264,6 +266,10 @@ class AutonomousEngine {
       // Start Auto-Deployment Recovery (monitors Railway 24/7)
       this.services.deploymentRecovery.start();
       this.logger.info('   ✓ Auto-Deployment Recovery monitoring Railway');
+
+      // Start AI Alignment Monitor (ensures we stay true to original vision)
+      this.services.alignmentMonitor.start();
+      this.logger.info('   ✓ AI Alignment Monitor watching original vision');
 
       // Load existing knowledge
       await this.loadKnowledgeBase();
