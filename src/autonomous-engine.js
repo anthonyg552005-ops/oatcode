@@ -60,6 +60,11 @@ const LowMaintenanceTargetingService = require('./services/LowMaintenanceTargeti
 const AIDocumentationAssistant = require('./services/AIDocumentationAssistant');
 const EmailSequenceService = require('./services/EmailSequenceService');
 const SendGridService = require('./services/SendGridService');
+const ConversionOptimizationService = require('./services/ConversionOptimizationService');
+const LeadScoringService = require('./services/LeadScoringService');
+const UpsellService = require('./services/UpsellService');
+const CustomerSupportAI = require('./services/CustomerSupportAI');
+const EmailOptimizationService = require('./services/EmailOptimizationService');
 
 // Phase 1 Autonomous Services (CRITICAL)
 const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
@@ -122,7 +127,14 @@ class AutonomousEngine {
       lowMaintenanceTargeting: new LowMaintenanceTargetingService(this.logger),
       documentation: new AIDocumentationAssistant(this.logger),
       sendGrid: new SendGridService(),
-      emailSequence: null // Initialized after sendGrid
+      emailSequence: null, // Initialized after sendGrid
+
+      // NEW: Business optimization services
+      conversionOptimization: new ConversionOptimizationService(this.logger),
+      leadScoring: new LeadScoringService(this.logger),
+      upsell: new UpsellService(this.logger),
+      customerSupport: new CustomerSupportAI(this.logger),
+      emailOptimization: new EmailOptimizationService(this.logger)
     };
 
     // Initialize email sequence (needs sendGrid) - wrapped in try/catch for resilience
@@ -294,6 +306,18 @@ class AutonomousEngine {
       // Expose daily presentation service globally
       global.dailyPresentation = this.services.dailyPresentation;
       this.logger.info('   ✓ Daily Presentation Service ready');
+
+      // Expose new business optimization services globally
+      global.conversionOptimization = this.services.conversionOptimization;
+      global.leadScoring = this.services.leadScoring;
+      global.upsell = this.services.upsell;
+      global.customerSupport = this.services.customerSupport;
+      global.emailOptimization = this.services.emailOptimization;
+      this.logger.info('   ✓ Conversion Optimization Service ready (A/B testing, analytics)');
+      this.logger.info('   ✓ Lead Scoring Service ready (prioritizes best prospects)');
+      this.logger.info('   ✓ Upsell Service ready (Standard → Premium upgrades)');
+      this.logger.info('   ✓ Customer Support AI ready (handles inquiries 24/7)');
+      this.logger.info('   ✓ Email Optimization Service ready (improves open/click rates)');
 
       // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
       this.services.deploymentMonitor.start();
