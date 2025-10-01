@@ -32,11 +32,13 @@ const OpenAI = require('openai');
 const fs = require('fs').promises;
 const path = require('path');
 const moment = require('moment-timezone');
+const ProjectOrganizerService = require('./ProjectOrganizerService');
 
 class AIDocumentationAssistant {
   constructor(logger) {
     this.logger = logger;
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    this.projectOrganizer = new ProjectOrganizerService(logger);
 
     // Documentation paths
     this.docsRoot = path.join(__dirname, '../../docs');
@@ -82,6 +84,9 @@ class AIDocumentationAssistant {
 
     // Generate today's notes file if doesn't exist
     await this.initializeDailyNotes();
+
+    // Start Project Organizer (keeps entire project organized)
+    await this.projectOrganizer.start();
 
     // Auto-save every 5 minutes
     setInterval(() => this.autoSave(), 5 * 60 * 1000);
