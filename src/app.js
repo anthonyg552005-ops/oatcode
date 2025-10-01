@@ -15,6 +15,7 @@ const dashboardRoutes = require('./routes/dashboard');
 const monitoringRoutes = require('./routes/monitoring');
 const healthRoutes = require('./routes/health');
 const webhookRoutes = require('./routes/sendgridWebhook');
+const stripeWebhookRoutes = require('./routes/stripeWebhook');
 const autonomousControlRoutes = require('./routes/autonomous-control');
 
 const app = express();
@@ -65,6 +66,7 @@ app.use('/api/dashboard', dashboardAuth, dashboardRoutes);
 app.use('/api/monitoring', dashboardAuth, monitoringRoutes);
 app.use('/health', healthRoutes); // Public health checks
 app.use('/webhook/sendgrid', webhookRoutes); // SendGrid webhook (public - no auth)
+app.use('/webhook/stripe', stripeWebhookRoutes); // Stripe webhook (public - verified by signature)
 app.use('/api/autonomous-control', autonomousControlRoutes); // Autonomous control API (token auth)
 
 // Dashboard route (protected)
