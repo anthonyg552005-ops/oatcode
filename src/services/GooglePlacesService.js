@@ -4,11 +4,14 @@
  */
 
 const axios = require('axios');
+const LowMaintenanceTargetingService = require('./LowMaintenanceTargetingService');
 
 class GooglePlacesService {
-  constructor() {
+  constructor(logger = console) {
     this.apiKey = process.env.GOOGLE_PLACES_API_KEY;
     this.enabled = !!this.apiKey;
+    this.logger = logger;
+    this.lowMaintenanceTargeting = new LowMaintenanceTargetingService(logger);
 
     if (!this.enabled) {
       console.warn('⚠️  Google Places API key not configured');
@@ -17,8 +20,9 @@ class GooglePlacesService {
 
   /**
    * Search for businesses by type and location
+   * Now filters for LOW-MAINTENANCE businesses only (lawyers, dentists, plumbers, etc.)
    */
-  async searchBusinesses(query, location, radius = 50000) {
+  async searchBusinesses(query, location, radius = 50000, filterByMaintenance = true) {
     if (!this.enabled) {
       console.log(`🔍 [SIMULATION] Would search for: ${query} in ${location}`);
       return this.getMockBusinesses(query);
@@ -33,7 +37,7 @@ class GooglePlacesService {
         }
       });
 
-      return response.data.results.map(place => ({
+      const businesses = response.data.results.map(place => ({
         placeId: place.place_id,
         name: place.name,
         address: place.formatted_address,
@@ -42,10 +46,53 @@ class GooglePlacesService {
         types: place.types
       }));
 
+      // Filter to only low-maintenance businesses
+      if (filterByMaintenance) {
+        const filtered = await this.lowMaintenanceTargeting.filterLowMaintenanceBusinesses(businesses);
+        this.logger.info(`🎯 Filtered ${businesses.length} businesses → ${filtered.length} low-maintenance targets`);
+        return filtered;
+      }
+
+      return businesses;
+
     } catch (error) {
       console.error('Google Places API error:', error.message);
       return [];
     }
+  }
+
+  /**
+   * Search specifically for low-maintenance business types
+   * Uses targeting service to get recommended search terms
+   */
+  async searchLowMaintenanceBusinesses(location, phase = 'mvp', radius = 50000) {
+    const searchTerms = this.lowMaintenanceTargeting.getSearchTermsForPhase(phase);
+
+    this.logger.info(`🔍 Searching for low-maintenance businesses in ${location}`);
+    this.logger.info(`   Target types: ${searchTerms.slice(0, 5).join(', ')}... (${searchTerms.length} total)`);
+
+    const allBusinesses = [];
+
+    // Search for each low-maintenance business type
+    for (const term of searchTerms) {
+      const businesses = await this.searchBusinesses(term, location, radius, false);
+      allBusinesses.push(...businesses);
+
+      // Rate limit: wait 200ms between searches
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+
+    // Remove duplicates by placeId
+    const uniqueBusinesses = Array.from(
+      new Map(allBusinesses.map(b => [b.placeId, b])).values()
+    );
+
+    // Filter to only low-maintenance
+    const filtered = await this.lowMaintenanceTargeting.filterLowMaintenanceBusinesses(uniqueBusinesses);
+
+    this.logger.info(`✅ Found ${filtered.length} low-maintenance businesses in ${location}`);
+
+    return filtered;
   }
 
   /**

@@ -52,18 +52,20 @@ class MarketExpansionService {
         criteria: {
           hasWebsite: true,
           industries: [
-            'dentist',
-            'chiropractor',
-            'physical therapist',
-            'accountant',
-            'insurance agent',
-            'real estate agent',
             'lawyer',
-            'financial advisor',
-            'consultant'
+            'attorney',
+            'dentist',
+            'plumber',
+            'electrician',
+            'hvac',
+            'landscaper',
+            'roofer',
+            'insurance agent',
+            'accountant',
+            'chiropractor'
           ]
         },
-        description: 'Target low-maintenance industries with existing websites (more affordable alternative)',
+        description: 'Target ultra-low-maintenance industries with existing websites (set and forget businesses)',
         messaging: {
           hook: 'More affordable website solution',
           valueProps: [

@@ -5,22 +5,25 @@
  * Based on data-driven decisions, not guesswork.
  *
  * Inspired by scaling framework:
- * - Phase 1: Single city MVP (prove it works)
- * - Phase 2: 10 cities automation (scale systems)
- * - Phase 3: 50+ cities + international (dominate)
+ * - Phase 1: Single city MVP (prove it works) - LOW-MAINTENANCE BUSINESSES ONLY
+ * - Phase 2: 10 cities automation (scale systems) - EXPAND LOW-MAINTENANCE
+ * - Phase 3: 50+ cities + international (dominate) - ADD MEDIUM-MAINTENANCE
  *
  * AI decides WHEN to scale, WHERE to expand, and HOW to optimize for each market.
+ * Focuses on LOW-MAINTENANCE businesses (lawyers, dentists, plumbers, etc.) for MVP.
  */
 
 const OpenAI = require('openai');
 const sgMail = require('@sendgrid/mail');
 const fs = require('fs').promises;
 const path = require('path');
+const LowMaintenanceTargetingService = require('./LowMaintenanceTargetingService');
 
 class AutoScalingStrategyService {
   constructor(logger) {
     this.logger = logger;
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    this.lowMaintenanceTargeting = new LowMaintenanceTargetingService(logger);
 
     if (process.env.SENDGRID_API_KEY) {
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -34,7 +37,7 @@ class AutoScalingStrategyService {
     // Scaling framework (inspired by provided strategy)
     this.scalingFramework = {
       phase1_mvp: {
-        name: 'Phase 1: MVP Validation',
+        name: 'Phase 1: MVP Validation (LOW-MAINTENANCE ONLY)',
         duration: '1-2 months',
         targets: {
           cities: 1,
@@ -43,6 +46,7 @@ class AutoScalingStrategyService {
         },
         markets: ['Los Angeles, CA'], // Start local
         channels: ['email'],
+        businessTypes: 'ultra-low-maintenance', // Lawyers, dentists, plumbers, electricians
         successCriteria: {
           conversionRate: 2, // 2%+ email to customer
           customerSatisfaction: 4.0, // 4.0+ rating
@@ -53,7 +57,7 @@ class AutoScalingStrategyService {
       },
 
       phase2_automation: {
-        name: 'Phase 2: Automation & Multi-Market',
+        name: 'Phase 2: Automation & Multi-Market (LOW-MAINTENANCE)',
         duration: '2-4 months',
         targets: {
           cities: 10,
@@ -73,6 +77,7 @@ class AutoScalingStrategyService {
           'Seattle, WA'
         ],
         channels: ['email', 'social_media', 'cold_calling'],
+        businessTypes: 'low-maintenance', // Ultra-low + low maintenance (auto repair, pet groomers)
         features: [
           'A/B testing framework',
           'Multi-channel outreach',
@@ -90,7 +95,7 @@ class AutoScalingStrategyService {
       },
 
       phase3_scale: {
-        name: 'Phase 3: National Domination',
+        name: 'Phase 3: National Domination (ADD MEDIUM-MAINTENANCE)',
         duration: '4-8 months',
         targets: {
           cities: 50,
@@ -99,6 +104,7 @@ class AutoScalingStrategyService {
         },
         markets: 'top_50_us_cities',
         channels: ['email', 'social_media', 'cold_calling', 'partnerships', 'seo'],
+        businessTypes: 'medium-maintenance', // Add restaurants, salons (only when systems proven)
         features: [
           'Industry-specific templates',
           'Upselling framework',
@@ -355,12 +361,19 @@ Return JSON array of city names:
     // Add to active markets
     this.activeMarkets.push(market);
 
+    // Get target business types for current phase
+    const phaseConfig = this.scalingFramework[`phase${this.getPhaseNumber()}_${this.currentPhase}`];
+    const businessTypes = this.lowMaintenanceTargeting.getCurrentTargets(this.currentPhase);
+
+    this.logger.info(`   🎯 Target businesses: ${businessTypes.map(b => b.name).slice(0, 3).join(', ')}...`);
+
     // Log activation
     this.scalingHistory.push({
       timestamp: new Date().toISOString(),
       action: 'market_activated',
       market,
-      phase: this.currentPhase
+      phase: this.currentPhase,
+      targetBusinessTypes: businessTypes.map(b => b.name)
     });
 
     // Configure market-specific settings

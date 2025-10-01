@@ -55,6 +55,7 @@ const DailyPresentationService = require('./services/DailyPresentationService');
 const AutoDeploymentRecoveryService = require('./services/AutoDeploymentRecoveryService');
 const AIAlignmentMonitor = require('./services/AIAlignmentMonitor');
 const AutoScalingStrategyService = require('./services/AutoScalingStrategyService');
+const LowMaintenanceTargetingService = require('./services/LowMaintenanceTargetingService');
 
 class AutonomousEngine {
   constructor() {
@@ -106,7 +107,8 @@ class AutonomousEngine {
       dailyPresentation: new DailyPresentationService(this.logger),
       deploymentRecovery: new AutoDeploymentRecoveryService(this.logger),
       alignmentMonitor: new AIAlignmentMonitor(this.logger),
-      scalingStrategy: new AutoScalingStrategyService(this.logger)
+      scalingStrategy: new AutoScalingStrategyService(this.logger),
+      lowMaintenanceTargeting: new LowMaintenanceTargetingService(this.logger)
     };
 
     // Performance metrics
@@ -276,6 +278,9 @@ class AutonomousEngine {
       // Start Autonomous Scaling Strategy (1 city → 50+ cities → international)
       await this.services.scalingStrategy.start();
       this.logger.info('   ✓ Autonomous Scaling Strategy managing expansion');
+
+      // Initialize Low-Maintenance Targeting (focus on set-and-forget businesses)
+      this.logger.info('   ✓ Low-Maintenance Targeting ready (lawyers, dentists, plumbers, etc.)');
 
       // Load existing knowledge
       await this.loadKnowledgeBase();
