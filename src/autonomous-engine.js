@@ -291,10 +291,6 @@ class AutonomousEngine {
       global.dailyPresentation = this.services.dailyPresentation;
       this.logger.info('   ✓ Daily Presentation Service ready');
 
-      // Start Auto-Deployment Recovery (monitors Railway 24/7)
-      this.services.deploymentRecovery.start();
-      this.logger.info('   ✓ Auto-Deployment Recovery monitoring Railway');
-
       // Start AI Alignment Monitor (ensures we stay true to original vision)
       this.services.alignmentMonitor.start();
       this.logger.info('   ✓ AI Alignment Monitor watching original vision');
