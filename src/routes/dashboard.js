@@ -1,15 +1,30 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs').promises;
+const path = require('path');
 
 /**
  * Dashboard API - Real-time stats for mobile/web dashboard
  */
 router.get('/stats', async (req, res) => {
   try {
-    // Check if system is running (autonomous engine active)
-    // Check BOTH environment variables AND global.autonomousBusiness (set by autonomous-engine.js)
-    const systemRunning = !!global.autonomousBusiness || !!global.autonomousMetrics ||
-                          (process.env.OPERATION_MODE === 'continuous' && process.env.ENABLE_AUTOMATION === 'true');
+    // Check if system is running by reading health file
+    let systemRunning = false;
+    let healthStatus = null;
+
+    try {
+      const healthFile = path.join(__dirname, '../../data/health-status.json');
+      const healthData = await fs.readFile(healthFile, 'utf-8');
+      healthStatus = JSON.parse(healthData);
+
+      // System is running if health file was updated within last 2 minutes
+      const lastUpdate = new Date(healthStatus.timestamp);
+      const minutesSinceUpdate = (Date.now() - lastUpdate) / 1000 / 60;
+      systemRunning = minutesSinceUpdate < 2;
+    } catch (error) {
+      // Health file doesn't exist = engine not running
+      systemRunning = false;
+    }
 
     // Get stats from database (when models are ready)
     // For now, return mock data structure

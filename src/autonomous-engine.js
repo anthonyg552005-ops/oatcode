@@ -64,6 +64,7 @@ const SendGridService = require('./services/SendGridService');
 const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
 const AutoDatabaseBackupService = require('./services/AutoDatabaseBackupService');
 const AutoEmailDeliverabilityService = require('./services/AutoEmailDeliverabilityService');
+const AutonomousHealthCheckService = require('./services/AutonomousHealthCheckService');
 
 class AutonomousEngine {
   constructor() {
@@ -134,6 +135,7 @@ class AutonomousEngine {
     this.services.sslRenewal = new AutoSSLRenewalService(this.logger);
     this.services.databaseBackup = new AutoDatabaseBackupService(this.logger);
     this.services.emailDeliverability = new AutoEmailDeliverabilityService(this.logger, this.services.sendGrid);
+    this.services.healthCheck = new AutonomousHealthCheckService(this.logger);
 
     // Performance metrics
     this.metrics = {
@@ -538,6 +540,10 @@ class AutonomousEngine {
 
     // Email Deliverability Monitoring
     this.services.emailDeliverability.scheduleChecks(cron);
+
+    // Health Check Service (writes status every 30 seconds)
+    this.services.healthCheck.startHeartbeat(cron);
+    await this.services.healthCheck.writeHealthStatus();
 
     this.logger.info('   ✅ Critical services initialized');
   }
