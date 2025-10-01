@@ -39,12 +39,20 @@ class MarketExpansionService {
     // Expansion phases
     this.phases = {
       phase1: {
-        name: 'No Website Businesses Only',
+        name: 'No Website, Low-Maintenance Businesses Only',
         active: true,
         criteria: {
-          hasWebsite: false
+          hasWebsite: false,
+          maintenanceLevel: 'ultra-low' // Lawyers, dentists, plumbers, electricians
         },
-        description: 'Target businesses without websites (easiest to convert)'
+        description: 'Target low-maintenance businesses WITHOUT websites (perfect combination: easiest to convert + lowest churn)',
+        reasoning: [
+          'Have Google My Business but no website',
+          'Already investing in online presence',
+          'Low-maintenance = minimal support needed',
+          'Professional services = can afford $197/month',
+          'Highest conversion rate + lowest churn risk'
+        ]
       },
       phase2: {
         name: 'Existing Website Businesses (Low-Maintenance)',

@@ -111,12 +111,22 @@ Return JSON with: { subject, body }`;
 
   /**
    * Find and outreach to multiple businesses
+   * UPDATED: Now focuses on low-maintenance businesses WITHOUT websites
    */
-  async findAndOutreach(query, location, count = 10) {
+  async findAndOutreach(query, location, count = 10, targetNoWebsite = true) {
     this.logger.info(`🔍 Finding ${count} ${query} businesses in ${location}...`);
 
-    // Find businesses
-    const businesses = await this.googlePlaces.searchBusinesses(query, location);
+    let businesses;
+
+    if (targetNoWebsite) {
+      // PRIMARY STRATEGY: Find low-maintenance businesses WITHOUT websites
+      this.logger.info(`   🎯 Targeting low-maintenance businesses WITHOUT websites (easiest conversions)`);
+      businesses = await this.googlePlaces.searchLowMaintenanceBusinesses(location, 'mvp');
+    } else {
+      // Fallback: Regular search
+      businesses = await this.googlePlaces.searchBusinesses(query, location);
+    }
+
     const selected = businesses.slice(0, count);
 
     this.logger.info(`   Found ${businesses.length} businesses, processing ${selected.length}...`);
@@ -135,6 +145,39 @@ Return JSON with: { subject, body }`;
 
     const successful = results.filter(r => r.success).length;
     this.logger.info(`✅ Outreach complete: ${successful}/${selected.length} successful`);
+
+    return {
+      total: selected.length,
+      successful,
+      results
+    };
+  }
+
+  /**
+   * Find and outreach to businesses WITH existing websites (Phase 2 expansion)
+   */
+  async findAndOutreachWithWebsites(location, count = 10) {
+    this.logger.info(`🔍 Finding ${count} low-maintenance businesses WITH websites in ${location}...`);
+    this.logger.info(`   💡 These are "upgrade" targets - need better website for less money`);
+
+    const businesses = await this.googlePlaces.searchBusinessesWithWebsites(location, 'automation');
+    const selected = businesses.slice(0, count);
+
+    this.logger.info(`   Found ${businesses.length} businesses, processing ${selected.length}...`);
+
+    // Execute outreach with different messaging (upgrade angle)
+    const results = [];
+    for (const business of selected) {
+      const result = await this.executeOutreach(business, { upgradeAngle: true });
+      results.push(result);
+
+      if (results.length < selected.length) {
+        await new Promise(resolve => setTimeout(resolve, 30000));
+      }
+    }
+
+    const successful = results.filter(r => r.success).length;
+    this.logger.info(`✅ Upgrade outreach complete: ${successful}/${selected.length} successful`);
 
     return {
       total: selected.length,

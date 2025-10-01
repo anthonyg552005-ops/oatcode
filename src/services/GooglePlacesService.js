@@ -62,13 +62,19 @@ class GooglePlacesService {
   }
 
   /**
-   * Search specifically for low-maintenance business types
-   * Uses targeting service to get recommended search terms
+   * Search specifically for low-maintenance business types WITHOUT WEBSITES
+   * This is the PRIMARY TARGET - easiest conversions!
+   *
+   * Strategy:
+   * 1. Find low-maintenance businesses (lawyers, dentists, plumbers, etc.)
+   * 2. Get their place details to check if they have a website
+   * 3. ONLY return businesses WITHOUT websites (they need us most!)
+   * 4. These businesses have Google My Business but no website = perfect target
    */
   async searchLowMaintenanceBusinesses(location, phase = 'mvp', radius = 50000) {
     const searchTerms = this.lowMaintenanceTargeting.getSearchTermsForPhase(phase);
 
-    this.logger.info(`🔍 Searching for low-maintenance businesses in ${location}`);
+    this.logger.info(`🔍 Searching for low-maintenance businesses WITHOUT websites in ${location}`);
     this.logger.info(`   Target types: ${searchTerms.slice(0, 5).join(', ')}... (${searchTerms.length} total)`);
 
     const allBusinesses = [];
@@ -87,10 +93,76 @@ class GooglePlacesService {
       new Map(allBusinesses.map(b => [b.placeId, b])).values()
     );
 
-    // Filter to only low-maintenance
-    const filtered = await this.lowMaintenanceTargeting.filterLowMaintenanceBusinesses(uniqueBusinesses);
+    this.logger.info(`   Found ${uniqueBusinesses.length} total businesses, checking for websites...`);
 
-    this.logger.info(`✅ Found ${filtered.length} low-maintenance businesses in ${location}`);
+    // CRITICAL: Get place details to check for websites
+    const businessesWithDetails = [];
+    for (const business of uniqueBusinesses) {
+      const details = await this.getPlaceDetails(business.placeId);
+
+      if (details) {
+        businessesWithDetails.push({
+          ...business,
+          ...details
+        });
+      }
+
+      // Rate limit: wait 100ms between detail requests
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Filter to only businesses WITHOUT websites (HIGHEST PRIORITY)
+    const noWebsiteBusinesses = businessesWithDetails.filter(b => !b.hasWebsite);
+
+    this.logger.info(`   🎯 ${noWebsiteBusinesses.length} businesses WITHOUT websites (perfect targets!)`);
+
+    // Further filter to only low-maintenance types
+    const filtered = await this.lowMaintenanceTargeting.filterLowMaintenanceBusinesses(noWebsiteBusinesses);
+
+    this.logger.info(`✅ Final count: ${filtered.length} low-maintenance businesses WITHOUT websites`);
+
+    return filtered;
+  }
+
+  /**
+   * Search for businesses WITH existing websites (Phase 2 expansion)
+   * Only use this when expanding beyond no-website businesses
+   */
+  async searchBusinessesWithWebsites(location, phase = 'automation', radius = 50000) {
+    const searchTerms = this.lowMaintenanceTargeting.getSearchTermsForPhase(phase);
+
+    this.logger.info(`🔍 Searching for low-maintenance businesses WITH websites in ${location}`);
+
+    const allBusinesses = [];
+
+    for (const term of searchTerms) {
+      const businesses = await this.searchBusinesses(term, location, radius, false);
+      allBusinesses.push(...businesses);
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+
+    const uniqueBusinesses = Array.from(
+      new Map(allBusinesses.map(b => [b.placeId, b])).values()
+    );
+
+    // Get details and filter for businesses WITH websites
+    const businessesWithDetails = [];
+    for (const business of uniqueBusinesses) {
+      const details = await this.getPlaceDetails(business.placeId);
+
+      if (details && details.hasWebsite) {
+        businessesWithDetails.push({
+          ...business,
+          ...details
+        });
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    const filtered = await this.lowMaintenanceTargeting.filterLowMaintenanceBusinesses(businessesWithDetails);
+
+    this.logger.info(`✅ Found ${filtered.length} low-maintenance businesses WITH websites (upgrade targets)`);
 
     return filtered;
   }
