@@ -68,6 +68,26 @@ app.get('/dashboard', dashboardAuth, (req, res) => {
   res.sendFile(path.join(__dirname, '../public/dashboard.html'));
 });
 
+// Daily presentation route (protected)
+app.get('/daily-presentation', dashboardAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/daily-presentation.html'));
+});
+
+// Manual trigger for daily presentation (protected)
+app.post('/api/generate-presentation', dashboardAuth, async (req, res) => {
+  try {
+    if (global.dailyPresentation) {
+      await global.dailyPresentation.sendDailyPresentation();
+      await global.dailyPresentation.savePresentationToFile();
+      res.json({ success: true, message: 'Daily presentation generated and sent!' });
+    } else {
+      res.status(400).json({ success: false, message: 'Presentation service not initialized' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // API Control endpoints
 app.post('/api/control/pause', (req, res) => {
   if (global.autonomousBusiness) {

@@ -51,6 +51,7 @@ const PreLaunchResearchPhase = require('./services/PreLaunchResearchPhase');
 const ProjectLearningService = require('./services/ProjectLearningService');
 const MarketExpansionService = require('./services/MarketExpansionService');
 const BusinessStatusReportService = require('./services/BusinessStatusReportService');
+const DailyPresentationService = require('./services/DailyPresentationService');
 
 class AutonomousEngine {
   constructor() {
@@ -98,7 +99,8 @@ class AutonomousEngine {
       criticalNeeds: new CriticalNeedsMonitor(this.logger),
       projectLearning: new ProjectLearningService(this.logger),
       marketExpansion: new MarketExpansionService(this.logger),
-      statusReports: new BusinessStatusReportService(this.logger)
+      statusReports: new BusinessStatusReportService(this.logger),
+      dailyPresentation: new DailyPresentationService(this.logger)
     };
 
     // Performance metrics
@@ -253,6 +255,10 @@ class AutonomousEngine {
       this.services.statusReports.start();
       this.logger.info('   ✓ Business Status Reports enabled (every 3 hours)');
 
+      // Expose daily presentation service globally
+      global.dailyPresentation = this.services.dailyPresentation;
+      this.logger.info('   ✓ Daily Presentation Service ready');
+
       // Load existing knowledge
       await this.loadKnowledgeBase();
       this.logger.info('   ✓ Knowledge base loaded');
@@ -401,6 +407,35 @@ class AutonomousEngine {
       }
     });
     this.logger.info('   ✓ Market expansion check: Daily at 6 AM');
+
+    // Daily at 8 PM: Generate and send daily presentation
+    cron.schedule('0 20 * * *', async () => {
+      this.logger.info('📊 Generating daily CEO presentation...');
+
+      // Update final metrics for the day
+      this.services.dailyPresentation.updateMetrics({
+        leadsGenerated: this.services.fullAutonomousBusiness?.stats?.leadsGenerated || 0,
+        emailsSent: this.services.fullAutonomousBusiness?.stats?.emailsSent || 0,
+        websitesCreated: this.services.fullAutonomousBusiness?.stats?.demosCreated || 0,
+        customersAcquired: this.services.fullAutonomousBusiness?.stats?.customersSigned || 0,
+        revenue: this.services.fullAutonomousBusiness?.stats?.revenue || 0,
+        startDate: this.startTime.toISOString()
+      });
+
+      // Add future plans
+      this.services.dailyPresentation.addFuturePlan(
+        'Continue Autonomous Growth',
+        'AI will continue analyzing competitors, optimizing campaigns, and growing the business autonomously.',
+        'Next 24 hours'
+      );
+
+      // Send presentation
+      await this.services.dailyPresentation.sendDailyPresentation();
+
+      // Also save to public folder for web viewing
+      await this.services.dailyPresentation.savePresentationToFile();
+    });
+    this.logger.info('   ✓ Daily CEO presentation: 8 PM daily');
 
     // Every 15 minutes: Make autonomous decisions
     cron.schedule('*/15 * * * *', async () => {
