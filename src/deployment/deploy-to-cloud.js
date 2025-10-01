@@ -25,20 +25,21 @@ if (!fs.existsSync('.git')) {
 
 console.log('🎯 Deployment Options:');
 console.log('');
-console.log('1. Railway (Recommended)');
+console.log('1. DigitalOcean Droplet (Recommended - Currently Deployed)');
+console.log('   - Full control with VPS access');
+console.log('   - $14.40/month (2GB RAM, backups included)');
+console.log('   - Custom domain with SSL (oatcode.com)');
+console.log('   - PM2 for process management');
+console.log('   - Automated GitHub deployment');
+console.log('');
+console.log('2. Railway');
 console.log('   - Easy setup');
-console.log('   - Free tier available');
 console.log('   - Automatic deployments');
+console.log('   - Higher cost at scale');
 console.log('');
-console.log('2. Heroku');
+console.log('3. Heroku');
 console.log('   - Popular platform');
-console.log('   - Good free tier');
 console.log('   - Many add-ons');
-console.log('');
-console.log('3. DigitalOcean');
-console.log('   - More control');
-console.log('   - $5/month');
-console.log('   - VPS access');
 console.log('');
 
 console.log('📋 Pre-Deployment Checklist:');
@@ -92,10 +93,10 @@ console.log('');
 
 console.log('📊 After Deployment:');
 console.log('');
-console.log('✓ Access dashboard at: https://your-app.railway.app/autonomous-dashboard');
-console.log('✓ Monitor logs: railway logs (or heroku logs --tail)');
-console.log('✓ Check metrics: https://your-app.railway.app/metrics');
-console.log('✓ Review daily reports in cloud storage');
+console.log('✓ Access dashboard at: https://oatcode.com/dashboard');
+console.log('✓ Monitor logs: ssh to droplet and run: pm2 logs');
+console.log('✓ Check webhook stats: https://oatcode.com/webhook/sendgrid/stats');
+console.log('✓ Review daily reports in data/metrics/');
 console.log('');
 
 console.log('✅ Ready to deploy! Follow the steps above for your chosen platform.');

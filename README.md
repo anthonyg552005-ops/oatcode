@@ -226,15 +226,38 @@ Reports saved to: `data/metrics/day-{N}-report.json`
 
 ## 🌐 Cloud Deployment
 
-### Deploy to Railway
+### Currently Deployed on DigitalOcean Droplet
+
+**Live at:** https://oatcode.com
+
+The autonomous engine is deployed and running 24/7 on a DigitalOcean Droplet with:
+- **PM2** for process management and auto-restart
+- **Nginx** reverse proxy with SSL (Let's Encrypt)
+- **GitHub Actions** for automated deployment on push to main
+- **Cron jobs** for autonomous monitoring and recovery
+
+### Deployment Details
 
 ```bash
-# The AI will run continuously on Railway
+# Droplet: $14.40/month (2GB RAM, 1 CPU, 50GB SSD, weekly backups)
+# Domain: oatcode.com with wildcard SSL (*.oatcode.com)
+# Services managed by PM2:
+#   - oatcode-engine (autonomous-engine.js)
+#   - oatcode-web (app.js)
+```
+
+### Manual Deployment to DigitalOcean
+
+If setting up a new droplet, see `droplet-setup.sh` for complete setup instructions.
+
+### Alternative Platforms
+
+#### Deploy to Railway
+```bash
 npm run deploy
 ```
 
-### Deploy to Heroku
-
+#### Deploy to Heroku
 ```bash
 heroku create your-app-name
 git push heroku main
@@ -242,11 +265,10 @@ git push heroku main
 
 ### Environment Variables
 
-Set these in your cloud platform:
+Set these on your deployment platform:
 - All API keys from `.env.example`
 - `NODE_ENV=production`
-- `DATABASE_URL` (PostgreSQL)
-- `REDIS_URL` (for job queue)
+- `DOMAIN=https://oatcode.com`
 
 ## 📁 Project Structure
 

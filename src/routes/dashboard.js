@@ -58,7 +58,7 @@ router.get('/stats', async (req, res) => {
     if (!systemRunning) {
       stats.alerts.push({
         title: 'System Not Running',
-        message: 'The autonomous engine is currently stopped. Deploy autonomous-engine.js to Railway to start.'
+        message: 'The autonomous engine is currently stopped. Check the DigitalOcean Droplet to ensure PM2 services are running.'
       });
     } else {
       // System is running - check if we're in research phase
