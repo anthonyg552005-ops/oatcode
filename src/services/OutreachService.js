@@ -146,6 +146,12 @@ Return JSON with: { subject, body }`;
         });
       }
 
+      // Step 6: Start 5-email follow-up sequence
+      if (global.emailSequence) {
+        await global.emailSequence.startSequence(business, email);
+        this.logger.info(`   📧 Started follow-up sequence (5 emails over 21 days)`);
+      }
+
       return {
         success: true,
         business: business.name,

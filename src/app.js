@@ -14,6 +14,7 @@ const demoRoutes = require('./routes/demoRoutes');
 const dashboardRoutes = require('./routes/dashboard');
 const monitoringRoutes = require('./routes/monitoring');
 const healthRoutes = require('./routes/health');
+const webhookRoutes = require('./routes/sendgridWebhook');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -62,6 +63,7 @@ app.use('/demo', demoRoutes);
 app.use('/api/dashboard', dashboardAuth, dashboardRoutes);
 app.use('/api/monitoring', dashboardAuth, monitoringRoutes);
 app.use('/health', healthRoutes); // Public health checks
+app.use('/webhook/sendgrid', webhookRoutes); // SendGrid webhook (public - no auth)
 
 // Dashboard route (protected)
 app.get('/dashboard', dashboardAuth, (req, res) => {

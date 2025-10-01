@@ -57,6 +57,8 @@ const AIAlignmentMonitor = require('./services/AIAlignmentMonitor');
 const AutoScalingStrategyService = require('./services/AutoScalingStrategyService');
 const LowMaintenanceTargetingService = require('./services/LowMaintenanceTargetingService');
 const AIDocumentationAssistant = require('./services/AIDocumentationAssistant');
+const EmailSequenceService = require('./services/EmailSequenceService');
+const SendGridService = require('./services/SendGridService');
 
 class AutonomousEngine {
   constructor() {
@@ -110,8 +112,13 @@ class AutonomousEngine {
       alignmentMonitor: new AIAlignmentMonitor(this.logger),
       scalingStrategy: new AutoScalingStrategyService(this.logger),
       lowMaintenanceTargeting: new LowMaintenanceTargetingService(this.logger),
-      documentation: new AIDocumentationAssistant(this.logger)
+      documentation: new AIDocumentationAssistant(this.logger),
+      sendGrid: new SendGridService(),
+      emailSequence: null // Initialized after sendGrid
     };
+
+    // Initialize email sequence (needs sendGrid)
+    this.services.emailSequence = new EmailSequenceService(this.logger, this.services.sendGrid);
 
     // Performance metrics
     this.metrics = {
@@ -288,6 +295,11 @@ class AutonomousEngine {
       await this.services.documentation.start();
       global.documentation = this.services.documentation;
       this.logger.info('   ✓ AI Documentation Assistant ready (taking notes and organizing)');
+
+      // Start Email Sequence Service (5-email follow-up over 21 days)
+      await this.services.emailSequence.start();
+      global.emailSequence = this.services.emailSequence;
+      this.logger.info('   ✓ Email Sequence Service ready (5 follow-ups over 21 days with smart tracking)');
 
       // Load existing knowledge
       await this.loadKnowledgeBase();
