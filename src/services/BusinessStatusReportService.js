@@ -201,13 +201,29 @@ Overall Assessment: 🟢 System running autonomously and healthy!
 
 P.S. View dashboard: ${process.env.DOMAIN || 'http://oatcode.com'}/dashboard`;
 
-      // Send email
+      // Send email with proper headers to avoid spam
       const msg = {
         to: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
-        from: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com', // Use same email as verified sender
+        from: {
+          email: process.env.FROM_EMAIL || 'noreply@oatcode.com',
+          name: 'OatCode Status Updates'
+        },
+        replyTo: {
+          email: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
+          name: 'Anthony'
+        },
         subject,
         text: emailBody,
-        html: emailBody.replace(/\n/g, '<br>').replace(/━/g, '─')
+        html: emailBody.replace(/\n/g, '<br>').replace(/━/g, '─'),
+        headers: {
+          'X-Priority': '3',
+          'X-MSMail-Priority': 'Normal',
+          'Importance': 'Normal'
+        },
+        trackingSettings: {
+          clickTracking: { enable: false },
+          openTracking: { enable: false }
+        }
       };
 
       await sgMail.send(msg);
@@ -310,10 +326,22 @@ This is an immediate update outside the regular 3-hour schedule.
 
       const msg = {
         to: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
-        from: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com', // Use same email as verified sender
+        from: {
+          email: process.env.FROM_EMAIL || 'noreply@oatcode.com',
+          name: 'OatCode Alerts'
+        },
+        replyTo: {
+          email: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
+          name: 'Anthony'
+        },
         subject,
         text: emailBody,
-        html: emailBody.replace(/\n/g, '<br>')
+        html: emailBody.replace(/\n/g, '<br>'),
+        headers: {
+          'X-Priority': '2',
+          'X-MSMail-Priority': 'High',
+          'Importance': 'High'
+        }
       };
 
       await sgMail.send(msg);

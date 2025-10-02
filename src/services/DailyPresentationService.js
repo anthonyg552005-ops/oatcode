@@ -624,9 +624,21 @@ Tone: Professional but exciting, like a successful startup CEO briefing investor
 
       const msg = {
         to: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
-        from: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
+        from: {
+          email: process.env.FROM_EMAIL || 'noreply@oatcode.com',
+          name: 'OatCode Daily Reports'
+        },
+        replyTo: {
+          email: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
+          name: 'Anthony'
+        },
         subject: `📊 OatCode Daily Presentation - ${today}`,
-        html: presentationHTML
+        html: presentationHTML,
+        headers: {
+          'X-Priority': '3',
+          'X-MSMail-Priority': 'Normal',
+          'Importance': 'Normal'
+        }
       };
 
       await sgMail.send(msg);

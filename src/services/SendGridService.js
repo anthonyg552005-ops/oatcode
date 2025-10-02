@@ -1,6 +1,6 @@
 /**
  * SendGrid Email Service
- * Wrapper for SendGrid API
+ * Wrapper for SendGrid API with deliverability best practices
  */
 
 const sgMail = require('@sendgrid/mail');
@@ -17,7 +17,7 @@ class SendGridService {
   }
 
   /**
-   * Send email via SendGrid
+   * Send email via SendGrid with anti-spam best practices
    */
   async send(options) {
     if (!this.enabled) {
@@ -26,13 +26,51 @@ class SendGridService {
     }
 
     try {
+      // Build message with deliverability best practices
       const msg = {
         to: options.to,
-        from: options.from || process.env.FROM_EMAIL,
+        from: {
+          email: options.from || process.env.FROM_EMAIL || 'noreply@oatcode.com',
+          name: options.fromName || 'OatCode'
+        },
+        replyTo: {
+          email: process.env.NOTIFICATION_EMAIL || 'anthonyg552005@gmail.com',
+          name: 'Anthony at OatCode'
+        },
         subject: options.subject,
         text: options.text,
-        html: options.html
+        html: options.html,
+        headers: {
+          'X-Priority': '3',
+          'X-MSMail-Priority': 'Normal',
+          'Importance': 'Normal',
+          'List-Unsubscribe': `<mailto:unsubscribe@oatcode.com?subject=Unsubscribe>, <https://oatcode.com/unsubscribe>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+        },
+        trackingSettings: {
+          clickTracking: {
+            enable: true,
+            enableText: false
+          },
+          openTracking: {
+            enable: true
+          },
+          subscriptionTracking: {
+            enable: false
+          }
+        }
       };
+
+      // Add personalization if provided
+      if (options.recipientName) {
+        msg.personalizations = [{
+          to: [{ email: options.to }],
+          substitutions: {
+            '-recipientName-': options.recipientName,
+            '-businessName-': options.businessName || 'your business'
+          }
+        }];
+      }
 
       await sgMail.send(msg);
 
