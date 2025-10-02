@@ -320,6 +320,25 @@
         <!-- Alerts (if any) -->
         <div id="alertsContainer"></div>
 
+        <!-- Phase Tracking -->
+        <div class="card" style="margin-bottom: 30px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);">
+            <h2 style="margin-bottom: 20px; color: #94a3b8;">📅 Current Phase</h2>
+            <div id="phaseInfo" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                <div style="flex: 1; min-width: 200px;">
+                    <div style="font-size: 2em; font-weight: bold; margin-bottom: 10px;" id="phaseName">Loading...</div>
+                    <div style="color: #94a3b8; margin-bottom: 20px;" id="phaseDescription">Checking phase status...</div>
+                    <div style="background: rgba(30, 41, 59, 0.5); border-radius: 10px; height: 20px; overflow: hidden;">
+                        <div id="phaseProgress" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); height: 100%; width: 0%; transition: width 0.5s;"></div>
+                    </div>
+                    <div style="color: #94a3b8; font-size: 0.9em; margin-top: 8px;" id="phaseProgressText">0% complete</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 3em; font-weight: bold;" id="phaseDayNumber">--</div>
+                    <div style="color: #94a3b8;">days in phase</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Key Metrics Grid -->
         <div class="grid">
             <!-- Revenue Card -->
@@ -422,6 +441,59 @@
                     <span class="api-name">Twilio</span>
                     <span class="api-credits"><span class="loading"></span> Loading...</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- Email Tracking Logs -->
+        <div class="card" style="margin-bottom: 30px;">
+            <h2 style="margin-bottom: 20px; color: #94a3b8;">📧 Email Campaign Tracking</h2>
+
+            <!-- Email Stats Summary -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold;" id="emailStatsTotal">0</div>
+                    <div style="color: #94a3b8; font-size: 0.9em;">Total Sent</div>
+                </div>
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold;" id="emailStatsOpened">0</div>
+                    <div style="color: #94a3b8; font-size: 0.9em;">Opened (<span id="emailStatsOpenRate">0%</span>)</div>
+                </div>
+                <div style="background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold;" id="emailStatsClicked">0</div>
+                    <div style="color: #94a3b8; font-size: 0.9em;">Clicked Demo (<span id="emailStatsClickRate">0%</span>)</div>
+                </div>
+                <div style="background: rgba(236, 72, 153, 0.1); padding: 15px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold;" id="emailStatsPurchased">0</div>
+                    <div style="color: #94a3b8; font-size: 0.9em;">Purchased (<span id="emailStatsConversionRate">0%</span>)</div>
+                </div>
+            </div>
+
+            <!-- Email Logs Table -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.3);">
+                            <th style="padding: 12px; text-align: left; color: #94a3b8; font-weight: 600;">Timestamp</th>
+                            <th style="padding: 12px; text-align: left; color: #94a3b8; font-weight: 600;">Business</th>
+                            <th style="padding: 12px; text-align: left; color: #94a3b8; font-weight: 600;">Email</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8; font-weight: 600;">Delivered</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8; font-weight: 600;">Opened</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8; font-weight: 600;">Clicked Demo</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8; font-weight: 600;">Visited Site</th>
+                            <th style="padding: 12px; text-align: center; color: #94a3b8; font-weight: 600;">Purchased</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emailLogsTable">
+                        <tr>
+                            <td colspan="8" style="padding: 40px; text-align: center; color: #64748b;">
+                                Loading email logs...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 20px; text-align: center; color: #64748b; font-size: 0.9em;">
+                Showing last 50 emails • <a href="#" onclick="refreshEmailLogs(); return false;" style="color: #667eea;">Refresh</a>
             </div>
         </div>
 
@@ -582,6 +654,75 @@
 
             activityLog.innerHTML = html;
         }
+
+        // Refresh phase info
+        async function refreshPhaseInfo() {
+            try {
+                const response = await fetch('/api/dashboard/phase');
+                const phase = await response.json();
+
+                document.getElementById('phaseName').textContent = phase.displayName;
+                document.getElementById('phaseDescription').textContent =
+                    phase.phase === 'research' ?
+                    phase.daysRemaining + ' days remaining in research phase' :
+                    'Live production - actively reaching out to businesses';
+                document.getElementById('phaseProgress').style.width = phase.progress + '%';
+                document.getElementById('phaseProgressText').textContent = phase.progress + '% complete';
+                document.getElementById('phaseDayNumber').textContent =
+                    phase.phase === 'research' ? phase.currentDay : phase.daysInProduction;
+            } catch (error) {
+                console.error('Failed to fetch phase info:', error);
+            }
+        }
+
+        // Refresh email logs
+        async function refreshEmailLogs() {
+            try {
+                const response = await fetch('/api/dashboard/emails?limit=50');
+                const data = await response.json();
+
+                // Update stats
+                document.getElementById('emailStatsTotal').textContent = data.stats.total;
+                document.getElementById('emailStatsOpened').textContent = data.stats.opened;
+                document.getElementById('emailStatsOpenRate').textContent = data.stats.openRate + '%';
+                document.getElementById('emailStatsClicked').textContent = data.stats.clickedDemo;
+                document.getElementById('emailStatsClickRate').textContent = data.stats.clickRate + '%';
+                document.getElementById('emailStatsPurchased').textContent = data.stats.purchased;
+                document.getElementById('emailStatsConversionRate').textContent = data.stats.conversionRate + '%';
+
+                // Update table
+                const tbody = document.getElementById('emailLogsTable');
+                if (data.emails.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 40px; text-align: center; color: #64748b;">No emails sent yet</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                data.emails.forEach(email => {
+                    const checkmark = '\u2705'; // ✅
+                    const pending = '\u23F3'; // ⏳
+
+                    html += '<tr style="border-bottom: 1px solid rgba(100, 116, 139, 0.1);">';
+                    html += '<td style="padding: 12px; color: #94a3b8;">' + new Date(email.timestamp).toLocaleString() + '</td>';
+                    html += '<td style="padding: 12px;">' + email.businessName + '</td>';
+                    html += '<td style="padding: 12px; color: #94a3b8; font-size: 0.9em;">' + email.to + '</td>';
+                    html += '<td style="padding: 12px; text-align: center;">' + (email.status.delivered ? checkmark : pending) + '</td>';
+                    html += '<td style="padding: 12px; text-align: center;">' + (email.status.opened ? checkmark : pending) + '</td>';
+                    html += '<td style="padding: 12px; text-align: center;">' + (email.status.clickedDemo ? checkmark : pending) + '</td>';
+                    html += '<td style="padding: 12px; text-align: center;">' + (email.status.visitedWebsite ? checkmark : pending) + '</td>';
+                    html += '<td style="padding: 12px; text-align: center;">' + (email.status.purchased ? checkmark : pending) + '</td>';
+                    html += '</tr>';
+                });
+
+                tbody.innerHTML = html;
+            } catch (error) {
+                console.error('Failed to fetch email logs:', error);
+            }
+        }
+
+        // Call new functions on refresh
+        refreshPhaseInfo();
+        refreshEmailLogs();
     </script>
 </body>
 </html>
