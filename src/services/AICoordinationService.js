@@ -47,14 +47,17 @@ class AICoordinationService {
    */
   async initialize() {
     this.logger.info('🤝 AI Coordination Service initializing...');
+    this.logger.info('   Auto-discovering all autonomous services...');
 
-    // Register AI services from global scope
-    this.aiServices.selfImprovement = global.selfImprovement || null;
-    this.aiServices.alignment = global.aiAlignment || null;
-    this.aiServices.documentation = global.documentation || null;
-    this.aiServices.opportunity = global.aiOpportunity || null;
-    this.aiServices.customerSupport = global.customerSupport || null;
-    this.aiServices.decisionMaking = global.decisionMaking || null;
+    // AUTO-DISCOVER ALL SERVICES FROM GLOBAL SCOPE
+    const discoveredServices = this.autoDiscoverServices();
+
+    this.logger.info(`   ✓ Discovered ${discoveredServices.length} autonomous services`);
+
+    // Register all discovered services
+    for (const service of discoveredServices) {
+      this.registerService(service.name, service.instance);
+    }
 
     // Load previous shared knowledge
     await this.loadSharedKnowledge();
@@ -62,7 +65,78 @@ class AICoordinationService {
     // Start coordination loop
     this.startCoordination();
 
-    this.logger.info('   ✓ AI Coordination ready - all AI services connected');
+    this.logger.info(`   ✓ AI Coordination ready - ${discoveredServices.length} services synchronized`);
+  }
+
+  /**
+   * Auto-discover all services from global scope
+   */
+  autoDiscoverServices() {
+    const discovered = [];
+
+    // List of all possible service names in global scope
+    const servicePatterns = [
+      // AI Services
+      'selfImprovement', 'aiAlignment', 'documentation', 'aiOpportunity',
+      'customerSupport', 'decisionMaking', 'aiCoordination',
+
+      // Business Services
+      'autonomousBusiness', 'autonomousMetrics', 'conversionOptimization',
+      'leadScoring', 'upsell', 'emailSequence', 'emailOptimization',
+      'customerRetention', 'emailTracking', 'phaseTracking', 'escalation',
+
+      // Infrastructure Services
+      'autoRepair', 'apiMonitoring', 'analytics', 'dailyPresentation',
+
+      // Enhancement Services
+      'projectNotes', 'urgencyEngine', 'advancedVisuals', 'quietHoursProductivity'
+    ];
+
+    for (const serviceName of servicePatterns) {
+      if (global[serviceName]) {
+        discovered.push({
+          name: serviceName,
+          instance: global[serviceName],
+          type: this.classifyService(serviceName)
+        });
+      }
+    }
+
+    return discovered;
+  }
+
+  /**
+   * Classify service type
+   */
+  classifyService(serviceName) {
+    const aiPatterns = ['ai', 'selfImprovement', 'alignment', 'documentation', 'opportunity'];
+    const businessPatterns = ['business', 'metrics', 'conversion', 'lead', 'upsell', 'email', 'customer', 'retention'];
+    const infrastructurePatterns = ['repair', 'monitoring', 'analytics', 'deployment'];
+    const enhancementPatterns = ['notes', 'urgency', 'visual', 'productivity', 'coordination'];
+
+    if (aiPatterns.some(pattern => serviceName.toLowerCase().includes(pattern))) return 'ai';
+    if (businessPatterns.some(pattern => serviceName.toLowerCase().includes(pattern))) return 'business';
+    if (infrastructurePatterns.some(pattern => serviceName.toLowerCase().includes(pattern))) return 'infrastructure';
+    if (enhancementPatterns.some(pattern => serviceName.toLowerCase().includes(pattern))) return 'enhancement';
+
+    return 'other';
+  }
+
+  /**
+   * Register a service into coordination system
+   */
+  registerService(name, instance) {
+    this.aiServices[name] = instance;
+
+    // Create shared knowledge namespace for this service
+    if (!this.sharedKnowledge[name]) {
+      this.sharedKnowledge[name] = {
+        registered: new Date().toISOString(),
+        lastActivity: null,
+        insights: [],
+        metrics: {}
+      };
+    }
   }
 
   /**
@@ -119,75 +193,118 @@ class AICoordinationService {
   }
 
   /**
-   * Gather insights from all AI services
+   * Gather insights from ALL registered services (auto-sync)
    */
   async gatherInsights() {
     const insights = {
       timestamp: new Date().toISOString(),
-      services: {}
+      services: {},
+      serviceCount: 0
     };
 
-    // Collect from SelfImprovementAI
-    if (this.aiServices.selfImprovement && this.aiServices.selfImprovement.improvementHistory) {
-      insights.services.selfImprovement = {
-        recentImprovements: this.aiServices.selfImprovement.improvementHistory.slice(-5),
-        servicesCreated: this.aiServices.selfImprovement.servicesCreated
-      };
-    }
+    // AUTO-GATHER from ALL registered services
+    for (const [serviceName, serviceInstance] of Object.entries(this.aiServices)) {
+      if (!serviceInstance) continue;
 
-    // Collect from AIAlignmentMonitor
-    if (global.aiAlignment && global.aiAlignment.getAlignmentScore) {
       try {
-        insights.services.alignment = {
-          score: await global.aiAlignment.getAlignmentScore(),
-          concerns: global.aiAlignment.alignmentConcerns || []
-        };
+        const serviceInsights = await this.extractServiceInsights(serviceName, serviceInstance);
+        if (serviceInsights) {
+          insights.services[serviceName] = serviceInsights;
+          insights.serviceCount++;
+        }
       } catch (error) {
-        insights.services.alignment = { score: 100, concerns: [] };
+        // Service doesn't have insights, that's okay
       }
-    }
-
-    // Collect from DecisionMakingService
-    if (global.decisionMaking && global.decisionMaking.getRecentDecisions) {
-      insights.services.decisions = {
-        recent: global.decisionMaking.getRecentDecisions ? global.decisionMaking.getRecentDecisions() : []
-      };
-    }
-
-    // Collect from AIOpportunityMonitor
-    if (global.aiOpportunity && global.aiOpportunity.opportunities) {
-      insights.services.opportunities = {
-        active: global.aiOpportunity.opportunities || []
-      };
     }
 
     return insights;
   }
 
   /**
-   * Share insights across all AI services
+   * Extract insights from any service (works with any service type)
+   */
+  async extractServiceInsights(name, instance) {
+    const insights = {
+      serviceName: name,
+      active: true,
+      lastUpdate: new Date().toISOString()
+    };
+
+    // Try to extract common data patterns
+    if (instance.improvementHistory) {
+      insights.improvements = instance.improvementHistory.slice(-5);
+    }
+
+    if (instance.getStatistics && typeof instance.getStatistics === 'function') {
+      try {
+        insights.statistics = instance.getStatistics();
+      } catch (error) {
+        // No stats available
+      }
+    }
+
+    if (instance.getAlignmentScore && typeof instance.getAlignmentScore === 'function') {
+      try {
+        insights.alignmentScore = await instance.getAlignmentScore();
+      } catch (error) {
+        // No alignment score
+      }
+    }
+
+    if (instance.opportunities) {
+      insights.opportunities = instance.opportunities.slice ? instance.opportunities.slice(-5) : instance.opportunities;
+    }
+
+    if (instance.tasksCompleted) {
+      insights.tasksCompleted = instance.tasksCompleted.slice ? instance.tasksCompleted.slice(-5) : instance.tasksCompleted;
+    }
+
+    // Capture any metrics
+    if (instance.metrics) {
+      insights.metrics = instance.metrics;
+    }
+
+    return Object.keys(insights).length > 3 ? insights : null; // Return only if has useful data
+  }
+
+  /**
+   * Share insights across ALL AI services (auto-sync)
    */
   async shareInsights(insights) {
     // Make insights available globally
     global.aiSharedInsights = insights;
 
-    // Log key insights
-    if (insights.services.selfImprovement) {
-      const improvements = insights.services.selfImprovement.recentImprovements.length;
-      if (improvements > 0) {
-        this.logger.info(`   📈 Self-Improvement AI: ${improvements} recent improvements`);
+    // PUSH insights to ALL services that can receive them
+    let syncedServices = 0;
+
+    for (const [serviceName, serviceInstance] of Object.entries(this.aiServices)) {
+      if (!serviceInstance) continue;
+
+      // If service has a receiveInsights method, push insights to it
+      if (serviceInstance.receiveInsights && typeof serviceInstance.receiveInsights === 'function') {
+        try {
+          await serviceInstance.receiveInsights(insights);
+          syncedServices++;
+        } catch (error) {
+          // Service couldn't receive insights
+        }
+      }
+
+      // If service has sharedInsights property, update it
+      if (serviceInstance.sharedInsights !== undefined) {
+        serviceInstance.sharedInsights = insights;
+        syncedServices++;
       }
     }
 
-    if (insights.services.alignment) {
-      this.logger.info(`   🎯 Alignment Score: ${insights.services.alignment.score}%`);
-    }
+    // Log summary
+    this.logger.info(`   📡 Synchronized insights across ${syncedServices} services`);
+    this.logger.info(`   📊 Total services monitored: ${insights.serviceCount}`);
 
-    if (insights.services.opportunities) {
-      const opps = insights.services.opportunities.active.length;
-      if (opps > 0) {
-        this.logger.info(`   💡 Active Opportunities: ${opps}`);
-      }
+    // Log key highlights
+    const servicesWithTasks = Object.values(insights.services).filter(s => s.tasksCompleted);
+    if (servicesWithTasks.length > 0) {
+      this.logger.info(`   ✅ ${servicesWithTasks.length} services actively completing tasks`);
     }
   }
 
