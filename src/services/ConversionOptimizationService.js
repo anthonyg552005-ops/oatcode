@@ -1,93 +1,101 @@
-const GPT4Service = require('./GPT4Service');
-const DALLE3Service = require('./DALLE3Service');
-const SendGridService = require('./SendGridService');
-const GooglePlacesService = require('./GooglePlacesService');
+/**
+ * CONVERSION OPTIMIZATION SERVICE
+ *
+ * A/B tests landing pages, emails, and pricing to maximize conversion rates
+ */
 
-class AutonomousWebsiteService {
-  constructor() {
-    this.gpt4Service = new GPT4Service();
-    this.dalle3Service = new DALLE3Service();
-    this.sendGridService = new SendGridService();
-    this.googlePlacesService = new GooglePlacesService();
+class ConversionOptimizationService {
+  constructor(logger) {
+    this.logger = logger;
+    this.experiments = [];
+    this.results = [];
   }
 
   /**
-   * Generate autonomous website for specific business
+   * Create new A/B test experiment
    */
-  async generateWebsite(businessData) {
-    const websiteContent = await this.gpt4Service.generateWebsiteContent(businessData);
-    const websiteImages = await this.dalle3Service.generateWebsiteImages(businessData);
+  async createExperiment(name, variants) {
+    const experiment = {
+      id: Date.now(),
+      name,
+      variants,
+      results: {},
+      createdAt: new Date()
+    };
+
+    this.experiments.push(experiment);
+
+    if (this.logger) {
+      this.logger.info(`Created A/B test: ${name} with ${variants.length} variants`);
+    }
+
+    return experiment;
+  }
+
+  /**
+   * Record conversion event
+   */
+  recordConversion(experimentId, variantId, converted) {
+    const experiment = this.experiments.find(e => e.id === experimentId);
+
+    if (!experiment) {
+      return;
+    }
+
+    if (!experiment.results[variantId]) {
+      experiment.results[variantId] = {
+        views: 0,
+        conversions: 0
+      };
+    }
+
+    experiment.results[variantId].views++;
+
+    if (converted) {
+      experiment.results[variantId].conversions++;
+    }
+  }
+
+  /**
+   * Get winning variant
+   */
+  getWinningVariant(experimentId) {
+    const experiment = this.experiments.find(e => e.id === experimentId);
+
+    if (!experiment) {
+      return null;
+    }
+
+    let winner = null;
+    let maxConversionRate = 0;
+
+    Object.keys(experiment.results).forEach(variantId => {
+      const { views, conversions } = experiment.results[variantId];
+      const conversionRate = views > 0 ? conversions / views : 0;
+
+      if (conversionRate > maxConversionRate) {
+        maxConversionRate = conversionRate;
+        winner = variantId;
+      }
+    });
 
     return {
-      ...websiteContent,
-      images: websiteImages,
-      url: `https://autowebsite.tgwebsites.com/${businessData.slug}`,
-      tracking: this.getTrackingSetup(businessData)
+      variantId: winner,
+      conversionRate: maxConversionRate
     };
   }
 
   /**
-   * Send welcome email to new customer
+   * Get all experiment results
    */
-  async sendWelcomeEmail(customerData) {
-    const emailContent = await this.gpt4Service.generateWelcomeEmailContent(customerData);
-    await this.sendGridService.sendEmail(customerData.email, emailContent);
-  }
-
-  /**
-   * Find new leads from Google Places
-   */
-  async findNewLeads(industry, location) {
-    const leads = await this.googlePlacesService.findBusinesses(industry, location);
-    return leads;
-  }
-
-  /**
-   * Advanced tracking and analytics
-   */
-  getTrackingSetup(business) {
-    return {
-      google_analytics: {
-        events: [
-          'website_view',
-          'form_start',
-          'form_complete',
-          'phone_click',
-          'email_click'
-        ]
-      },
-      facebook_pixel: {
-        events: [
-          'ViewContent',
-          'InitiateCheckout',
-          'Lead',
-          'Purchase'
-        ]
-      },
-      heat_mapping: {
-        enabled: true,
-        tools: ['Hotjar', 'Crazy Egg'],
-        track: ['clicks', 'scrolling', 'form_interactions']
-      },
-      conversion_goals: [
-        {
-          name: 'form_submission',
-          value: 50,
-          funnel: ['website_view', 'form_start', 'form_complete']
-        },
-        {
-          name: 'phone_call',
-          value: 75,
-          funnel: ['website_view', 'phone_click']
-        },
-        {
-          name: 'purchase',
-          value: 197,
-          funnel: ['website_view', 'checkout_start', 'purchase_complete']
-        }
-      ]
-    };
+  getResults() {
+    return this.experiments.map(exp => ({
+      id: exp.id,
+      name: exp.name,
+      results: exp.results,
+      winner: this.getWinningVariant(exp.id)
+    }));
   }
 }
 
-module.exports = AutonomousWebsiteService;
+module.exports = ConversionOptimizationService;
