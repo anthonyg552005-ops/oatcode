@@ -66,6 +66,11 @@ const UpsellService = require('./services/UpsellService');
 const CustomerSupportAI = require('./services/CustomerSupportAI');
 const EmailOptimizationService = require('./services/EmailOptimizationService');
 const CustomerRetentionService = require('./services/CustomerRetentionService');
+const APIMonitoringService = require('./services/APIMonitoringService');
+const EmailTrackingService = require('./services/EmailTrackingService');
+const PhaseTrackingService = require('./services/PhaseTrackingService');
+const IntelligentEscalationService = require('./services/IntelligentEscalationService');
+const AdvancedAnalyticsService = require('./services/AdvancedAnalyticsService');
 
 // Phase 1 Autonomous Services (CRITICAL)
 const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
@@ -137,7 +142,14 @@ class AutonomousEngine {
       upsell: new UpsellService(this.logger),
       customerSupport: new CustomerSupportAI(this.logger),
       emailOptimization: new EmailOptimizationService(this.logger),
-      customerRetention: new CustomerRetentionService(this.logger)
+      customerRetention: new CustomerRetentionService(this.logger),
+
+      // Critical monitoring and tracking services
+      apiMonitoring: new APIMonitoringService(),
+      emailTracking: new EmailTrackingService(this.logger),
+      phaseTracking: new PhaseTrackingService(this.logger),
+      escalation: new IntelligentEscalationService(this.logger),
+      analytics: new AdvancedAnalyticsService()
     };
 
     // Initialize email sequence (needs sendGrid) - wrapped in try/catch for resilience
@@ -327,6 +339,28 @@ class AutonomousEngine {
       await this.services.customerRetention.initialize();
       global.customerRetention = this.services.customerRetention;
       this.logger.info('   ✓ Customer Retention Service ready (automated check-ins, feedback processing, website updates)');
+
+      // Initialize Email Tracking Service (tracks email funnel)
+      await this.services.emailTracking.initialize();
+      global.emailTracking = this.services.emailTracking;
+      this.logger.info('   ✓ Email Tracking Service ready (tracks sent → delivered → opened → clicked → purchased)');
+
+      // Initialize Phase Tracking Service (research vs production)
+      await this.services.phaseTracking.initialize();
+      global.phaseTracking = this.services.phaseTracking;
+      this.logger.info('   ✓ Phase Tracking Service ready (tracks business phase for dashboard)');
+
+      // Initialize Intelligent Escalation Service (decides when to alert human)
+      global.escalation = this.services.escalation;
+      this.logger.info('   ✓ Intelligent Escalation Service ready (handles 99.9% of issues, escalates critical only)');
+
+      // Initialize Advanced Analytics Service (business metrics)
+      global.analytics = this.services.analytics;
+      this.logger.info('   ✓ Advanced Analytics Service ready (tracks all business metrics)');
+
+      // API Monitoring starts automatically in constructor
+      global.apiMonitoring = this.services.apiMonitoring;
+      this.logger.info('   ✓ API Monitoring Service active (monitors OpenAI, SendGrid, Twilio usage)');
 
       // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
       this.services.deploymentMonitor.start();
