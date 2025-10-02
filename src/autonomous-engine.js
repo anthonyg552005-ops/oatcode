@@ -65,6 +65,7 @@ const LeadScoringService = require('./services/LeadScoringService');
 const UpsellService = require('./services/UpsellService');
 const CustomerSupportAI = require('./services/CustomerSupportAI');
 const EmailOptimizationService = require('./services/EmailOptimizationService');
+const CustomerRetentionService = require('./services/CustomerRetentionService');
 
 // Phase 1 Autonomous Services (CRITICAL)
 const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
@@ -135,7 +136,8 @@ class AutonomousEngine {
       leadScoring: new LeadScoringService(this.logger),
       upsell: new UpsellService(this.logger),
       customerSupport: new CustomerSupportAI(this.logger),
-      emailOptimization: new EmailOptimizationService(this.logger)
+      emailOptimization: new EmailOptimizationService(this.logger),
+      customerRetention: new CustomerRetentionService(this.logger)
     };
 
     // Initialize email sequence (needs sendGrid) - wrapped in try/catch for resilience
@@ -320,6 +322,11 @@ class AutonomousEngine {
       this.logger.info('   ✓ Upsell Service ready (Standard → Premium upgrades)');
       this.logger.info('   ✓ Customer Support AI ready (handles inquiries 24/7)');
       this.logger.info('   ✓ Email Optimization Service ready (improves open/click rates)');
+
+      // Initialize Customer Retention Service (automated check-ins + website updates)
+      await this.services.customerRetention.initialize();
+      global.customerRetention = this.services.customerRetention;
+      this.logger.info('   ✓ Customer Retention Service ready (automated check-ins, feedback processing, website updates)');
 
       // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
       this.services.deploymentMonitor.start();
@@ -575,6 +582,22 @@ class AutonomousEngine {
       await this.services.dailyPresentation.savePresentationToFile();
     });
     this.logger.info('   ✓ Daily CEO presentation: 8 PM daily');
+
+    // Daily at 10 AM: Process customer check-in emails (Day 3, Day 14, Day 30, etc.)
+    cron.schedule('0 10 * * *', async () => {
+      this.logger.info('📧 Processing customer retention check-ins...');
+      try {
+        const checkInsSent = await this.services.customerRetention.processDailyCheckIns();
+        this.logger.info(`   ✅ Sent ${checkInsSent} customer check-in emails`);
+
+        // Update retention metrics
+        const stats = await this.services.customerRetention.getStats();
+        this.logger.info(`   📊 Retention stats: ${stats.activeSubscriptions} active, ${stats.responseRate}% response rate`);
+      } catch (error) {
+        this.logger.error(`   ❌ Customer retention check-ins failed: ${error.message}`);
+      }
+    });
+    this.logger.info('   ✓ Customer retention check-ins: 10 AM daily (auto-emails at Day 3, 14, 30, etc.)');
 
     // Every 15 minutes: Make autonomous decisions
     cron.schedule('*/15 * * * *', async () => {

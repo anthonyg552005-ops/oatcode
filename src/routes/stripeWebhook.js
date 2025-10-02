@@ -85,6 +85,30 @@ async function handleCheckoutComplete(session) {
   // TODO: Save to database
   // await saveCustomer(customer);
 
+  // Add customer to retention system (automated check-ins + feedback)
+  if (global.customerRetention) {
+    try {
+      const websiteUrl = `http://oatcode.com/demos/${session.id}.html`;
+
+      await global.customerRetention.addCustomer({
+        email: customer.email,
+        businessName: customer.name || 'Customer',
+        tier: customer.tier,
+        websiteUrl,
+        websiteData: {} // Will be populated when website is generated
+      });
+
+      console.log(`   ✅ Added to customer retention system - first check-in on Day 3`);
+
+      // Track purchase in email tracking
+      if (global.emailTracking) {
+        await global.emailTracking.trackPurchase(customer.email, customer.tier, session.amount_total / 100);
+      }
+    } catch (error) {
+      console.error(`   ⚠️  Failed to add to retention system: ${error.message}`);
+    }
+  }
+
   // TODO: Send welcome email
   // await sendWelcomeEmail(customer);
 
