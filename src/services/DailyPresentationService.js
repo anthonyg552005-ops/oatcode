@@ -16,11 +16,13 @@ const OpenAI = require('openai');
 const sgMail = require('@sendgrid/mail');
 const fs = require('fs').promises;
 const path = require('path');
+const OwnerDemoService = require('./OwnerDemoService');
 
 class DailyPresentationService {
   constructor(logger) {
     this.logger = logger;
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    this.ownerDemo = new OwnerDemoService(logger);
 
     // Setup SendGrid
     if (process.env.SENDGRID_API_KEY) {
@@ -630,6 +632,10 @@ Tone: Professional but exciting, like a successful startup CEO briefing investor
       await sgMail.send(msg);
 
       this.logger.info(`✅ Daily presentation sent to ${msg.to}`);
+
+      // Also send daily demo for owner to test
+      this.logger.info('🎨 Sending daily demo for owner to test...');
+      await this.ownerDemo.sendDailyOwnerDemo();
 
       // Reset data for tomorrow
       this.resetDailyData();
