@@ -1,118 +1,156 @@
-const moment = require('moment-timezone');
-const WebsiteSchedulingService = require('./WebsiteSchedulingService');
-const EnhancedWebsiteGenerationService = require('./EnhancedWebsiteGenerationService');
+/**
+ * EMAIL OPTIMIZATION SERVICE
+ *
+ * Optimizes email subject lines, content, and send times to maximize open and click rates
+ */
 
-class WebsiteOptimizationService {
-  constructor() {
-    this.subjectLineVariants = this.initializeSubjectLineVariants();
-    this.socialProofData = this.initializeSocialProofData();
-    this.urgencyMessages = this.initializeUrgencyMessages();
-    this.sendTimeOptimization = this.initializeSendTimes();
-    this.scheduler = new WebsiteSchedulingService();
-    this.websiteGenerator = new EnhancedWebsiteGenerationService();
+class EmailOptimizationService {
+  constructor(logger) {
+    this.logger = logger;
+
+    // Best performing subject line templates
+    this.subjectLineTemplates = [
+      'Quick question about {businessName}',
+      '{businessName} - I built you a free website',
+      'Free website demo for {businessName}',
+      '{businessName}: Professional website ready in 5 minutes',
+      'I noticed {businessName} doesn\'t have a website...',
+      '{ownerName}, here\'s what your website could look like'
+    ];
+
+    // Optimal send times (in UTC hours)
+    this.optimalSendTimes = {
+      monday: [9, 14],
+      tuesday: [9, 10, 14],
+      wednesday: [9, 14],
+      thursday: [9, 10, 14],
+      friday: [9, 11],
+      saturday: [],
+      sunday: []
+    };
+
+    // Performance tracking
+    this.emailPerformance = [];
   }
 
   /**
-   * Generate three-website demo with enhanced content
+   * Get optimal subject line for business
    */
-  async optimizeThreeWebsiteDemo(business, pitchData) {
-    try {
-      // Generate three website options
-      const businessInfo = {
-        businessName: business.name,
-        industry: business.industryCategory || 'business',
-        description: pitchData.personalizedInsights || `Professional ${business.businessType} services in ${business.city}`,
-        location: business.city,
-        phone: business.phone,
-        email: business.email
-      };
+  getOptimalSubjectLine(business) {
+    // Randomly select a template (could be weighted by past performance)
+    const template = this.subjectLineTemplates[
+      Math.floor(Math.random() * this.subjectLineTemplates.length)
+    ];
 
-      const websites = await this.websiteGenerator.generateThreeWebsiteOptions(businessInfo);
+    return template
+      .replace('{businessName}', business.name)
+      .replace('{ownerName}', business.ownerName || 'there');
+  }
 
-      // Select best subject line variant for three-demo approach
-      const subjectLine = this.selectThreeWebsiteSubjectLine(business);
+  /**
+   * Get optimal send time for current day
+   */
+  getOptimalSendTime() {
+    const now = new Date();
+    const dayOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.getDay()];
 
-      // Add social proof and urgency
-      const socialProof = this.getSocialProofForBusiness(business);
-      const urgencyMessage = this.createUrgencyMessage(business);
+    const optimalHours = this.optimalSendTimes[dayOfWeek];
 
-      // Create enhanced demo with three website options
-      const demoContent = this.websiteGenerator.generateDemoPreviewContent(businessInfo, websites);
+    if (optimalHours.length === 0) {
+      // No good send times today, suggest Monday 9 AM
+      return null;
+    }
 
-      // Optimize send time
-      const optimalSendTime = this.scheduler.calculateOptimalSendTime(business);
+    const currentHour = now.getUTCHours();
 
-      return {
-        subject: subjectLine.text,
-        subjectVariant: 'three_demo',
-        body: demoContent,
-        htmlBody: demoContent, // Already formatted as HTML
-        websites: websites,
-        optimalSendTime,
-        expectedOpenRate: this.calculateExpectedOpenRate(subjectLine, business),
-        expectedClickRate: this.calculateExpectedClickRate(business) + 3, // +3% for multiple options
-        optimizations: {
-          websiteOptions: 3,
-          socialProof: socialProof.type,
-          urgency: urgencyMessage.type,
-          customImages: 'DALL-E 3 generated',
-          personalization: 'high',
-          sendTimeOptimized: true
-        }
-      };
+    // Find next optimal hour
+    const nextOptimalHour = optimalHours.find(h => h > currentHour);
 
-    } catch (error) {
-      console.error('Three-website demo optimization error:', error);
-      throw error;
+    if (nextOptimalHour) {
+      const sendTime = new Date();
+      sendTime.setUTCHours(nextOptimalHour, 0, 0, 0);
+      return sendTime;
+    }
+
+    // No more optimal times today, return first optimal time tomorrow
+    return null;
+  }
+
+  /**
+   * Track email performance
+   */
+  trackEmailPerformance(emailId, metrics) {
+    this.emailPerformance.push({
+      emailId,
+      sentAt: new Date(),
+      ...metrics
+    });
+
+    // Keep only last 1000 emails
+    if (this.emailPerformance.length > 1000) {
+      this.emailPerformance = this.emailPerformance.slice(-1000);
+    }
+
+    if (this.logger) {
+      this.logger.info(`Tracked email performance: ${JSON.stringify(metrics)}`);
     }
   }
 
   /**
-   * Optimize website content for maximum conversion
+   * Get performance statistics
    */
-  async optimizeWebsiteCampaign(business, pitchData) {
-    try {
-      // Select best subject line variant for this business
-      const subjectLine = this.selectOptimalSubjectLine(business, pitchData);
-
-      // Add social proof elements
-      const socialProof = this.getSocialProofForBusiness(business);
-
-      // Create urgency/scarcity messaging
-      const urgencyMessage = this.createUrgencyMessage(business);
-
-      // Optimize send time for business type and location using advanced scheduler
-      const optimalSendTime = this.scheduler.calculateOptimalSendTime(business);
-
-      // Enhanced website body with all optimizations
-      const optimizedBody = this.createOptimizedWebsiteBody(business, pitchData, {
-        socialProof,
-        urgencyMessage,
-        personalizedInsights: pitchData.personalizedInsights
-      });
-
+  getPerformanceStats() {
+    if (this.emailPerformance.length === 0) {
       return {
-        subject: subjectLine.text,
-        subjectVariant: subjectLine.variant,
-        body: optimizedBody,
-        optimalSendTime,
-        expectedOpenRate: this.calculateExpectedOpenRate(subjectLine, business),
-        expectedClickRate: this.calculateExpectedClickRate(business),
-        optimizations: {
-          socialProof: socialProof.type,
-          urgency: urgencyMessage.type,
-          personalization: 'high',
-          sendTimeOptimized: true
-        }
+        totalSent: 0,
+        avgOpenRate: 0,
+        avgClickRate: 0,
+        avgConversionRate: 0
       };
-
-    } catch (error) {
-      console.error('Website optimization error:', error);
-      throw error;
     }
+
+    const total = this.emailPerformance.length;
+    const totalOpens = this.emailPerformance.filter(e => e.opened).length;
+    const totalClicks = this.emailPerformance.filter(e => e.clicked).length;
+    const totalConversions = this.emailPerformance.filter(e => e.converted).length;
+
+    return {
+      totalSent: total,
+      avgOpenRate: (totalOpens / total * 100).toFixed(2),
+      avgClickRate: (totalClicks / total * 100).toFixed(2),
+      avgConversionRate: (totalConversions / total * 100).toFixed(2)
+    };
   }
 
-  // Rest of the code remains the same as the original code
+  /**
+   * Optimize email content based on past performance
+   */
+  optimizeContent(emailContent) {
+    // Simple optimizations
+    // - Add personalization
+    // - Keep subject line under 50 characters
+    // - Include clear call-to-action
+    // - Use power words
+
+    const optimized = {
+      ...emailContent,
+      subject: emailContent.subject.substring(0, 50),
+      hasPersonalization: emailContent.subject.includes('{') || emailContent.body.includes('{'),
+      hasCTA: emailContent.body.includes('click') || emailContent.body.includes('view') || emailContent.body.includes('check out'),
+      scorePercent: 0
+    };
+
+    // Calculate optimization score
+    let score = 0;
+    if (optimized.subject.length <= 50) score += 25;
+    if (optimized.hasPersonalization) score += 25;
+    if (optimized.hasCTA) score += 25;
+    if (emailContent.body.length >= 100 && emailContent.body.length <= 500) score += 25;
+
+    optimized.scorePercent = score;
+
+    return optimized;
+  }
 }
 
-module.exports = WebsiteOptimizationService;
+module.exports = EmailOptimizationService;
