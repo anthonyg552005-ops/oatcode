@@ -196,46 +196,118 @@ Return ONLY valid JSON:
    * Creates all copy, headlines, CTAs, etc.
    */
   async generateWebsiteContent(business, strategy) {
-    const prompt = `You are an expert copywriter. Create compelling website content for this business.
+    try {
+      const prompt = `You are an expert copywriter. Create compelling website content for this business.
 
-Business: ${business.name}
+Business: ${business.name || business.businessName}
 Industry: ${business.industry}
-Location: ${business.city}, ${business.state}
-Rating: ${business.rating} stars
-Strategy: ${strategy.messagingFocus}
-Design Style: ${strategy.designStyle}
+Location: ${business.city || business.location}
 
 Create content for these sections:
 1. Hero Section (attention-grabbing headline + subheadline + CTA)
 2. About Section (compelling story, 2-3 paragraphs)
 3. Services Section (3-6 key services with descriptions)
 4. Why Choose Us Section (3-4 unique value props)
-5. Testimonials Section (create 3-4 realistic testimonials based on reviews)
+5. Testimonials Section (create 3-4 realistic testimonials)
 6. Contact Section (compelling CTA + contact info)
-7. SEO Meta (title, description, keywords)
 
-Requirements:
-- Write for ${business.industry} customers in ${business.city}
-- Emphasize ${strategy.messagingFocus}
-- Use ${strategy.designStyle} tone
-- Strong, action-oriented CTAs
-- SEO optimized for local search
-- Conversational, benefit-focused copy
+Return ONLY valid JSON in this exact format:
+{
+  "sections": [
+    {"type": "hero", "headline": "...", "subheadline": "...", "cta": "..."},
+    {"type": "about", "content": "..."},
+    {"type": "services", "items": [...]},
+    {"type": "why_choose", "items": [...]},
+    {"type": "testimonials", "items": [...]},
+    {"type": "contact", "cta": "...", "content": "..."}
+  ],
+  "seo": {"title": "...", "description": "...", "keywords": "..."}
+}`;
 
-Return ONLY valid JSON with all sections.`;
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+          { role: 'system', content: 'You are an expert copywriter who creates high-converting website content. Always return valid JSON.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.8,
+        max_tokens: 3000,
+        response_format: { type: "json_object" }
+      });
 
-    const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [
-        { role: 'system', content: 'You are an expert copywriter who creates high-converting website content. Always return valid JSON.' },
-        { role: 'user', content: prompt }
+      const content = JSON.parse(response.choices[0].message.content);
+
+      // Ensure sections array exists
+      if (!content.sections || !Array.isArray(content.sections)) {
+        throw new Error('Invalid content format - missing sections array');
+      }
+
+      return content;
+
+    } catch (error) {
+      this.logger.warn(`GPT-4 content generation failed, using fallback template: ${error.message}`);
+
+      // Fallback to template-based content
+      return this.generateFallbackContent(business, strategy);
+    }
+  }
+
+  /**
+   * Fallback content generator (when AI fails)
+   */
+  generateFallbackContent(business, strategy) {
+    const name = business.name || business.businessName || 'Our Business';
+    const industry = business.industry || 'services';
+    const location = business.city || business.location || 'your area';
+
+    return {
+      sections: [
+        {
+          type: 'hero',
+          headline: `Professional ${industry} in ${location}`,
+          subheadline: `Experience quality service from ${name}`,
+          cta: 'Get Started Today'
+        },
+        {
+          type: 'about',
+          content: `${name} is your trusted ${industry} provider in ${location}. We're dedicated to delivering exceptional service and results that exceed your expectations.`
+        },
+        {
+          type: 'services',
+          items: [
+            { name: `Premium ${industry} Services`, description: 'High-quality solutions tailored to your needs' },
+            { name: 'Expert Consultation', description: 'Professional guidance every step of the way' },
+            { name: 'Reliable Support', description: 'We\'re here when you need us' }
+          ]
+        },
+        {
+          type: 'why_choose',
+          items: [
+            'Years of Experience',
+            'Customer Satisfaction Guaranteed',
+            'Professional Team',
+            'Competitive Pricing'
+          ]
+        },
+        {
+          type: 'testimonials',
+          items: [
+            { author: 'Happy Customer', text: `Excellent service from ${name}!`, rating: 5 },
+            { author: 'Satisfied Client', text: 'Professional and reliable', rating: 5 }
+          ]
+        },
+        {
+          type: 'contact',
+          cta: 'Contact Us Today',
+          content: 'Ready to get started? Reach out to us for a consultation.'
+        }
       ],
-      temperature: 0.8,
-      max_tokens: 3000,
-      
-    });
-
-    return JSON.parse(response.choices[0].message.content);
+      seo: {
+        title: `${name} | ${industry} in ${location}`,
+        description: `Professional ${industry} services in ${location}. Contact ${name} today.`,
+        keywords: `${industry}, ${location}, ${name}`
+      }
+    };
   }
 
   /**

@@ -84,10 +84,95 @@ class OwnerDemoService {
   }
 
   /**
+   * Build pitch email (what businesses receive)
+   */
+  buildPitchEmail(business, demo) {
+    const domain = process.env.DOMAIN || 'http://oatcode.com';
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .demo-link {
+            display: block;
+            padding: 15px 25px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Quick question about ${business.businessName}</h2>
+    </div>
+
+    <p>Hi there,</p>
+
+    <p>I noticed ${business.businessName} doesn't have a website yet. I actually went ahead and built you a demo to show you what it could look like.</p>
+
+    <p><strong>Two options for you:</strong></p>
+
+    <a href="${domain}${demo.standardUrl}" class="demo-link">
+        📱 View Standard Demo - $197/month
+    </a>
+
+    <a href="${domain}${demo.premiumUrl}" class="demo-link">
+        ✨ View Premium Demo - $297/month (AI-generated visuals)
+    </a>
+
+    <p><strong>What's included:</strong></p>
+    <ul>
+        <li>✅ Professional modern design</li>
+        <li>✅ Mobile-responsive</li>
+        <li>✅ SEO optimized</li>
+        <li>✅ Contact forms</li>
+        <li>✅ Free hosting & SSL</li>
+        <li>✅ 24/7 AI support</li>
+    </ul>
+
+    <p>If you like what you see, you can activate it immediately. If not, no worries - no commitment.</p>
+
+    <p><a href="${domain}${demo.comparisonUrl}">Compare both versions side-by-side →</a></p>
+
+    <p>Best,<br>
+    OatCode Team</p>
+
+    <p style="font-size: 12px; color: #999; margin-top: 30px;">
+    P.S. The website is already built and ready to go live - just say the word!
+    </p>
+</body>
+</html>
+    `;
+  }
+
+  /**
    * Build demo email for owner
    */
   buildDemoEmail(demo) {
     const domain = process.env.DOMAIN || 'http://oatcode.com';
+
+    const pitchEmailPreview = this.buildPitchEmail({
+      businessName: 'OatCode'
+    }, demo);
 
     return `
 <!DOCTYPE html>
@@ -236,6 +321,21 @@ class OwnerDemoService {
                 <li>Is the difference between Standard and Premium clear?</li>
                 <li>Would YOU pay $197-297/month for this?</li>
                 <li>Does it showcase value better than competitors?</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📧 Pitch Email Preview</h2>
+            <p>This is the <strong>exact email</strong> that businesses will receive when we reach out to them:</p>
+            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                ${pitchEmailPreview}
+            </div>
+            <p><strong>Testing this email helps you:</strong></p>
+            <ul class="checklist">
+                <li>See if the messaging is compelling</li>
+                <li>Verify all demo links work correctly</li>
+                <li>Experience what potential customers see</li>
+                <li>Identify any improvements needed</li>
             </ul>
         </div>
 
