@@ -2,6 +2,20 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
+const EmailTrackingService = require('../services/EmailTrackingService');
+const PhaseTrackingService = require('../services/PhaseTrackingService');
+
+// Initialize services
+const emailTracking = new EmailTrackingService(console);
+const phaseTracking = new PhaseTrackingService(console);
+
+// Initialize on startup
+emailTracking.initialize().catch(err => console.error('Email tracking init failed:', err));
+phaseTracking.initialize().catch(err => console.error('Phase tracking init failed:', err));
+
+// Expose globally
+global.emailTracking = emailTracking;
+global.phaseTracking = phaseTracking;
 
 /**
  * Dashboard API - Real-time stats for mobile/web dashboard
@@ -153,6 +167,67 @@ router.get('/health', async (req, res) => {
     res.status(500).json({
       status: 'unhealthy',
       error: error.message
+    });
+  }
+});
+
+/**
+ * Get current phase info
+ */
+router.get('/phase', async (req, res) => {
+  try {
+    const phaseInfo = await phaseTracking.getPhaseInfo();
+    res.json(phaseInfo);
+  } catch (error) {
+    console.error('Error fetching phase info:', error);
+    res.status(500).json({
+      error: 'Failed to fetch phase info',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Get email logs
+ */
+router.get('/emails', async (req, res) => {
+  try {
+    const { limit, status, phase } = req.query;
+
+    const emails = await emailTracking.getAllEmails({
+      limit: limit ? parseInt(limit) : 50,
+      status,
+      phase
+    });
+
+    const stats = await emailTracking.getStats();
+
+    res.json({
+      emails,
+      stats,
+      total: emails.length
+    });
+  } catch (error) {
+    console.error('Error fetching email logs:', error);
+    res.status(500).json({
+      error: 'Failed to fetch email logs',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Get email statistics
+ */
+router.get('/emails/stats', async (req, res) => {
+  try {
+    const stats = await emailTracking.getStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching email stats:', error);
+    res.status(500).json({
+      error: 'Failed to fetch email stats',
+      message: error.message
     });
   }
 });
