@@ -71,6 +71,7 @@ const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
 const AutoDatabaseBackupService = require('./services/AutoDatabaseBackupService');
 const AutoEmailDeliverabilityService = require('./services/AutoEmailDeliverabilityService');
 const AutonomousHealthCheckService = require('./services/AutonomousHealthCheckService');
+const AutoRepairService = require('./services/AutoRepairService');
 
 class AutonomousEngine {
   constructor() {
@@ -150,6 +151,7 @@ class AutonomousEngine {
     this.services.databaseBackup = new AutoDatabaseBackupService(this.logger);
     this.services.emailDeliverability = new AutoEmailDeliverabilityService(this.logger, this.services.sendGrid);
     this.services.healthCheck = new AutonomousHealthCheckService(this.logger);
+    this.services.autoRepair = new AutoRepairService(this.logger);
 
     // Performance metrics
     this.metrics = {
@@ -322,6 +324,11 @@ class AutonomousEngine {
       // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
       this.services.deploymentMonitor.start();
       this.logger.info('   ✓ Auto-Deployment Monitor active (checks every 60s)');
+
+      // Start Auto-Repair Service (monitors logs and fixes common issues autonomously)
+      this.services.autoRepair.start();
+      global.autoRepair = this.services.autoRepair;
+      this.logger.info('   ✓ Auto-Repair Service active (scans hourly, fixes git config, code errors, etc.)');
 
       // Start Self-Improvement AI (continuously creates new services to improve business)
       this.services.selfImprovement.start();
