@@ -75,6 +75,7 @@ const ProjectNotesService = require('./services/ProjectNotesService');
 const UrgencyEngine = require('./services/UrgencyEngine');
 const AdvancedVisualGenerationService = require('./services/AdvancedVisualGenerationService');
 const AICoordinationService = require('./services/AICoordinationService');
+const QuietHoursProductivityService = require('./services/QuietHoursProductivityService');
 
 // Phase 1 Autonomous Services (CRITICAL)
 const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
@@ -161,7 +162,10 @@ class AutonomousEngine {
       advancedVisuals: new AdvancedVisualGenerationService(this.logger),
 
       // AI Coordination - makes all AI services work together
-      aiCoordination: new AICoordinationService(this.logger)
+      aiCoordination: new AICoordinationService(this.logger),
+
+      // Quiet Hours Productivity - maximizes productivity during non-emailing times
+      quietHoursProductivity: new QuietHoursProductivityService(this.logger)
     };
 
     // Initialize email sequence (needs sendGrid) - wrapped in try/catch for resilience
@@ -392,6 +396,11 @@ class AutonomousEngine {
       await this.services.aiCoordination.initialize();
       global.aiCoordination = this.services.aiCoordination;
       this.logger.info('   ✓ AI Coordination Service ready (central nervous system for all AIs)');
+
+      // Initialize Quiet Hours Productivity Service (works during non-emailing times)
+      await this.services.quietHoursProductivity.initialize();
+      global.quietHoursProductivity = this.services.quietHoursProductivity;
+      this.logger.info('   ✓ Quiet Hours Productivity ready (maximizes work during off-hours)');
 
       // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
       this.services.deploymentMonitor.start();
