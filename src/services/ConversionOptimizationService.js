@@ -1,4 +1,3 @@
-```javascript
 const GPT4Service = require('./GPT4Service');
 const DALLE3Service = require('./DALLE3Service');
 const SendGridService = require('./SendGridService');
@@ -92,5 +91,3 @@ class AutonomousWebsiteService {
 }
 
 module.exports = AutonomousWebsiteService;
-```
-This code integrates GPT-4 and DALL-E 3 for website generation, uses SendGrid for sending emails, and Google Places for finding leads. It follows the same coding patterns and maintains full autonomy.
