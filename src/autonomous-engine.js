@@ -71,6 +71,9 @@ const EmailTrackingService = require('./services/EmailTrackingService');
 const PhaseTrackingService = require('./services/PhaseTrackingService');
 const IntelligentEscalationService = require('./services/IntelligentEscalationService');
 const AdvancedAnalyticsService = require('./services/AdvancedAnalyticsService');
+const ProjectNotesService = require('./services/ProjectNotesService');
+const UrgencyEngine = require('./services/UrgencyEngine');
+const AdvancedVisualGenerationService = require('./services/AdvancedVisualGenerationService');
 
 // Phase 1 Autonomous Services (CRITICAL)
 const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
@@ -149,7 +152,12 @@ class AutonomousEngine {
       emailTracking: new EmailTrackingService(this.logger),
       phaseTracking: new PhaseTrackingService(this.logger),
       escalation: new IntelligentEscalationService(this.logger),
-      analytics: new AdvancedAnalyticsService()
+      analytics: new AdvancedAnalyticsService(),
+
+      // Documentation and enhancement services
+      projectNotes: new ProjectNotesService(this.logger),
+      urgencyEngine: new UrgencyEngine(),
+      advancedVisuals: new AdvancedVisualGenerationService(this.logger)
     };
 
     // Initialize email sequence (needs sendGrid) - wrapped in try/catch for resilience
@@ -361,6 +369,20 @@ class AutonomousEngine {
       // API Monitoring starts automatically in constructor
       global.apiMonitoring = this.services.apiMonitoring;
       this.logger.info('   ✓ API Monitoring Service active (monitors OpenAI, SendGrid, Twilio usage)');
+
+      // Initialize Project Notes Service (documents all decisions/learnings)
+      await this.services.projectNotes.initialize();
+      global.projectNotes = this.services.projectNotes;
+      this.logger.info('   ✓ Project Notes Service ready (auto-documents development, decisions, learnings)');
+
+      // Initialize Urgency Engine (adds urgency to sales messaging)
+      global.urgencyEngine = this.services.urgencyEngine;
+      this.logger.info('   ✓ Urgency Engine ready (generates urgency messaging for sales)');
+
+      // Initialize Advanced Visual Generation Service (for Premium tier websites)
+      await this.services.advancedVisuals.initialize();
+      global.advancedVisuals = this.services.advancedVisuals;
+      this.logger.info('   ✓ Advanced Visual Generation Service ready (Runway ML + DALL-E 3 for Premium)');
 
       // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
       this.services.deploymentMonitor.start();
