@@ -391,7 +391,20 @@ NO TEXT, NO LOGOS.`;
     this.logger.info(`   🏗️  Assembling website with Tailwind CSS...`);
 
     const colors = strategy.colorDetails;
-    const heroImage = images.find(img => img.type === 'hero');
+
+    // Handle both array and object formats for images
+    let heroImage;
+    if (Array.isArray(images)) {
+      heroImage = images.find(img => img.type === 'hero');
+    } else if (images && typeof images === 'object') {
+      // Images is an object (from SmartVisualService)
+      heroImage = images.heroImage || images.hero;
+    }
+
+    // Fallback hero image
+    if (!heroImage) {
+      heroImage = { url: 'https://via.placeholder.com/1200x600/2563EB/FFFFFF?text=Professional+Service', cost: 0 };
+    }
 
     // Generate complete HTML with Tailwind
     const html = `<!DOCTYPE html>
