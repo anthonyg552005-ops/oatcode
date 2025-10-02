@@ -598,7 +598,7 @@ class AutonomousEngine {
     });
     this.logger.info('   ✓ Market expansion check: Daily at 6 AM');
 
-    // Daily at 8 PM: Generate and send daily presentation
+    // Daily at 8 PM CT: Generate and send daily presentation
     cron.schedule('0 20 * * *', async () => {
       this.logger.info('📊 Generating daily CEO presentation...');
 
@@ -658,8 +658,10 @@ class AutonomousEngine {
 
       // Also save to public folder for web viewing
       await this.services.dailyPresentation.savePresentationToFile();
+    }, {
+      timezone: 'America/Chicago' // 8 PM Central Time
     });
-    this.logger.info('   ✓ Daily CEO presentation: 8 PM daily');
+    this.logger.info('   ✓ Daily CEO presentation: 8 PM CT daily');
 
     // Daily at 10 AM: Process customer check-in emails (Day 3, Day 14, Day 30, etc.)
     cron.schedule('0 10 * * *', async () => {

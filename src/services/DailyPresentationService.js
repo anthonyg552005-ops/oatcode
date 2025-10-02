@@ -680,6 +680,40 @@ Tone: Professional but exciting, like a successful startup CEO briefing investor
       this.logger.error(`❌ Failed to save presentation: ${error.message}`);
     }
   }
+
+  /**
+   * Start daily presentation service with cron scheduling
+   */
+  start() {
+    const cron = require('node-cron');
+
+    this.logger.info('📊 Daily Presentation Service started');
+    this.logger.info('   Scheduled for 8:00 PM CT daily');
+
+    // Schedule for 8:00 PM Central Time (20:00) every day
+    // Cron format: minute hour * * *
+    // 8 PM CT = 20:00 CT = 01:00 UTC (next day) or 02:00 UTC (DST)
+    // Using 01:00 UTC as base (8 PM CT in standard time)
+    this.dailyJob = cron.schedule('0 1 * * *', async () => {
+      this.logger.info('⏰ Daily presentation time! Generating...');
+      await this.sendDailyPresentation();
+      await this.savePresentationToFile();
+    }, {
+      timezone: 'America/Chicago' // Use Chicago timezone for CT
+    });
+
+    this.logger.info('   ✓ Daily presentation cron job active');
+  }
+
+  /**
+   * Stop daily presentation service
+   */
+  stop() {
+    if (this.dailyJob) {
+      this.dailyJob.stop();
+      this.logger.info('📊 Daily Presentation Service stopped');
+    }
+  }
 }
 
 module.exports = DailyPresentationService;
