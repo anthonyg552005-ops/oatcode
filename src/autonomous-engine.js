@@ -74,6 +74,7 @@ const AdvancedAnalyticsService = require('./services/AdvancedAnalyticsService');
 const ProjectNotesService = require('./services/ProjectNotesService');
 const UrgencyEngine = require('./services/UrgencyEngine');
 const AdvancedVisualGenerationService = require('./services/AdvancedVisualGenerationService');
+const AICoordinationService = require('./services/AICoordinationService');
 
 // Phase 1 Autonomous Services (CRITICAL)
 const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
@@ -157,7 +158,10 @@ class AutonomousEngine {
       // Documentation and enhancement services
       projectNotes: new ProjectNotesService(this.logger),
       urgencyEngine: new UrgencyEngine(),
-      advancedVisuals: new AdvancedVisualGenerationService(this.logger)
+      advancedVisuals: new AdvancedVisualGenerationService(this.logger),
+
+      // AI Coordination - makes all AI services work together
+      aiCoordination: new AICoordinationService(this.logger)
     };
 
     // Initialize email sequence (needs sendGrid) - wrapped in try/catch for resilience
@@ -383,6 +387,11 @@ class AutonomousEngine {
       await this.services.advancedVisuals.initialize();
       global.advancedVisuals = this.services.advancedVisuals;
       this.logger.info('   ✓ Advanced Visual Generation Service ready (Runway ML + DALL-E 3 for Premium)');
+
+      // Initialize AI Coordination Service (makes all AI services work together)
+      await this.services.aiCoordination.initialize();
+      global.aiCoordination = this.services.aiCoordination;
+      this.logger.info('   ✓ AI Coordination Service ready (central nervous system for all AIs)');
 
       // Start Auto-Deployment Monitor (watches for crashes and auto-fixes)
       this.services.deploymentMonitor.start();

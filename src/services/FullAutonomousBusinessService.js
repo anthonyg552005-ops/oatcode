@@ -216,14 +216,14 @@ class FullAutonomousBusinessService {
     ];
 
     const targetCities = [
-      { city: 'Austin', state: 'TX' },
-      { city: 'Dallas', state: 'TX' },
-      { city: 'Houston', state: 'TX' },
-      { city: 'San Antonio', state: 'TX' },
-      { city: 'Phoenix', state: 'AZ' },
-      { city: 'Las Vegas', state: 'NV' },
-      { city: 'Denver', state: 'CO' },
-      { city: 'Portland', state: 'OR' }
+      { city: 'Austin', state: 'TX', timezone: 'America/Chicago' },
+      { city: 'Dallas', state: 'TX', timezone: 'America/Chicago' },
+      { city: 'Houston', state: 'TX', timezone: 'America/Chicago' },
+      { city: 'San Antonio', state: 'TX', timezone: 'America/Chicago' },
+      { city: 'Phoenix', state: 'AZ', timezone: 'America/Phoenix' },
+      { city: 'Las Vegas', state: 'NV', timezone: 'America/Los_Angeles' },
+      { city: 'Denver', state: 'CO', timezone: 'America/Denver' },
+      { city: 'Portland', state: 'OR', timezone: 'America/Los_Angeles' }
     ];
 
     // Autonomous loop - finds businesses 24/7

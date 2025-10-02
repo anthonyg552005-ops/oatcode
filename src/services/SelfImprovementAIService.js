@@ -157,7 +157,7 @@ class SelfImprovementAIService {
       data.services.existing = files.filter(f => f.endsWith('.js')).map(f => f.replace('.js', ''));
       data.services.count = data.services.existing.length;
 
-      // Get recent errors from logs
+      // Get recent errors from logs (both local and PM2 production)
       try {
         const logFile = path.join(__dirname, '../../data/logs/combined.log');
         const logContent = await fs.readFile(logFile, 'utf-8');
@@ -165,6 +165,33 @@ class SelfImprovementAIService {
         data.logs.recentErrors = lines.filter(l => l.includes('error') || l.includes('Error')).slice(-10);
       } catch (error) {
         data.logs.recentErrors = [];
+      }
+
+      // Get PM2 production errors (if running in production)
+      try {
+        const { exec } = require('child_process');
+        const util = require('util');
+        const execPromise = util.promisify(exec);
+
+        // Check if running on production (has droplet_key)
+        try {
+          await fs.access(path.join(require('os').homedir(), '.ssh', 'droplet_key'));
+
+          // Get production errors from PM2 logs
+          const prodLogsCmd = 'ssh -i ~/.ssh/droplet_key root@24.144.89.17 "tail -500 /root/.pm2/logs/oatcode-engine-error.log"';
+          const { stdout } = await execPromise(prodLogsCmd);
+          const prodErrors = stdout.split('\n').filter(l =>
+            l.includes('Error') || l.includes('TypeError') || l.includes('ReferenceError')
+          ).slice(-20);
+
+          data.logs.productionErrors = prodErrors;
+          data.logs.isProduction = true;
+        } catch (error) {
+          data.logs.productionErrors = [];
+          data.logs.isProduction = false;
+        }
+      } catch (error) {
+        data.logs.productionErrors = [];
       }
 
       // Get metrics from global state (if available)
@@ -250,8 +277,11 @@ ${JSON.stringify(businessData, null, 2)}
 EXISTING SERVICES:
 ${businessData.services.existing.join(', ')}
 
-RECENT ERRORS:
+RECENT LOCAL ERRORS:
 ${businessData.logs.recentErrors.slice(0, 5).join('\n')}
+
+PRODUCTION ERRORS:
+${businessData.logs.productionErrors ? businessData.logs.productionErrors.slice(0, 10).join('\n') : 'N/A (not running on production)'}
 
 Analyze and identify:
 1. Missing critical services that would improve reliability
