@@ -557,17 +557,30 @@ Provide strategic recommendations.`
     }
   }
 
+  /**
+   * Helper: Strip markdown code fences from JSON responses
+   */
+  stripMarkdownCodeFences(text) {
+    // Remove ```json\n{...}\n``` or ```\n{...}\n```
+    return text
+      .replace(/^```json\s*\n/i, '')
+      .replace(/^```\s*\n/i, '')
+      .replace(/\n```\s*$/i, '')
+      .trim();
+  }
+
   async generateFakeCustomers(count) {
     this.logger.info(`🤖 Generating ${count} realistic fake customer personas...`);
 
     const personas = [];
 
     for (let i = 0; i < count; i++) {
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4',
-        messages: [{
-          role: 'user',
-          content: `Generate a realistic small business persona for testing:
+      try {
+        const response = await this.openai.chat.completions.create({
+          model: 'gpt-4',
+          messages: [{
+            role: 'user',
+            content: `Generate a realistic small business persona for testing:
 
 Include:
 - Business name
@@ -581,12 +594,30 @@ Include:
 - Personality traits
 - Email tone preference
 
-Make it diverse and realistic. Return as JSON.`
-        }],
-        
-      });
+Make it diverse and realistic. Return ONLY valid JSON, no markdown code fences.`
+          }],
+          temperature: 0.8
+        });
 
-      personas.push(JSON.parse(response.choices[0].message.content));
+        const content = this.stripMarkdownCodeFences(response.choices[0].message.content);
+        personas.push(JSON.parse(content));
+      } catch (error) {
+        this.logger.warn(`   ⚠ Failed to generate persona ${i + 1}: ${error.message}`);
+        // Use fallback persona
+        personas.push({
+          businessName: `Test Business ${i + 1}`,
+          industry: ['plumber', 'restaurant', 'dentist', 'lawyer'][i % 4],
+          ownerName: `Owner ${i + 1}`,
+          city: 'Austin',
+          state: 'TX',
+          currentSituation: 'No website',
+          painPoints: ['Need online presence', 'Limited budget'],
+          budgetConcerns: 'Looking for affordable solution',
+          decisionMakingStyle: 'Quick',
+          personalityTraits: ['Practical', 'Busy'],
+          emailTonePreference: 'Professional'
+        });
+      }
     }
 
     this.logger.info(`   ✓ Generated ${personas.length} fake customer personas`);

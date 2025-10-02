@@ -411,9 +411,13 @@ class AutonomousEngine {
 
     // Every 30 minutes: Analyze competitors
     cron.schedule('*/30 * * * *', async () => {
-      this.logger.info('🔍 Running competitor analysis...');
-      await this.agents.competitorIntelligence.analyzeCompetitors();
-      this.metrics.competitorsAnalyzed++;
+      try {
+        this.logger.info('🔍 Running competitor analysis...');
+        await this.agents.competitorIntelligence.analyzeTopCompetitors();
+        this.metrics.competitorsAnalyzed++;
+      } catch (error) {
+        this.logger.error(`Competitor analysis failed: ${error.message}`);
+      }
     });
     this.logger.info('   ✓ Competitor analysis: Every 30 minutes');
 
