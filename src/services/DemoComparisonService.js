@@ -184,6 +184,7 @@ class DemoComparisonService {
                     <div class="premium-badge">Premium Plan - $297/mo</div>
                     <h2 class="text-2xl font-bold mb-4 text-gray-900">AI-Generated Custom Visuals</h2>
                     <ul class="text-gray-700 space-y-2 mb-6">
+                        <li>✓ <strong>Your own .com domain</strong></li>
                         <li>✓ <strong>Runway AI videos</strong></li>
                         <li>✓ <strong>DALL-E 3 custom images</strong></li>
                         <li>✓ <strong>Unique AI branding</strong></li>
@@ -237,6 +238,11 @@ class DemoComparisonService {
                             <td class="py-4 px-6">Professional Design</td>
                             <td class="text-center py-4 px-6">✓</td>
                             <td class="text-center py-4 px-6">✓</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 bg-purple-50">
+                            <td class="py-4 px-6"><strong>Custom Domain (YourBusiness.com)</strong></td>
+                            <td class="text-center py-4 px-6">-</td>
+                            <td class="text-center py-4 px-6 text-purple-600 font-bold">✓</td>
                         </tr>
                         <tr class="border-b border-gray-100">
                             <td class="py-4 px-6">Stock Photos</td>
@@ -333,15 +339,18 @@ I've created TWO demo websites for ${business.businessName} to show you exactly 
 📸 Standard Plan ($197/month):
 ${comparison.standardUrl}
 Professional design with high-quality stock photos
+• Hosted on our platform
 
 🎬 Premium Plan ($297/month):
 ${comparison.premiumUrl}
 AI-generated videos, custom visuals, unique branding
+• YOUR OWN .COM DOMAIN (we purchase and set it up for you!)
+• Runway AI videos & DALL-E 3 custom images
 
 👀 Compare them side-by-side:
 ${comparison.comparisonUrl}
 
-The Premium plan includes Runway AI videos and DALL-E 3 custom images that make your business stand out from every competitor. Most customers choose Premium because the AI visuals drive significantly more customer attention.
+The Premium plan includes your own custom domain (like ${business.businessName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com) PLUS Runway AI videos and DALL-E 3 custom images. We handle everything - domain purchase, DNS setup, and deployment. Most customers choose Premium because the custom domain and AI visuals drive significantly more customer attention and trust.
 
 Ready to launch? Choose your plan:
 Standard: ${process.env.STRIPE_STANDARD_PAYMENT_LINK || 'https://buy.stripe.com/eVq5kFdx937Z6B4g9D7Re00'}

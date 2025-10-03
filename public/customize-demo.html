@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customize Your Website - OatCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #64748b;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-left: 4px solid #10b981;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+
+        .highlight-box h2 {
+            color: #065f46;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .highlight-box p {
+            color: #047857;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .form-group .subtitle {
+            display: block;
+            color: #64748b;
+            font-size: 0.9em;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .examples {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .examples h4 {
+            color: #475569;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .examples ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .examples li {
+            color: #64748b;
+            font-size: 0.9em;
+            padding: 5px 0;
+        }
+
+        .examples li:before {
+            content: "💡 ";
+            margin-right: 8px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .success-message h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            display: none;
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            border-radius: 8px;
+            color: #991b1b;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✏️ Customize Your Website</h1>
+            <p>Tell us what you want changed, and we'll update it within 24 hours!</p>
+        </div>
+
+        <div class="highlight-box">
+            <h2>This is YOUR website - make it perfect!</h2>
+            <p>
+                We want your website to be exactly what you need. Whether it's adding sections,
+                changing colors, updating text, or anything else - just tell us below and we'll
+                make it happen.
+            </p>
+        </div>
+
+        <form id="customizationForm">
+            <input type="hidden" id="leadId" name="leadId">
+            <input type="hidden" id="demoId" name="demoId">
+
+            <!-- Changes Requested -->
+            <div class="form-group">
+                <label>
+                    📝 What would you like changed?
+                    <span class="subtitle">Tell us what you want to modify on your website</span>
+                </label>
+                <textarea
+                    name="changes"
+                    id="changes"
+                    placeholder="Example: Change the main heading to say 'Austin's Premier Dental Care' instead of 'Dental Services in Austin'"
+                ></textarea>
+                <div class="examples">
+                    <h4>Examples:</h4>
+                    <ul>
+                        <li>Change the hero heading to "[your text]"</li>
+                        <li>Update the 'About Us' section to emphasize family-friendly service</li>
+                        <li>Change the color scheme to blue and white</li>
+                        <li>Use different photos in the gallery section</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Additions Requested -->
+            <div class="form-group">
+                <label>
+                    ➕ What would you like added?
+                    <span class="subtitle">Tell us what new sections or features you want</span>
+                </label>
+                <textarea
+                    name="additions"
+                    id="additions"
+                    placeholder="Example: Add a 'Testimonials' section with 3-4 customer reviews, and add a 'Pricing' page"
+                ></textarea>
+                <div class="examples">
+                    <h4>Examples:</h4>
+                    <ul>
+                        <li>Add a testimonials section with customer reviews</li>
+                        <li>Add a pricing page showing our service packages</li>
+                        <li>Add a photo gallery showcasing our work</li>
+                        <li>Add a team section with staff bios</li>
+                        <li>Add a blog section for articles</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Removals Requested -->
+            <div class="form-group">
+                <label>
+                    ➖ What would you like removed?
+                    <span class="subtitle">Tell us what sections or content to take out</span>
+                </label>
+                <textarea
+                    name="removals"
+                    id="removals"
+                    placeholder="Example: Remove the 'Blog' section - we don't plan to use it"
+                ></textarea>
+                <div class="examples">
+                    <h4>Examples:</h4>
+                    <ul>
+                        <li>Remove the blog section - we won't use it</li>
+                        <li>Remove the location map - we're mobile-only</li>
+                        <li>Remove the stock photos - prefer text-only sections</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Additional Notes -->
+            <div class="form-group">
+                <label>
+                    💬 Anything else we should know?
+                    <span class="subtitle">Any other details, preferences, or special requests</span>
+                </label>
+                <textarea
+                    name="notes"
+                    id="notes"
+                    placeholder="Example: We serve families primarily, so keep the tone warm and friendly. We also offer emergency services 24/7 - make sure that's prominent."
+                ></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                🚀 Submit Customization Request
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="color: #64748b; font-size: 1.1em;">Submitting your request...</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <h2>✅ Got it! Your request has been submitted!</h2>
+            <p>
+                We're working on your customizations now. You'll receive an email with your
+                updated website within the next 24 hours.
+            </p>
+            <p style="margin-top: 20px; font-size: 0.95em;">
+                We'll send you an email confirmation shortly, and another email when your
+                updated website is ready to view!
+            </p>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            <strong>Oops!</strong> Something went wrong. Please try again or email us directly at
+            <a href="mailto:anthonyg552005@gmail.com">anthonyg552005@gmail.com</a>
+        </div>
+    </div>
+
+    <script>
+        // Get lead ID and demo ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const leadId = urlParams.get('lead') || urlParams.get('leadId');
+        const demoId = urlParams.get('demo') || urlParams.get('demoId');
+
+        if (leadId) document.getElementById('leadId').value = leadId;
+        if (demoId) document.getElementById('demoId').value = demoId;
+
+        // Handle form submission
+        document.getElementById('customizationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            const submitBtn = form.querySelector('.submit-btn');
+            const loading = document.getElementById('loading');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Validate - at least one field must be filled
+            const changes = document.getElementById('changes').value.trim();
+            const additions = document.getElementById('additions').value.trim();
+            const removals = document.getElementById('removals').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+
+            if (!changes && !additions && !removals && !notes) {
+                alert('Please fill in at least one field to let us know what you want!');
+                return;
+            }
+
+            // Show loading
+            form.style.display = 'none';
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            try {
+                // Submit to API
+                const response = await fetch(`/api/dashboard/demos/${demoId}/customize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        leadId: document.getElementById('leadId').value,
+                        changes,
+                        additions,
+                        removals,
+                        notes
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to submit request');
+                }
+
+                const result = await response.json();
+
+                // Show success
+                loading.style.display = 'none';
+                successMessage.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error submitting customization:', error);
+
+                loading.style.display = 'none';
+                form.style.display = 'block';
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

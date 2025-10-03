@@ -14,6 +14,7 @@ const router = express.Router();
 const fs = require('fs').promises;
 const path = require('path');
 const sgMail = require('@sendgrid/mail');
+const db = require('../database/DatabaseService');
 
 // Stripe webhook endpoint
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -73,23 +74,119 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 async function handleCheckoutComplete(session) {
   console.log('✅ Checkout completed:', session.id);
 
-  const customer = {
+  const tier = determineTier(session.amount_total);
+  const businessName = session.customer_details?.name || session.metadata?.business_name || session.customer_details?.email?.split('@')[0];
+  const email = session.customer_details?.email;
+
+  console.log(`   New customer: ${email} (${tier} tier)`);
+
+  // Initialize database if needed
+  if (!db.db) await db.connect();
+
+  // Save to SQLite database
+  const dbCustomer = await db.createCustomer({
+    businessName,
+    email,
+    tier,
+    status: 'active',
+    monthlyPrice: tier === 'premium' ? 297 : 197,
     stripeCustomerId: session.customer,
-    email: session.customer_details?.email,
-    name: session.customer_details?.name || session.customer_details?.email?.split('@')[0],
+    stripeSubscriptionId: session.subscription
+  });
+
+  console.log(`   💾 Customer saved to database (ID: ${dbCustomer.id})`);
+
+  const customer = {
+    id: dbCustomer.id,
+    stripeCustomerId: session.customer,
+    email,
+    name: businessName,
     subscriptionId: session.subscription,
-    tier: determineTier(session.amount_total), // $197 = standard, $297 = premium
+    tier,
     status: 'active',
     createdAt: new Date()
   };
 
-  console.log(`   New customer: ${customer.email} (${customer.tier} tier)`);
+  // AUTOMATIC DOMAIN PURCHASE FOR PREMIUM CUSTOMERS
+  let domainInfo = null;
 
-  // Save to customer database
-  await saveCustomer(customer);
+  if (tier === 'premium' && global.autoDomain) {
+    console.log('');
+    console.log('🌐 Premium customer - initiating autonomous domain purchase...');
+
+    try {
+      const suggestedDomain = businessName.toLowerCase()
+        .replace(/[^a-z0-9]/g, '')
+        .replace(/\s+/g, '') + '.com';
+
+      console.log(`   Suggested domain: ${suggestedDomain}`);
+
+      const availability = await global.autoDomain.checkAvailability(suggestedDomain);
+
+      if (availability.available) {
+        const domainResult = await global.autoDomain.setupCustomDomain(
+          suggestedDomain,
+          {
+            businessName,
+            firstName: session.metadata?.first_name || 'Customer',
+            lastName: session.metadata?.last_name || 'Service',
+            email,
+            phone: session.metadata?.phone || '+1.5125551234',
+            address: session.metadata?.address || '123 Main St',
+            city: session.metadata?.city || 'Austin',
+            state: session.metadata?.state || 'TX',
+            zip: session.metadata?.zip || '78701',
+            country: session.metadata?.country || 'US'
+          }
+        );
+
+        // Save domain purchase to database
+        await db.createDomainPurchase({
+          customerId: dbCustomer.id,
+          domainName: suggestedDomain,
+          purchasePrice: domainResult.cost,
+          expiresAt: domainResult.expirationDate,
+          dnsConfigured: true,
+          dnsConfiguredAt: new Date().toISOString()
+        });
+
+        // Update customer with custom domain
+        await db.updateCustomer(dbCustomer.id, {
+          customDomain: suggestedDomain,
+          websiteUrl: domainResult.liveUrl
+        });
+
+        domainInfo = {
+          domain: suggestedDomain,
+          liveUrl: domainResult.liveUrl,
+          cost: domainResult.cost
+        };
+
+        console.log(`   ✅ Domain purchased: ${suggestedDomain}`);
+      }
+    } catch (error) {
+      console.error(`   ❌ Domain purchase failed: ${error.message}`);
+    }
+  }
 
   // Generate website for customer
-  const websiteResult = await generateWebsite(customer, session);
+  const websiteResult = await generateWebsite(customer, session, domainInfo);
+
+  // Update customer with website URL if not using custom domain
+  if (!domainInfo && websiteResult.websiteUrl) {
+    await db.updateCustomer(dbCustomer.id, {
+      websiteUrl: websiteResult.websiteUrl
+    });
+  }
+
+  // Record payment in database
+  await db.createPayment({
+    customerId: dbCustomer.id,
+    stripePaymentId: session.payment_intent,
+    amount: session.amount_total / 100,
+    status: 'succeeded',
+    description: `${tier} plan - initial payment`
+  });
 
   // Add customer to retention system (automated check-ins + feedback)
   if (global.customerRetention) {
@@ -144,9 +241,14 @@ async function handleSubscriptionUpdated(subscription) {
   console.log(`   New tier: ${newTier}`);
 
   try {
-    // Load customer from database
-    const customers = await loadCustomers();
-    const customer = customers.find(c => c.subscriptionId === subscription.id);
+    // Initialize database if needed
+    if (!db.db) await db.connect();
+
+    // Find customer by subscription ID
+    const customer = await db.get(
+      'SELECT * FROM customers WHERE stripe_subscription_id = ?',
+      [subscription.id]
+    );
 
     if (!customer) {
       console.warn(`   ⚠️  Customer not found for subscription ${subscription.id}`);
@@ -154,11 +256,12 @@ async function handleSubscriptionUpdated(subscription) {
     }
 
     const oldTier = customer.tier;
-    customer.tier = newTier;
-    customer.updatedAt = new Date();
 
-    // Save updated customer
-    await saveCustomers(customers);
+    // Update customer tier in database
+    await db.updateCustomer(customer.id, {
+      tier: newTier,
+      monthlyPrice: newTier === 'premium' ? 297 : 197
+    });
 
     console.log(`   ✅ Updated tier: ${oldTier} → ${newTier}`);
 
@@ -166,7 +269,23 @@ async function handleSubscriptionUpdated(subscription) {
     if (oldTier === 'standard' && newTier === 'premium') {
       console.log(`   🎨 Upgrading website to premium (AI visuals)...`);
 
-      const websiteResult = await generateWebsite(customer, null, true); // Force premium
+      const customerForWebsite = {
+        id: customer.id,
+        stripeCustomerId: customer.stripe_customer_id,
+        email: customer.email,
+        name: customer.business_name,
+        subscriptionId: customer.stripe_subscription_id,
+        tier: newTier
+      };
+
+      const websiteResult = await generateWebsite(customerForWebsite, null, true); // Force premium
+
+      // Update customer with new website URL
+      if (websiteResult.websiteUrl) {
+        await db.updateCustomer(customer.id, {
+          websiteUrl: websiteResult.websiteUrl
+        });
+      }
 
       // Update retention system
       if (global.customerRetention) {
@@ -179,7 +298,7 @@ async function handleSubscriptionUpdated(subscription) {
       }
 
       // Send upgrade notification email
-      await sendUpgradeEmail(customer, websiteResult);
+      await sendUpgradeEmail(customerForWebsite, websiteResult);
 
       console.log(`   ✅ Premium website generated and delivered!`);
     }
@@ -195,20 +314,24 @@ async function handleSubscriptionCanceled(subscription) {
   console.log('❌ Subscription canceled:', subscription.id);
 
   try {
-    // Load customer from database
-    const customers = await loadCustomers();
-    const customer = customers.find(c => c.subscriptionId === subscription.id);
+    // Initialize database if needed
+    if (!db.db) await db.connect();
+
+    // Find customer by subscription ID
+    const customer = await db.get(
+      'SELECT * FROM customers WHERE stripe_subscription_id = ?',
+      [subscription.id]
+    );
 
     if (!customer) {
       console.warn(`   ⚠️  Customer not found for subscription ${subscription.id}`);
       return;
     }
 
-    customer.status = 'canceled';
-    customer.canceledAt = new Date();
-
-    // Save updated customer
-    await saveCustomers(customers);
+    // Update customer status in database
+    await db.updateCustomer(customer.id, {
+      status: 'cancelled'
+    });
 
     // Update retention system
     if (global.customerRetention) {
@@ -219,10 +342,14 @@ async function handleSubscriptionCanceled(subscription) {
       }
     }
 
-    console.log(`   ✅ Customer status updated to canceled`);
+    console.log(`   ✅ Customer status updated to cancelled`);
 
     // Send cancellation survey email
-    await sendCancellationSurvey(customer);
+    const customerForEmail = {
+      email: customer.email,
+      name: customer.business_name
+    };
+    await sendCancellationSurvey(customerForEmail);
 
     // Schedule website takedown after 30-day grace period
     // (For now, just log it - implement actual scheduling later)
@@ -252,41 +379,52 @@ async function handlePaymentFailed(invoice) {
   console.log(`   Customer: ${invoice.customer}`);
 
   try {
-    // Load customer from database
-    const customers = await loadCustomers();
-    const customer = customers.find(c => c.stripeCustomerId === invoice.customer);
+    // Initialize database if needed
+    if (!db.db) await db.connect();
+
+    // Find customer by Stripe customer ID
+    const customer = await db.get(
+      'SELECT * FROM customers WHERE stripe_customer_id = ?',
+      [invoice.customer]
+    );
 
     if (!customer) {
       console.warn(`   ⚠️  Customer not found: ${invoice.customer}`);
       return;
     }
 
-    // Track failed payment
-    if (!customer.failedPayments) {
-      customer.failedPayments = [];
-    }
-    customer.failedPayments.push({
-      invoiceId: invoice.id,
+    // Record failed payment in database
+    await db.createPayment({
+      customerId: customer.id,
+      stripePaymentId: invoice.payment_intent,
+      stripeInvoiceId: invoice.id,
       amount: invoice.amount_due / 100,
-      date: new Date(),
-      attemptNumber: customer.failedPayments.length + 1
+      status: 'failed',
+      description: 'Failed payment'
     });
 
-    customer.updatedAt = new Date();
+    // Count failed payments for this customer
+    const failedPayments = await db.all(
+      'SELECT COUNT(*) as count FROM payments WHERE customer_id = ? AND status = "failed"',
+      [customer.id]
+    );
+    const failedCount = failedPayments[0]?.count || 1;
 
-    // Save updated customer
-    await saveCustomers(customers);
-
-    const failedCount = customer.failedPayments.length;
     console.log(`   ⚠️  Failed payment #${failedCount} for ${customer.email}`);
 
     // Send payment failure notification
-    await sendPaymentFailureEmail(customer, invoice);
+    const customerForEmail = {
+      email: customer.email,
+      name: customer.business_name,
+      failedPayments: { length: failedCount }
+    };
+    await sendPaymentFailureEmail(customerForEmail, invoice);
 
     // Pause website after 3 failed payments
     if (failedCount >= 3) {
-      customer.status = 'suspended';
-      await saveCustomers(customers);
+      await db.updateCustomer(customer.id, {
+        status: 'paused'
+      });
       console.log(`   🛑 Website suspended after 3 failed payments`);
 
       // Update retention system
@@ -386,8 +524,9 @@ async function saveCustomer(customer) {
 /**
  * Generate website for customer
  */
-async function generateWebsite(customer, session, forcePremium = false) {
+async function generateWebsite(customer, session, domainInfo = null) {
   try {
+    const forcePremium = typeof domainInfo === 'boolean' ? domainInfo : false;
     console.log(`   🎨 Generating ${forcePremium || customer.tier === 'premium' ? 'PREMIUM' : 'STANDARD'} website for ${customer.name}...`);
 
     // Use AI website generation service

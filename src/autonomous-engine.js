@@ -76,6 +76,17 @@ const UrgencyEngine = require('./services/UrgencyEngine');
 const AdvancedVisualGenerationService = require('./services/AdvancedVisualGenerationService');
 const AICoordinationService = require('./services/AICoordinationService');
 const QuietHoursProductivityService = require('./services/QuietHoursProductivityService');
+const UpgradeAlertService = require('./services/UpgradeAlertService');
+const CustomizationProcessorService = require('./services/CustomizationProcessorService');
+const DemoGalleryService = require('./services/DemoGalleryService');
+const EmailLogService = require('./services/EmailLogService');
+const WebsiteGeneratorService = require('./services/WebsiteGeneratorService');
+const DemoFollowUpService = require('./services/DemoFollowUpService');
+const AutoDomainService = require('./services/AutoDomainService');
+
+// Database Service
+const db = require('./database/DatabaseService');
+const initializeDatabase = require('./database/init-database');
 
 // Phase 1 Autonomous Services (CRITICAL)
 const AutoSSLRenewalService = require('./services/AutoSSLRenewalService');
@@ -165,8 +176,41 @@ class AutonomousEngine {
       aiCoordination: new AICoordinationService(this.logger),
 
       // Quiet Hours Productivity - maximizes productivity during non-emailing times
-      quietHoursProductivity: new QuietHoursProductivityService(this.logger)
+      quietHoursProductivity: new QuietHoursProductivityService(this.logger),
+
+      // Upgrade Alert Service - notifies owner when upgrades are needed
+      upgradeAlerts: new UpgradeAlertService(this.logger),
+
+      // Demo & Email Tracking - tracks all demos and emails for dashboard
+      demoGallery: new DemoGalleryService(this.logger),
+      emailLog: new EmailLogService(this.logger),
+
+      // Website Generator - generates and deploys websites for prospects/clients
+      websiteGenerator: new WebsiteGeneratorService(this.logger),
+
+      // Auto Domain Service - purchases and configures custom domains for Premium customers
+      autoDomain: new AutoDomainService(this.logger)
     };
+
+    // Initialize demo gallery and email log
+    this.services.demoGallery.initialize().catch(err => this.logger.error(`DemoGallery init failed: ${err.message}`));
+    this.services.emailLog.initialize().catch(err => this.logger.error(`EmailLog init failed: ${err.message}`));
+
+    // Initialize Demo Follow-Up Service - sends instant customization CTAs
+    this.services.demoFollowUp = new DemoFollowUpService(
+      this.logger,
+      this.services.sendGrid,
+      this.services.demoGallery,
+      this.services.emailLog
+    );
+
+    // Initialize Customization Processor - autonomously processes website change requests
+    this.services.customizationProcessor = new CustomizationProcessorService(
+      this.logger,
+      this.services.demoGallery,
+      this.services.emailLog,
+      this.services.websiteGenerator
+    );
 
     // Initialize email sequence (needs sendGrid) - wrapped in try/catch for resilience
     try {
@@ -319,9 +363,20 @@ class AutonomousEngine {
     this.logger.info('⚙️  Initializing Systems...');
 
     try {
-      // Initialize database
+      // Initialize SQLite database
+      await initializeDatabase();
+      await db.connect();
+      this.logger.info('   ✓ SQLite database initialized and connected');
+
+      // Expose database globally for routes and services
+      global.db = db;
+
+      // Expose SendGrid globally for email sending
+      global.sendGrid = this.services.sendGrid;
+
+      // Initialize in-memory database
       await this.services.businessAutomation.initializeDatabase();
-      this.logger.info('   ✓ Database initialized');
+      this.logger.info('   ✓ In-memory database initialized');
 
       // Initialize metrics tracking
       await this.services.metricsCollection.initialize();
@@ -338,6 +393,22 @@ class AutonomousEngine {
       // Expose daily presentation service globally
       global.dailyPresentation = this.services.dailyPresentation;
       this.logger.info('   ✓ Daily Presentation Service ready');
+
+      // Expose demo follow-up service globally (instant customization CTAs)
+      global.demoFollowUp = this.services.demoFollowUp;
+      this.logger.info('   ✓ Demo Follow-Up Service ready (instant customization CTAs)');
+
+      // Expose demo gallery, email log, website generator globally
+      global.demoGallery = this.services.demoGallery;
+      global.emailLog = this.services.emailLog;
+      global.websiteGenerator = this.services.websiteGenerator;
+      global.customizationProcessor = this.services.customizationProcessor;
+      global.autoDomain = this.services.autoDomain;
+      this.logger.info('   ✓ Demo Gallery ready (tracks all demos)');
+      this.logger.info('   ✓ Email Log ready (tracks all emails sent)');
+      this.logger.info('   ✓ Website Generator ready (AI-powered website creation)');
+      this.logger.info('   ✓ Customization Processor ready (processes change requests hourly)');
+      this.logger.info('   ✓ Auto Domain Service ready (Namecheap API - purchases custom domains for Premium)');
 
       // Expose new business optimization services globally
       global.conversionOptimization = this.services.conversionOptimization;
@@ -544,6 +615,60 @@ class AutonomousEngine {
       await this.services.criticalNeeds.checkCriticalNeeds();
     });
     this.logger.info('   ✓ Critical needs monitoring: Every hour');
+
+    // Every hour: Check for service upgrades needed
+    cron.schedule('0 * * * *', async () => {
+      try {
+        this.logger.info('🔔 Checking for required service upgrades...');
+
+        // Get current business stats
+        const businessStats = {
+          customersSigned: this.services.fullAutonomousBusiness?.stats?.customersSigned || 0,
+          revenue: (this.services.fullAutonomousBusiness?.stats?.customersSigned || 0) * 197,
+          leadsGenerated: this.services.fullAutonomousBusiness?.stats?.leadsGenerated || 0,
+          emailsSent: this.services.fullAutonomousBusiness?.stats?.emailsSent || 0,
+          demosCreated: this.services.fullAutonomousBusiness?.stats?.demosCreated || 0
+        };
+
+        // Get current phase from growth strategy
+        const currentPhase = this.services.fullAutonomousBusiness?.currentPhase || {
+          phase: 1,
+          name: 'VALIDATION',
+          settings: { cities: [], industries: [] },
+          economics: { total: 84 }
+        };
+
+        // Check for upgrades and send alerts if needed
+        const alerts = await this.services.upgradeAlerts.checkForUpgrades(businessStats, currentPhase);
+
+        if (alerts.length > 0) {
+          this.logger.info(`   📧 Sent ${alerts.length} upgrade alert(s) to owner`);
+        } else {
+          this.logger.info('   ✅ All services within limits');
+        }
+      } catch (error) {
+        this.logger.error(`Upgrade alert check failed: ${error.message}`);
+      }
+    });
+    this.logger.info('   ✓ Upgrade monitoring: Every hour');
+
+    // Every hour: Process pending website customization requests
+    cron.schedule('0 * * * *', async () => {
+      try {
+        this.logger.info('🎨 Processing pending website customization requests...');
+
+        const result = await this.services.customizationProcessor.processPendingCustomizations();
+
+        if (result.processed > 0) {
+          this.logger.info(`   ✅ Processed ${result.processed} customization(s), ${result.failed} failed`);
+        } else {
+          this.logger.info('   ✅ No pending customization requests');
+        }
+      } catch (error) {
+        this.logger.error(`Customization processing failed: ${error.message}`);
+      }
+    });
+    this.logger.info('   ✓ Customization processing: Every hour');
 
     // Every 6 hours: Check for AI enhancement opportunities
     cron.schedule('0 */6 * * *', async () => {

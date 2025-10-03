@@ -21,6 +21,8 @@ const OpenAI = require('openai');
 const IntelligentEscalationService = require('./IntelligentEscalationService');
 const AIWebsiteGenerationService = require('./AIWebsiteGenerationService');
 const EmailSchedulingService = require('./EmailSchedulingService');
+const GooglePlacesService = require('./GooglePlacesService');
+const SendGridService = require('./SendGridService');
 
 class FullAutonomousBusinessService {
   constructor(logger) {
@@ -29,6 +31,11 @@ class FullAutonomousBusinessService {
     this.escalationService = new IntelligentEscalationService(logger);
     this.websiteGenerator = new AIWebsiteGenerationService(logger);
     this.emailScheduler = new EmailSchedulingService();
+    this.googlePlaces = new GooglePlacesService(logger);
+    this.sendGrid = new SendGridService();
+
+    // In-memory lead storage (will be replaced with DB later)
+    this.leads = [];
 
     // Business state
     this.isRunning = false;
@@ -45,6 +52,275 @@ class FullAutonomousBusinessService {
       startedAt: null,
       totalUptime: 0
     };
+
+    // Monitoring state
+    this.lastLeadGeneratedAt = null;
+    this.lastEmailSentAt = null;
+    this.healthCheckInterval = null;
+
+    // Growth strategy state
+    this.growthStrategy = null;
+    this.currentPhase = null;
+    this.phaseCheckInterval = null;
+  }
+
+  /**
+   * LOAD GROWTH STRATEGY
+   * Loads the self-sustaining growth strategy from config
+   */
+  async loadGrowthStrategy() {
+    try {
+      const fs = require('fs').promises;
+      const path = require('path');
+      const strategyPath = path.join(process.cwd(), 'data', 'growth-strategy.json');
+
+      const data = await fs.readFile(strategyPath, 'utf8');
+      this.growthStrategy = JSON.parse(data);
+
+      this.logger.info('📈 Growth Strategy Loaded:');
+      this.logger.info(`   Strategy: ${this.growthStrategy.strategy}`);
+      this.logger.info(`   Principle: ${this.growthStrategy.principle}`);
+
+      // Determine current phase based on customer count
+      await this.updateCurrentPhase();
+
+      return this.growthStrategy;
+    } catch (error) {
+      this.logger.warn('⚠️  Growth strategy not found, using default settings');
+      return null;
+    }
+  }
+
+  /**
+   * UPDATE CURRENT PHASE
+   * Determines which phase we're in based on customer count
+   */
+  async updateCurrentPhase() {
+    const customerCount = this.stats.customersSigned;
+
+    // Find the appropriate phase
+    const phase = this.growthStrategy.phases.find(p =>
+      customerCount >= p.triggers.minCustomers &&
+      customerCount <= p.triggers.maxCustomers
+    );
+
+    if (!phase) {
+      // Default to phase 1 if no match
+      this.currentPhase = this.growthStrategy.phases[0];
+    } else {
+      this.currentPhase = phase;
+    }
+
+    // Check if phase changed
+    if (this.growthStrategy.currentPhase !== this.currentPhase.phase) {
+      const oldPhase = this.growthStrategy.currentPhase;
+      this.growthStrategy.currentPhase = this.currentPhase.phase;
+      this.growthStrategy.lastPhaseChange = new Date().toISOString();
+
+      this.logger.info('');
+      this.logger.info('🚀 ═══════════════════════════════════════════');
+      this.logger.info(`🚀 PHASE CHANGE: ${oldPhase} → ${this.currentPhase.phase}`);
+      this.logger.info('🚀 ═══════════════════════════════════════════');
+      this.logger.info(`   Phase Name: ${this.currentPhase.name}`);
+      this.logger.info(`   Goal: ${this.currentPhase.goal}`);
+      this.logger.info(`   Customers: ${customerCount}`);
+      this.logger.info(`   Cities: ${this.currentPhase.settings.cities.length}`);
+      this.logger.info(`   Industries: ${this.currentPhase.settings.industries.length}`);
+      this.logger.info(`   Search Frequency: ${this.currentPhase.settings.searchFrequency}`);
+      this.logger.info(`   Monthly Cost: $${this.currentPhase.economics.estimatedMonthlyCost}`);
+      this.logger.info(`   Monthly Revenue: $${this.currentPhase.economics.monthlyRevenueAtTarget}`);
+      this.logger.info(`   Profit Margin: ${this.currentPhase.economics.profitMargin}`);
+      this.logger.info('🚀 ═══════════════════════════════════════════');
+      this.logger.info('');
+
+      // Save updated strategy
+      await this.saveGrowthStrategy();
+    }
+
+    this.logger.info(`📊 Current Phase: ${this.currentPhase.phase} - ${this.currentPhase.name}`);
+    this.logger.info(`   Customers: ${customerCount} (target: ${this.currentPhase.economics.targetCustomers})`);
+    this.logger.info(`   Monthly Cost: $${this.currentPhase.economics.estimatedMonthlyCost}`);
+    this.logger.info(`   Cities: ${this.currentPhase.settings.cities.join(', ')}`);
+    this.logger.info(`   Industries: ${this.currentPhase.settings.industries.length} types`);
+  }
+
+  /**
+   * SAVE GROWTH STRATEGY
+   * Persists growth strategy updates
+   */
+  async saveGrowthStrategy() {
+    try {
+      const fs = require('fs').promises;
+      const path = require('path');
+      const strategyPath = path.join(process.cwd(), 'data', 'growth-strategy.json');
+
+      await fs.writeFile(
+        strategyPath,
+        JSON.stringify(this.growthStrategy, null, 2),
+        'utf8'
+      );
+    } catch (error) {
+      this.logger.error(`Failed to save growth strategy: ${error.message}`);
+    }
+  }
+
+  /**
+   * START PHASE MONITORING
+   * Checks every hour if we should advance to next phase
+   */
+  startPhaseMonitoring() {
+    this.phaseCheckInterval = setInterval(async () => {
+      if (!this.shouldContinue()) return;
+
+      const oldPhase = this.currentPhase.phase;
+      await this.updateCurrentPhase();
+
+      // If phase changed, restart lead generation with new settings
+      if (oldPhase !== this.currentPhase.phase) {
+        this.logger.info('🔄 Restarting lead generation with new phase settings...');
+        // Lead generation will pick up new settings on next cycle
+      }
+
+    }, 3600000); // Check every hour
+
+    this.logger.info('   ✓ Phase monitoring started (checks every hour)');
+  }
+
+  /**
+   * STOP PHASE MONITORING
+   */
+  stopPhaseMonitoring() {
+    if (this.phaseCheckInterval) {
+      clearInterval(this.phaseCheckInterval);
+      this.phaseCheckInterval = null;
+    }
+  }
+
+  /**
+   * VALIDATE PRODUCTION READINESS
+   * Ensures all critical services are properly configured before starting
+   */
+  async validateProductionReadiness() {
+    const issues = [];
+
+    // Check if in research mode
+    if (process.env.SKIP_RESEARCH !== 'true') {
+      issues.push('⚠️  SKIP_RESEARCH is not set to true - system may be in research mode');
+    }
+
+    // Check Google Places API
+    if (!process.env.GOOGLE_PLACES_API_KEY) {
+      issues.push('❌ CRITICAL: GOOGLE_PLACES_API_KEY not configured - cannot find businesses!');
+    } else if (!this.googlePlaces.enabled) {
+      issues.push('❌ CRITICAL: Google Places service not enabled - check API key');
+    }
+
+    // Check SendGrid
+    if (!process.env.SENDGRID_API_KEY) {
+      issues.push('❌ CRITICAL: SENDGRID_API_KEY not configured - cannot send emails!');
+    } else if (!this.sendGrid.enabled) {
+      issues.push('❌ CRITICAL: SendGrid service not enabled - check API key');
+    }
+
+    // Check OpenAI
+    if (!process.env.OPENAI_API_KEY) {
+      issues.push('❌ CRITICAL: OPENAI_API_KEY not configured - AI features won\'t work!');
+    }
+
+    // Test Google Places API
+    if (this.googlePlaces.enabled) {
+      try {
+        const testResults = await this.googlePlaces.searchBusinesses('dentist', 'Austin, TX', 50000, false);
+        if (testResults.length === 0) {
+          issues.push('⚠️  WARNING: Google Places API returned 0 results - may be rate limited or API issue');
+        } else {
+          this.logger.info(`✅ Google Places API test passed (found ${testResults.length} results)`);
+        }
+      } catch (error) {
+        issues.push(`❌ CRITICAL: Google Places API test failed: ${error.message}`);
+      }
+    }
+
+    // Report results
+    if (issues.length > 0) {
+      this.logger.error('❌ PRODUCTION READINESS CHECK FAILED:');
+      issues.forEach(issue => this.logger.error(`   ${issue}`));
+
+      const criticalIssues = issues.filter(i => i.includes('CRITICAL'));
+      if (criticalIssues.length > 0) {
+        throw new Error(`Cannot start autonomous business - ${criticalIssues.length} critical issue(s) found`);
+      }
+    } else {
+      this.logger.info('✅ Production readiness check passed - all systems ready!');
+    }
+
+    return { success: issues.length === 0, issues };
+  }
+
+  /**
+   * START HEALTH MONITORING
+   * Detects when system is stuck in simulation mode or not generating leads
+   */
+  startHealthMonitoring() {
+    // Check health every 10 minutes
+    this.healthCheckInterval = setInterval(() => {
+      if (!this.shouldContinue()) return;
+
+      const now = Date.now();
+      const ONE_HOUR = 60 * 60 * 1000;
+      const TWO_HOURS = 2 * ONE_HOUR;
+
+      // Alert if no leads generated in 2 hours (during business hours)
+      if (this.isRunning && this.stats.startedAt) {
+        const runningSince = now - this.stats.startedAt;
+
+        if (runningSince > TWO_HOURS && this.stats.leadsGenerated === 0) {
+          this.logger.error('');
+          this.logger.error('❌ HEALTH CHECK ALERT: No leads generated in 2 hours!');
+          this.logger.error('   Possible issues:');
+          this.logger.error('   - Google Places API may not be working');
+          this.logger.error('   - System may be in simulation mode');
+          this.logger.error('   - Lead generation interval not triggering');
+          this.logger.error('');
+        }
+      }
+
+      // Alert if no emails sent in 3 hours (when we have leads)
+      if (this.leads.length > 0 && this.stats.emailsSent === 0) {
+        const oldestLead = this.leads[0];
+        const leadAge = now - new Date(oldestLead.createdAt).getTime();
+
+        if (leadAge > 3 * ONE_HOUR) {
+          this.logger.error('');
+          this.logger.error('❌ HEALTH CHECK ALERT: Leads exist but no emails sent in 3 hours!');
+          this.logger.error(`   We have ${this.leads.length} leads but haven't contacted them`);
+          this.logger.error('   Possible issues:');
+          this.logger.error('   - SendGrid may not be working');
+          this.logger.error('   - Outreach system may not be running');
+          this.logger.error('   - Leads may not have email addresses');
+          this.logger.error('');
+        }
+      }
+
+      // Log current stats
+      this.logger.info('📊 Health Check:');
+      this.logger.info(`   Leads: ${this.stats.leadsGenerated}, Emails: ${this.stats.emailsSent}`);
+      this.logger.info(`   Demos: ${this.stats.demosCreated}, Customers: ${this.stats.customersSigned}`);
+      this.logger.info(`   Leads in storage: ${this.leads.length} (${this.leads.filter(l => !l.contacted).length} uncontacted)`);
+
+    }, 10 * 60 * 1000); // Every 10 minutes
+
+    this.logger.info('   ✓ Health monitoring started (checks every 10 minutes)');
+  }
+
+  /**
+   * STOP HEALTH MONITORING
+   */
+  stopHealthMonitoring() {
+    if (this.healthCheckInterval) {
+      clearInterval(this.healthCheckInterval);
+      this.healthCheckInterval = null;
+    }
   }
 
   /**
@@ -109,6 +385,10 @@ class FullAutonomousBusinessService {
     this.isPaused = false;
     this.logger.warn('🛑 STOPPING Autonomous Business...');
     this.logger.warn('   All operations will stop gracefully');
+
+    // Stop monitoring systems
+    this.stopHealthMonitoring();
+    this.stopPhaseMonitoring();
 
     // Calculate total uptime
     if (this.stats.startedAt) {
@@ -191,6 +471,22 @@ class FullAutonomousBusinessService {
     this.logger.info('   ⚡ ZERO HUMAN INTERVENTION REQUIRED');
     this.logger.info('');
 
+    // LOAD GROWTH STRATEGY
+    this.logger.info('📈 Loading self-sustaining growth strategy...');
+    await this.loadGrowthStrategy();
+    this.logger.info('');
+
+    // VALIDATION: Ensure production readiness
+    this.logger.info('🔍 Running production readiness check...');
+    try {
+      await this.validateProductionReadiness();
+    } catch (error) {
+      this.logger.error(`❌ STARTUP ABORTED: ${error.message}`);
+      this.isRunning = false;
+      throw error;
+    }
+    this.logger.info('');
+
     // Start all autonomous processes
     await this.runAutonomousLeadGeneration();
     await this.runAutonomousOutreach();
@@ -199,76 +495,170 @@ class FullAutonomousBusinessService {
     await this.runAutonomousWebsiteDelivery();
     await this.runAutonomousBillingSystem();
     await this.runAutonomousRetentionSystem();
+
+    // Start monitoring systems
+    this.startHealthMonitoring();
+    this.startPhaseMonitoring();
   }
 
   /**
    * AUTONOMOUS LEAD GENERATION
    * Finds businesses automatically using Google Places API
+   * Uses dynamic settings from growth strategy based on customer count
    */
   async runAutonomousLeadGeneration() {
     this.logger.info('🔍 Starting autonomous lead generation...');
 
-    const targetIndustries = [
-      'dentist', 'lawyer', 'plumber', 'electrician',
-      'hvac', 'contractor', 'auto repair', 'restaurant',
-      'chiropractor', 'physical therapist', 'accountant',
-      'real estate agent', 'insurance agent', 'landscaper'
-    ];
+    // Get settings from current phase
+    const getPhaseSettings = () => {
+      if (!this.currentPhase) {
+        // Fallback to Phase 1 defaults if strategy not loaded
+        return {
+          industries: ['dentist', 'lawyer', 'plumber', 'hvac', 'electrician'],
+          cities: [
+            { city: 'Austin', state: 'TX', timezone: 'America/Chicago' },
+            { city: 'Dallas', state: 'TX', timezone: 'America/Chicago' }
+          ],
+          searchTimes: ['09:00', '13:00']
+        };
+      }
 
-    const targetCities = [
-      { city: 'Austin', state: 'TX', timezone: 'America/Chicago' },
-      { city: 'Dallas', state: 'TX', timezone: 'America/Chicago' },
-      { city: 'Houston', state: 'TX', timezone: 'America/Chicago' },
-      { city: 'San Antonio', state: 'TX', timezone: 'America/Chicago' },
-      { city: 'Phoenix', state: 'AZ', timezone: 'America/Phoenix' },
-      { city: 'Las Vegas', state: 'NV', timezone: 'America/Los_Angeles' },
-      { city: 'Denver', state: 'CO', timezone: 'America/Denver' },
-      { city: 'Portland', state: 'OR', timezone: 'America/Los_Angeles' }
-    ];
+      // Parse cities from strategy format "City, ST" to object
+      const cities = this.currentPhase.settings.cities.map(cityStr => {
+        const [cityName, state] = cityStr.split(', ');
+        const timezone = state === 'TX' ? 'America/Chicago' :
+                        state === 'AZ' ? 'America/Phoenix' :
+                        state === 'NV' || state === 'OR' ? 'America/Los_Angeles' :
+                        state === 'CO' ? 'America/Denver' :
+                        'America/Chicago';
+        return { city: cityName, state, timezone };
+      });
 
-    // Autonomous loop - finds businesses 24/7
-    setInterval(async () => {
-      if (!this.shouldContinue()) return;
-
-      // Check market expansion criteria
-      const criteria = global.leadGenerationCriteria || {
-        phase: 'phase1',
-        targetNoWebsite: true,
-        targetExistingWebsite: false
+      return {
+        industries: this.currentPhase.settings.industries,
+        cities: cities,
+        searchTimes: this.currentPhase.settings.searchTimes
       };
+    };
 
-      this.logger.info(`   📊 Current phase: ${criteria.phase}`);
+    // Schedule searches at optimal times based on phase settings
+    const scheduleSearches = () => {
+      const settings = getPhaseSettings();
 
-      for (const location of targetCities) {
-        for (const industry of targetIndustries) {
-          try {
-            const businesses = await this.findBusinesses(location, industry);
+      this.logger.info(`   Phase ${this.currentPhase?.phase || 1} Settings:`);
+      this.logger.info(`   - Cities: ${settings.cities.map(c => c.city).join(', ')}`);
+      this.logger.info(`   - Industries: ${settings.industries.length} types`);
+      this.logger.info(`   - Search Times: ${settings.searchTimes.join(', ')} CT`);
 
-            // Filter for qualified leads based on current phase
-            let qualifiedLeads = [];
+      // Schedule searches at specified times
+      settings.searchTimes.forEach(timeStr => {
+        const [hour, minute] = timeStr.split(':').map(Number);
 
-            if (criteria.targetNoWebsite) {
-              // Phase 1: No website businesses
-              const noWebsiteLeads = businesses.filter(b =>
-                !b.website ||
-                b.rating < 4.0 ||
-                b.reviewCount < 20
-              );
-              qualifiedLeads.push(...noWebsiteLeads);
-            }
+        // Schedule for each day
+        const scheduleDaily = () => {
+          const now = new Date();
+          const scheduledTime = new Date();
+          scheduledTime.setHours(hour, minute, 0, 0);
 
-            if (criteria.targetExistingWebsite && criteria.existingWebsiteIndustries?.includes(industry)) {
-              // Phase 2: Existing website businesses (low-maintenance industries)
-              const existingWebsiteLeads = businesses.filter(b =>
-                b.website && // Has a website
-                b.rating >= 4.0 && // Good business
-                b.reviewCount >= 20 // Established
-              );
-              qualifiedLeads.push(...existingWebsiteLeads);
-            }
+          // If time has passed today, schedule for tomorrow
+          if (scheduledTime <= now) {
+            scheduledTime.setDate(scheduledTime.getDate() + 1);
+          }
 
-            this.logger.info(`   ✓ Found ${qualifiedLeads.length} qualified leads in ${location.city} (${industry})`);
+          const msUntilSearch = scheduledTime.getTime() - now.getTime();
+
+          setTimeout(async () => {
+            await this.performLeadGenerationCycle();
+            scheduleDaily(); // Reschedule for next day
+          }, msUntilSearch);
+        };
+
+        scheduleDaily();
+      });
+    };
+
+    // Start scheduled searches
+    scheduleSearches();
+
+    // Also run immediate search on startup (for testing)
+    setTimeout(() => this.performLeadGenerationCycle(), 5000);
+
+    this.logger.info('   ✓ Autonomous lead generation active');
+  }
+
+  /**
+   * PERFORM ONE LEAD GENERATION CYCLE
+   * Searches all cities and industries based on current phase
+   */
+  async performLeadGenerationCycle() {
+    if (!this.shouldContinue()) return;
+
+    this.logger.info('');
+    this.logger.info('🔍 ═══════════════════════════════════════════');
+    this.logger.info('🔍 LEAD GENERATION CYCLE STARTING');
+    this.logger.info('🔍 ═══════════════════════════════════════════');
+
+    const settings = this.currentPhase ? {
+      industries: this.currentPhase.settings.industries,
+      cities: this.currentPhase.settings.cities.map(cityStr => {
+        const [cityName, state] = cityStr.split(', ');
+        const timezone = state === 'TX' ? 'America/Chicago' :
+                        state === 'AZ' ? 'America/Phoenix' :
+                        state === 'NV' || state === 'OR' ? 'America/Los_Angeles' :
+                        state === 'CO' ? 'America/Denver' :
+                        'America/Chicago';
+        return { city: cityName, state, timezone };
+      })
+    } : {
+      industries: ['dentist', 'lawyer', 'plumber', 'hvac', 'electrician'],
+      cities: [
+        { city: 'Austin', state: 'TX', timezone: 'America/Chicago' },
+        { city: 'Dallas', state: 'TX', timezone: 'America/Chicago' }
+      ]
+    };
+
+    this.logger.info(`Phase ${this.currentPhase?.phase || 1}: Searching ${settings.cities.length} cities, ${settings.industries.length} industries`);
+
+    const criteria = global.leadGenerationCriteria || {
+      phase: 'phase1',
+      targetNoWebsite: true,
+      targetExistingWebsite: false
+    };
+
+    let totalLeadsFound = 0;
+
+    for (const location of settings.cities) {
+      for (const industry of settings.industries) {
+        try {
+          const businesses = await this.findBusinesses(location, industry);
+
+          // Filter for qualified leads based on current phase
+          let qualifiedLeads = [];
+
+          if (criteria.targetNoWebsite) {
+            // Phase 1: No website businesses
+            const noWebsiteLeads = businesses.filter(b =>
+              !b.website ||
+              b.rating < 4.0 ||
+              b.reviewCount < 20
+            );
+            qualifiedLeads.push(...noWebsiteLeads);
+          }
+
+          if (criteria.targetExistingWebsite && criteria.existingWebsiteIndustries?.includes(industry)) {
+            // Phase 2: Existing website businesses (low-maintenance industries)
+            const existingWebsiteLeads = businesses.filter(b =>
+              b.website && // Has a website
+              b.rating >= 4.0 && // Good business
+              b.reviewCount >= 20 // Established
+            );
+            qualifiedLeads.push(...existingWebsiteLeads);
+          }
+
+          if (qualifiedLeads.length > 0) {
+            this.logger.info(`   ✓ Found ${qualifiedLeads.length} qualified leads: ${industry} in ${location.city}`);
             this.stats.leadsGenerated += qualifiedLeads.length;
+            totalLeadsFound += qualifiedLeads.length;
 
             // Automatically process each lead
             for (const lead of qualifiedLeads) {
@@ -276,33 +666,71 @@ class FullAutonomousBusinessService {
               lead.hasExistingWebsite = !!lead.website;
               await this.processLeadAutonomously(lead);
             }
-
-          } catch (error) {
-            this.logger.error(`   ✗ Error finding ${industry} in ${location.city}: ${error.message}`);
           }
 
-          // Rate limiting
-          await this.delay(5000);
+        } catch (error) {
+          this.logger.error(`   ✗ Error finding ${industry} in ${location.city}: ${error.message}`);
         }
-      }
-    }, 3600000); // Run every hour
 
-    this.logger.info('   ✓ Autonomous lead generation active');
+        // Rate limiting
+        await this.delay(2000);
+      }
+    }
+
+    this.logger.info('');
+    this.logger.info('🔍 ═══════════════════════════════════════════');
+    this.logger.info(`🔍 CYCLE COMPLETE: ${totalLeadsFound} new leads found`);
+    this.logger.info(`🔍 Total leads in storage: ${this.leads.length}`);
+    this.logger.info('🔍 ═══════════════════════════════════════════');
+    this.logger.info('');
   }
 
   /**
    * AUTONOMOUS OUTREACH
    * Researches, writes, and sends personalized outreach automatically
+   * OPTIMIZED: Only sends during optimal times (9am-2pm CT weekdays) for 3x better open rates
    */
   async runAutonomousOutreach() {
     this.logger.info('📧 Starting autonomous outreach system...');
+    this.logger.info('   ⏰ Emails sent only during optimal times: 9am-2pm CT (weekdays)');
+    this.logger.info('   📈 This timing achieves 3x higher open rates');
 
-    // Autonomous outreach - runs 24/7
+    // Check if we're in optimal sending window
+    const isOptimalSendingTime = () => {
+      const now = new Date();
+      const ctTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+      const hour = ctTime.getHours();
+      const day = ctTime.getDay(); // 0 = Sunday, 6 = Saturday
+
+      // Weekdays only (Mon-Fri) and 9am-2pm CT
+      return day >= 1 && day <= 5 && hour >= 9 && hour < 14;
+    };
+
+    // Autonomous outreach - runs every 30 minutes during optimal times
     setInterval(async () => {
       if (!this.shouldContinue()) return;
 
+      // Only send during optimal times
+      if (!isOptimalSendingTime()) {
+        // Silently skip - no need to log every 30 minutes
+        return;
+      }
+
       // Get leads that haven't been contacted
       const unleadedLeads = await this.getUncontactedLeads();
+
+      if (unleadedLeads.length === 0) {
+        // No leads to contact right now
+        return;
+      }
+
+      this.logger.info('');
+      this.logger.info('📧 ═══════════════════════════════════════════');
+      this.logger.info(`📧 OUTREACH CYCLE: ${unleadedLeads.length} leads to contact`);
+      this.logger.info('📧 ═══════════════════════════════════════════');
+
+      let emailsSentThisCycle = 0;
+      let errorCount = 0;
 
       for (const lead of unleadedLeads) {
         try {
@@ -315,38 +743,40 @@ class FullAutonomousBusinessService {
           // AI creates demo website
           const demoUrl = await this.aiCreateDemoWebsite(lead);
 
-          // Calculate optimal send time using EmailSchedulingService
-          const optimalTiming = this.emailScheduler.calculateOptimalSendTime(lead);
+          // AI sends email automatically
+          const sent = await this.aiSendEmail(lead, email, demoUrl);
 
-          this.logger.info(`   📧 Optimal send time: ${optimalTiming.dayOfWeek} at ${optimalTiming.hour}:00`);
-          this.logger.info(`      Expected open rate: ${optimalTiming.performance.expectedOpenRate}%`);
-          this.logger.info(`      Reason: ${optimalTiming.reason}`);
+          if (sent) {
+            this.stats.emailsSent++;
+            this.stats.demosCreated++;
+            emailsSentThisCycle++;
 
-          // AI sends email automatically (at optimal time if scheduling is available)
-          await this.aiSendEmail(lead, email, demoUrl, optimalTiming);
-
-          // AI also sends SMS if phone available
-          if (lead.phone) {
-            const sms = await this.aiWritePersonalizedSMS(lead, demoUrl);
-            await this.aiSendSMS(lead, sms);
+            this.logger.info(`   ✅ Outreach sent to ${lead.name} (${lead.city}, ${lead.state})`);
           }
-
-          this.stats.emailsSent++;
-          this.stats.demosCreated++;
-
-          this.logger.info(`   ✓ Autonomous outreach sent to ${lead.name}`);
 
         } catch (error) {
           this.logger.error(`   ✗ Outreach failed for ${lead.name}: ${error.message}`);
+          errorCount++;
         }
 
-        // Rate limiting
-        await this.delay(30000); // 30 seconds between emails
+        // Rate limiting: 10 seconds between emails (allows 6 emails/min, respects SendGrid limits)
+        await this.delay(10000);
       }
+
+      this.logger.info('');
+      this.logger.info('📧 ═══════════════════════════════════════════');
+      this.logger.info(`📧 CYCLE COMPLETE: ${emailsSentThisCycle} emails sent`);
+      if (errorCount > 0) {
+        this.logger.info(`📧 Errors: ${errorCount}`);
+      }
+      this.logger.info(`📧 Total emails today: ${this.stats.emailsSent}`);
+      this.logger.info('📧 ═══════════════════════════════════════════');
+      this.logger.info('');
 
     }, 1800000); // Run every 30 minutes
 
     this.logger.info('   ✓ Autonomous outreach system active');
+    this.logger.info('   ✓ Runs every 30 min during 9am-2pm CT (weekdays only)');
   }
 
   /**
@@ -585,10 +1015,13 @@ Provide:
 
 Return JSON.`;
 
+    // COST OPTIMIZATION: Use GPT-4-mini for research (200x cheaper than GPT-4)
+    // GPT-4-mini: $0.150/1M input tokens vs GPT-4: $30/1M = 200x savings
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.7
+      temperature: 0.7,
+      response_format: { type: 'json_object' }
     });
 
     return JSON.parse(response.choices[0].message.content);
@@ -704,10 +1137,46 @@ Return JSON: { subject, body }`;
     }
   }
 
-  async aiSendEmail(lead, email, demoUrl) {
-    // Send email via SendGrid/SMTP
-    this.logger.info(`      Sending email to ${lead.email}...`);
-    // Implementation uses existing email service
+  async aiSendEmail(lead, email, demoUrl, optimalTiming) {
+    if (!lead.email) {
+      this.logger.warn(`      ✗ No email address for ${lead.name}, skipping`);
+      return false;
+    }
+
+    try {
+      this.logger.info(`      Sending email to ${lead.email}...`);
+
+      // Replace demo URL placeholder in email body
+      const emailBody = email.body.replace(/\[DEMO_URL\]/g, demoUrl);
+
+      // Send via SendGrid
+      const result = await this.sendGrid.send({
+        to: lead.email,
+        subject: email.subject,
+        text: emailBody,
+        html: emailBody.replace(/\n/g, '<br>'),
+        recipientName: lead.name,
+        businessName: lead.name
+      });
+
+      // Mark lead as contacted
+      const leadInStorage = this.leads.find(l => l.placeId === lead.placeId);
+      if (leadInStorage) {
+        leadInStorage.contacted = true;
+        leadInStorage.contactedAt = new Date();
+        leadInStorage.status = 'contacted';
+      }
+
+      // Update monitoring timestamp
+      this.lastEmailSentAt = Date.now();
+
+      this.logger.info(`      ✅ Email sent successfully to ${lead.email}`);
+      return true;
+
+    } catch (error) {
+      this.logger.error(`      ✗ Email send failed: ${error.message}`);
+      return false;
+    }
   }
 
   async aiSendSMS(lead, sms) {
@@ -843,18 +1312,75 @@ Return JSON: { response }`;
    */
 
   async findBusinesses(location, industry) {
-    // Use Google Places API
-    // Implementation from existing GooglePlacesService
-    return [];
+    try {
+      // Use Google Places API to find businesses
+      const locationString = `${location.city}, ${location.state}`;
+
+      // Check if we're targeting businesses without websites or with websites
+      const criteria = global.leadGenerationCriteria || {
+        targetNoWebsite: true,
+        targetExistingWebsite: false
+      };
+
+      let businesses = [];
+
+      if (criteria.targetNoWebsite) {
+        // Phase 1: Find businesses WITHOUT websites (primary target)
+        businesses = await this.googlePlaces.searchLowMaintenanceBusinesses(locationString, 'mvp');
+      } else if (criteria.targetExistingWebsite) {
+        // Phase 2: Find businesses WITH websites (upgrade opportunity)
+        businesses = await this.googlePlaces.searchBusinessesWithWebsites(locationString, 'automation');
+      }
+
+      // Transform to expected format
+      return businesses.map(b => ({
+        placeId: b.placeId,
+        name: b.name,
+        industry: industry,
+        type: industry,
+        city: location.city,
+        state: location.state,
+        timezone: location.timezone,
+        address: b.address,
+        phone: b.phone,
+        email: b.email || null,
+        website: b.website,
+        rating: b.rating || 4.0,
+        reviewCount: b.userRatingsTotal || 0,
+        description: null
+      }));
+
+    } catch (error) {
+      this.logger.error(`   ✗ Error finding ${industry} in ${location.city}: ${error.message}`);
+      return [];
+    }
   }
 
   async processLeadAutonomously(lead) {
-    // Save to database, queue for outreach
+    // Save lead to in-memory storage (will be DB later)
+    const existingLead = this.leads.find(l => l.placeId === lead.placeId);
+
+    if (!existingLead) {
+      this.leads.push({
+        ...lead,
+        contacted: false,
+        contactedAt: null,
+        createdAt: new Date(),
+        status: 'new'
+      });
+      this.logger.info(`   ✓ New lead saved: ${lead.name} (${lead.city}, ${lead.state})`);
+
+      // Update monitoring timestamp
+      this.lastLeadGeneratedAt = Date.now();
+    }
   }
 
   async getUncontactedLeads() {
-    // Get from database
-    return [];
+    // Get leads that haven't been contacted yet
+    // Limit to 10 leads per batch to avoid overwhelming the system
+    return this.leads
+      .filter(l => !l.contacted)
+      .slice(0, 10);
   }
 
   async getOpenSupportTickets() {

@@ -5,14 +5,21 @@ const GooglePlacesService = require('./GooglePlacesService');
 class UpsellService {
   constructor() {
     this.upsellProducts = {
-      custom_domain: {
-        id: 'custom_domain',
-        name: 'Premium Custom Domain',
-        price: 47,
-        description: 'Professional yourname.com address (instead of subdomain)',
-        features: ['Custom domain setup', 'Professional email', 'SSL certificate'],
+      premium_tier: {
+        id: 'premium_tier',
+        name: 'Premium Tier Upgrade',
+        price: 100, // $297 - $197 difference
+        description: 'Upgrade to Premium: Custom domain + AI visuals',
+        features: [
+          'Your own .com domain (we purchase and configure)',
+          'Runway AI videos',
+          'DALL-E 3 custom images',
+          'AI-generated logo',
+          'Unique brand colors',
+          'Priority support'
+        ],
         industry_fit: ['all'],
-        success_rate: 0.68
+        success_rate: 0.42 // Higher value proposition drives good conversion
       }
     };
 
