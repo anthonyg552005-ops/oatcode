@@ -565,22 +565,35 @@ async function generateWebsite(customer, session, domainInfo = null) {
     const forcePremium = typeof domainInfo === 'boolean' ? domainInfo : false;
     console.log(`   🎨 Generating ${forcePremium || customer.tier === 'premium' ? 'PREMIUM' : 'STANDARD'} website for ${customer.name}...`);
 
+    // AUTONOMOUS BUSINESS RESEARCH
+    console.log(`   🔬 Researching business automatically...`);
+    const BusinessResearchService = require('../services/BusinessResearchService');
+    const researchService = new BusinessResearchService(console);
+
+    const researchData = await researchService.researchBusiness(customer.email, customer.name);
+
+    console.log(`   ✅ Research complete (${(researchData.confidence * 100).toFixed(0)}% confidence)`);
+    console.log(`      Business: ${researchData.businessName}`);
+    console.log(`      Industry: ${researchData.industry}`);
+    console.log(`      Location: ${researchData.city}${researchData.state ? ', ' + researchData.state : ''}`);
+
     // Use AI website generation service
     const AIWebsiteGenerationService = require('../services/AIWebsiteGenerationService');
     const websiteGenerator = new AIWebsiteGenerationService(console);
 
-    // Extract business info from customer name/email
-    const businessName = customer.name || customer.email.split('@')[0];
-
+    // Build business profile from research data
     const business = {
-      name: businessName,
-      businessName,
-      industry: 'General Business', // Will be improved with onboarding form
-      location: 'United States',
-      city: 'Local Area',
+      name: researchData.businessName,
+      businessName: researchData.businessName,
+      industry: researchData.industry,
+      location: researchData.city && researchData.state ? `${researchData.city}, ${researchData.state}` : researchData.city || 'United States',
+      city: researchData.city,
+      state: researchData.state,
+      address: researchData.address,
       email: customer.email,
-      phone: '(555) 123-4567', // Placeholder - will get real data from onboarding
-      description: `Professional services provided by ${businessName}`
+      phone: researchData.phone,
+      description: researchData.description,
+      services: researchData.services
     };
 
     const strategy = {
@@ -812,13 +825,18 @@ async function sendWelcomeEmail(customer, websiteResult) {
 
     <h2>Hi ${customer.name}!</h2>
 
-    <p>Thank you for choosing OatCode! We're excited to help grow your business with a professional website.</p>
+    <p>Thank you for choosing OatCode! Your professional website has been automatically generated and is now live.</p>
 
-    <p><strong>Your website is now live:</strong></p>
+    <p style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px;">
+        <strong>📝 Important:</strong> We used AI to research your business and build this website automatically.
+        If any details need adjustment, simply reply to this email with your changes - we'll update everything within 24 hours!
+    </p>
+
+    <p><strong>Your website is live:</strong></p>
 
     <div style="text-align: center;">
         <a href="${websiteResult.websiteUrl}" class="cta-button">
-            🌐 View Your Website
+            🌐 View Your Website Now
         </a>
     </div>
 
