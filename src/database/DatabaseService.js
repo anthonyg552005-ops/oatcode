@@ -133,6 +133,20 @@ class DatabaseService {
     return this.getCustomer(id);
   }
 
+  async upsertCustomer(data) {
+    // Check if customer exists by email
+    const existing = await this.getCustomerByEmail(data.email);
+
+    if (existing) {
+      // Update existing customer
+      console.log(`   Updating existing customer: ${data.email} (ID: ${existing.id})`);
+      return this.updateCustomer(existing.id, data);
+    } else {
+      // Create new customer
+      return this.createCustomer(data);
+    }
+  }
+
   /**
    * LEAD METHODS
    */

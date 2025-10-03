@@ -82,8 +82,8 @@ async function handleCheckoutComplete(session) {
   // Initialize database if needed
   if (!db.db) await db.connect();
 
-  // Save to SQLite database
-  const dbCustomer = await db.createCustomer({
+  // Save to SQLite database (upsert = insert or update if exists)
+  const dbCustomer = await db.upsertCustomer({
     businessName,
     email,
     tier,
