@@ -298,7 +298,7 @@ AI-Powered Website Management`,
 </html>
       `,
       trackingSettings: {
-        clickTracking: { enable: true },
+        clickTracking: { enable: false },  // MUST be disabled to prevent SSL errors
         openTracking: { enable: true }
       },
       mailSettings: {
