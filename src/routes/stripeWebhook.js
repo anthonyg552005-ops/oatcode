@@ -106,6 +106,43 @@ async function handleCheckoutComplete(session) {
     createdAt: new Date()
   };
 
+  // CHECK IF THIS IS A TEST PURCHASE (for instant delivery during testing)
+  const isTestPurchase = email.includes('test@') ||
+                        email.includes('@test.') ||
+                        session.customer.includes('_test_') ||
+                        session.id.includes('_test');
+
+  if (!isTestPurchase) {
+    // REAL CUSTOMER: Delay delivery for 24-48 hours (builds anticipation)
+    console.log(`   ⏰ Real customer detected - scheduling delivery for 24-48 hours`);
+
+    // Update customer status to pending_delivery
+    await db.updateCustomer(dbCustomer.id, {
+      status: 'pending_delivery',
+      deliveryScheduledFor: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours from now
+    });
+
+    // Send order confirmation email (not delivery email)
+    await sendOrderConfirmationEmail(customer);
+
+    console.log(`   ✅ Order confirmed - website will be delivered in 24-48 hours`);
+    console.log(`   📅 Scheduled delivery: ${new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()}`);
+
+    // Record payment
+    await db.createPayment({
+      customerId: dbCustomer.id,
+      stripePaymentId: session.payment_intent,
+      amount: session.amount_total / 100,
+      status: 'succeeded',
+      description: `${tier} plan - initial payment`
+    });
+
+    return; // Don't generate website yet
+  }
+
+  // TEST CUSTOMER: Generate and deliver immediately
+  console.log(`   🧪 Test purchase detected - delivering immediately`);
+
   // AUTOMATIC DOMAIN PURCHASE FOR PREMIUM CUSTOMERS
   let domainInfo = null;
 
@@ -596,6 +633,113 @@ async function generateWebsite(customer, session, domainInfo = null) {
       websiteData: {},
       error: error.message
     };
+  }
+}
+
+/**
+ * Send order confirmation email (for real customers)
+ * Tells them their website is being built and will be ready in 24-48 hours
+ */
+async function sendOrderConfirmationEmail(customer) {
+  try {
+    if (!process.env.SENDGRID_API_KEY) {
+      console.warn(`   ⚠️  SendGrid not configured, skipping confirmation email`);
+      return;
+    }
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+    const msg = {
+      to: customer.email,
+      from: {
+        email: process.env.NOTIFICATION_EMAIL || 'hello@oatcode.com',
+        name: 'OatCode'
+      },
+      subject: `✅ Order Confirmed - Your Website is Being Built!`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✅ Order Confirmed!</h1>
+        <p>Your ${customer.tier === 'premium' ? 'Premium' : 'Standard'} website is being crafted</p>
+    </div>
+
+    <h2>Hi ${customer.name}!</h2>
+
+    <p>Thank you for choosing OatCode! We've received your order and our team is already working on your professional website.</p>
+
+    <h3>⏰ What happens next:</h3>
+    <ul>
+        <li>✅ Your payment of $${customer.tier === 'premium' ? '297' : '197'} has been processed</li>
+        <li>🎨 Our AI-powered design team is creating your custom website</li>
+        <li>📧 You'll receive your website link within <strong>24-48 hours</strong></li>
+        <li>✨ Unlimited revisions included - make any changes you want!</li>
+    </ul>
+
+    <h3>What's included in your ${customer.tier === 'premium' ? 'Premium' : 'Standard'} plan:</h3>
+    <ul>
+        <li>✅ Professional modern design</li>
+        <li>✅ Mobile-responsive (looks great on all devices)</li>
+        <li>✅ SEO optimized for Google</li>
+        <li>✅ Free hosting & SSL certificate</li>
+        ${customer.tier === 'premium' ? `
+        <li>✅ AI-generated custom images</li>
+        <li>✅ Custom domain setup</li>
+        <li>✅ Premium branding & design</li>
+        ` : ''}
+        <li>✅ 24/7 AI customer support</li>
+        <li>✅ Automatic updates when you request changes</li>
+    </ul>
+
+    <h3>Need to make changes?</h3>
+    <p>Once you receive your website, simply reply to our emails with any changes you'd like. Our AI will update your website automatically within 24 hours!</p>
+
+    <p>We're excited to show you your new website soon!</p>
+
+    <p>
+        Best,<br>
+        The OatCode Team<br>
+        <em>Automated Website Management</em>
+    </p>
+
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid #e2e8f0;">
+
+    <p style="color: #64748b; font-size: 0.9em;">
+        Questions? Just reply to this email.<br>
+        Monthly billing: $${customer.tier === 'premium' ? '297' : '197'}/month
+    </p>
+</body>
+</html>
+      `
+    };
+
+    await sgMail.send(msg);
+    console.log(`   ✅ Order confirmation email sent to ${customer.email}`);
+
+  } catch (error) {
+    console.error(`   ❌ Failed to send confirmation email: ${error.message}`);
   }
 }
 
