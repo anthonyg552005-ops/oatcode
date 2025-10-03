@@ -18,7 +18,7 @@ async function sendRealBusinessPitch() {
     industry: 'Legal Services',
     location: 'Newport Beach, CA',
     city: 'Newport Beach',
-    email: 'anthonyg552005@gmail.com', // Your email to receive the pitch
+    email: 'contact@thompsonlawfirm.com', // Business contact email (shown on website)
     phone: '(949) 555-0147',
     description: 'Experienced Orange County law firm specializing in personal injury, business litigation, and estate planning. Over 25 years serving Southern California families and businesses with dedicated legal representation.',
     tier: 'premium',
@@ -41,6 +41,9 @@ async function sendRealBusinessPitch() {
       accent: '#b45309' // Gold accent for trust/prestige
     }
   };
+
+  // Recipient email (separate from business contact email)
+  const recipientEmail = 'anthonyg552005@gmail.com';
 
   try {
     // Step 1: Generate personalized demo website
@@ -75,7 +78,7 @@ async function sendRealBusinessPitch() {
 
     // Personalized email content based on industry
     const msg = {
-      to: business.email,
+      to: recipientEmail,
       from: {
         email: 'hello@oatcode.com',
         name: 'Sarah from OatCode'
@@ -305,7 +308,7 @@ AI-Powered Website Management`,
 
     await sgMail.send(msg);
 
-    console.log(`   ✅ Personalized email sent to ${business.email}\n`);
+    console.log(`   ✅ Personalized email sent to ${recipientEmail}\n`);
     console.log('✅ TEST COMPLETE!\n');
     console.log('📋 Notice the personalization:');
     console.log('   • Business name used throughout');
