@@ -173,13 +173,13 @@ Return ONLY valid JSON:
 }`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: 'You are an expert web designer who maximizes conversions. Always return valid JSON.' },
         { role: 'user', content: prompt }
       ],
       temperature: 0.7,
-      
+      response_format: { type: "json_object" }
     });
 
     const strategy = JSON.parse(response.choices[0].message.content);
@@ -225,7 +225,7 @@ Return ONLY valid JSON in this exact format:
 }`;
 
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are an expert copywriter who creates high-converting website content. Always return valid JSON.' },
           { role: 'user', content: prompt }
