@@ -455,7 +455,7 @@ NO TEXT, NO LOGOS.`;
                 <div class="hidden md:flex space-x-8">
                     <a href="#about" class="hover:opacity-70 transition">About</a>
                     <a href="#services" class="hover:opacity-70 transition">Services</a>
-                    <a href="#testimonials" class="hover:opacity-70 transition">Reviews</a>
+                    ${business.rating && business.reviewCount ? `<a href="#testimonials" class="hover:opacity-70 transition">Reviews</a>` : ''}
                     <a href="#contact" class="hover:opacity-70 transition">Contact</a>
                 </div>
                 <a href="#contact" class="px-6 py-2 rounded-lg text-white font-semibold hover:opacity-90 transition"
@@ -577,7 +577,8 @@ NO TEXT, NO LOGOS.`;
         </div>
     </section>
 
-    <!-- Testimonials Section -->
+    <!-- Testimonials Section (only if business has reviews) -->
+    ${business.rating && business.reviewCount ? `
     <section id="testimonials" class="py-20 px-4" style="background-color: ${colors.primary};">
         <div class="max-w-6xl mx-auto">
             <h2 class="text-4xl font-bold text-center mb-4 text-white">
@@ -607,6 +608,7 @@ NO TEXT, NO LOGOS.`;
             </div>
         </div>
     </section>
+    ` : ''}
 
     <!-- Contact Section -->
     <section id="contact" class="py-20 px-4">
