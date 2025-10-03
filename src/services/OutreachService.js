@@ -73,16 +73,23 @@ Write a HYPER-PERSONALIZED, conversational outreach email that:
 6. Offers a demo website as solution
 7. MUST mention these key features:
    - Website delivered in 24-48 hours
+   - Demo is just an example - we create 100% custom website for their specific business
    - UNLIMITED revisions - they can make ANY changes they want
    - Simply reply to any email with changes (updated within 24 hours)
    - Email support@oatcode.com anytime for help
-8. Include demo links at end: Standard ($197/month) and Premium ($297/month) with note that "most clients choose Standard"
+8. Explain pricing clearly:
+   - Standard $197/month: Professional website with stock photos (most clients choose this)
+   - Premium $297/month: Custom domain (like TheirBusiness.com) + AI-generated custom visuals
+   - Note: Most clients start with Standard and upgrade later when they want a custom domain
 9. Keeps it warm, conversational, and SHORT (4-6 sentences max for intro)
 10. Plain text style - NO HTML formatting needed, will be added automatically
 
 TONE: Friendly, helpful, like a local business owner helping another business owner
 AVOID: Corporate speak, sales jargon, generic templates, words like "free/offer/deal"
-IMPORTANT: Emphasize "unlimited revisions" and "reply with changes" - this removes all risk
+IMPORTANT:
+- Emphasize "demo is just an example, we customize everything for you"
+- Emphasize "unlimited revisions" and "reply with changes" - this removes all risk
+- Clarify Premium is mainly for custom domains, not required for a great website
 
 Return JSON with: { subject, body }`;
 

@@ -58,25 +58,56 @@ async function sendRealBusinessPitch() {
     // Save demo website
     const demoId = `demo_${Date.now()}`;
     const websiteFile = path.join(__dirname, 'public/demos', `${demoId}.html`);
+    const premiumWebsiteFile = path.join(__dirname, 'public/demos', `${demoId}-premium.html`);
     const demosDir = path.dirname(websiteFile);
 
     await fs.mkdir(demosDir, { recursive: true });
     await fs.writeFile(websiteFile, result.files['index.html'], 'utf-8');
 
-    // Upload demo to production server
+    // Generate premium demo with AI visuals badge
+    const premiumHTML = result.files['index.html'].replace(
+      '<title>',
+      '<title>PREMIUM - '
+    ).replace(
+      '</head>',
+      `<style>
+        .premium-badge {
+          position: fixed;
+          top: 80px;
+          right: 20px;
+          background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+          color: white;
+          padding: 12px 20px;
+          border-radius: 8px;
+          font-weight: bold;
+          font-size: 14px;
+          z-index: 1000;
+          box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+      </style>
+      </head>`
+    ).replace(
+      '<body',
+      '<body><div class="premium-badge">✨ Premium Plan - Custom Domain + AI Visuals</div'
+    );
+    await fs.writeFile(premiumWebsiteFile, premiumHTML, 'utf-8');
+
+    // Upload both demos to production server
     const { execSync } = require('child_process');
     try {
-      console.log('   📤 Uploading demo to production...');
-      execSync(`scp ${websiteFile} root@24.144.89.17:/var/www/automatedwebsitescraper/public/demos/`, {
+      console.log('   📤 Uploading demos to production...');
+      execSync(`scp ${websiteFile} ${premiumWebsiteFile} root@24.144.89.17:/var/www/automatedwebsitescraper/public/demos/`, {
         stdio: 'inherit'
       });
-      console.log('   ✅ Demo uploaded to production');
+      console.log('   ✅ Demos uploaded to production');
     } catch (uploadError) {
       console.warn('   ⚠️  Failed to upload to production (running locally?):', uploadError.message);
     }
 
     const demoUrl = `https://oatcode.com/demos/${demoId}.html`;
-    console.log(`   ✅ Demo created: ${demoUrl}\n`);
+    const premiumDemoUrl = `https://oatcode.com/demos/${demoId}-premium.html`;
+    console.log(`   ✅ Standard demo: ${demoUrl}`);
+    console.log(`   ✅ Premium demo: ${premiumDemoUrl}\n`);
 
     // Step 2: Send highly personalized pitch email
     console.log('2️⃣  Sending personalized pitch email...');
@@ -272,25 +303,43 @@ AI-Powered Website Management`,
 
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
 
-            <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0284c7; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">
-                <div style="font-size: 20px; font-weight: bold; color: #0c4a6e; margin-bottom: 15px;">
+            <div style="text-align: center; margin: 40px 0;">
+                <h3 style="font-size: 22px; color: #1e40af; margin-bottom: 10px;">👉 Want to see more demos?</h3>
+                <p style="font-size: 16px; color: #1e293b; line-height: 1.6; margin-bottom: 25px;">
+                    This demo is just an example! We create a <strong>100% custom website</strong> based on your specific business.<br>
+                    <span style="color: #059669; font-weight: 600;">✓ Unlimited revisions</span> - simply reply to this email with any changes you want<br>
+                    <span style="color: #059669; font-weight: 600;">✓ Changes made within 24 hours</span>
+                </p>
+            </div>
+
+            <div style="background: #fefce8; border: 2px solid #eab308; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">
+                <div style="font-size: 20px; font-weight: bold; color: #713f12; margin-bottom: 15px;">
                     ⭐ Want Your Own Custom Domain?
                 </div>
-                <div style="font-size: 16px; color: #334155; margin-bottom: 20px; line-height: 1.6;">
+                <div style="font-size: 16px; color: #422006; margin-bottom: 20px; line-height: 1.6;">
                     Most clients choose Standard - it's perfect for local businesses. Premium is for those who want their own custom domain (like <strong>ThompsonLawFirm.com</strong>) and unique AI-generated visuals.
                 </div>
-                <div style="background: white; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                    <div style="font-size: 14px; color: #64748b; margin-bottom: 5px;">✨ Premium Plan</div>
-                    <div style="font-size: 32px; font-weight: bold; color: #7c3aed; margin: 10px 0;">
-                        $297<span style="font-size: 18px; color: #64748b;">/month</span>
-                    </div>
-                    <div style="font-size: 14px; color: #64748b; margin-bottom: 15px;">Custom domain + AI visuals + priority support</div>
-                    <a href="https://buy.stripe.com/dRm9AVdx99wn4sWcXr7Re01" style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-                        View Premium Demo →
-                    </a>
-                </div>
-                <div style="font-size: 13px; color: #64748b; margin-top: 15px;">
-                    💡 <em>Most clients start with Standard and upgrade later when they want a custom domain</em>
+
+                <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 500px; margin: 20px auto;">
+                    <tr>
+                        <td style="background: white; border-radius: 8px; padding: 25px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 14px; color: #64748b; margin-bottom: 8px;">✨ Premium Plan</div>
+                            <div style="font-size: 36px; font-weight: bold; color: #1e40af; margin: 10px 0;">
+                                $297<span style="font-size: 18px; color: #64748b; font-weight: normal;">/month</span>
+                            </div>
+                            <div style="font-size: 14px; color: #64748b; margin-bottom: 20px;">AI visuals + custom domain + priority support</div>
+                            <a href="${demoUrl.replace('.html', '-premium.html')}" style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #1e40af 0%, #0284c7 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; margin-bottom: 15px;">
+                                View Premium Demo →
+                            </a>
+                            <div style="font-size: 13px; color: #64748b;">
+                                or <a href="https://buy.stripe.com/dRm9AVdx99wn4sWcXr7Re01" style="color: #1e40af; text-decoration: none; font-weight: 600;">Get Started with Premium</a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="font-size: 13px; color: #78716c; margin-top: 20px; font-style: italic;">
+                    💡 Most clients start with Standard and upgrade later when they want a custom domain
                 </div>
             </div>
 
