@@ -555,7 +555,7 @@ async function generateWebsite(customer, session, domainInfo = null) {
       }
     };
 
-    const result = await websiteGenerator.generateWebsite(business, strategy);
+    const result = await websiteGenerator.generateCompleteWebsite(business, strategy);
 
     if (!result.success) {
       throw new Error(result.error || 'Website generation failed');
