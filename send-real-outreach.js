@@ -191,9 +191,7 @@ P.S. - The demo is 100% free to view. No credit card required, no pressure. And 
         <strong>OatCode Team</strong><br>
         hello@oatcode.com</p>
 
-        <p style="font-size: 14px; color: #6b7280;">Questions? Email <strong>support@oatcode.com</strong></p>
-
-        <p style="font-size: 13px; color: #9ca3af; margin-top: 10px;">Want to learn more about us? Visit <a href="https://oatcode.com" style="color: #667eea; text-decoration: none;">oatcode.com</a></p>
+        <p style="font-size: 14px; color: #6b7280; margin-bottom: 20px;">Questions? Email <strong>support@oatcode.com</strong></p>
 
         <p style="font-size: 14px; color: #6b7280; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <strong>P.S.</strong> - No credit card required to view the demos. And remember: <strong>unlimited revisions</strong> means you can customize EVERYTHING until it's perfect!
@@ -201,8 +199,9 @@ P.S. - The demo is 100% free to view. No credit card required, no pressure. And 
     </div>
 
     <div style="background: #f9fafb; padding: 20px; text-align: center; color: #6b7280; font-size: 14px;">
-        <p>This demo was created specifically for Sunrise Dental Care</p>
-        <p>Questions? Reply to this email or contact us at support@oatcode.com</p>
+        <p style="margin: 0 0 10px 0;">This demo was created specifically for Sunrise Dental Care</p>
+        <p style="margin: 0 0 10px 0;">Questions? Reply to this email or contact us at support@oatcode.com</p>
+        <p style="margin: 0; font-size: 13px; color: #9ca3af;">Learn more at <a href="https://oatcode.com" style="color: #667eea; text-decoration: none;">oatcode.com</a></p>
     </div>
 </body>
 </html>`,
