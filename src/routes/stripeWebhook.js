@@ -569,7 +569,7 @@ async function generateWebsite(customer, session, domainInfo = null) {
     await fs.mkdir(demosDir, { recursive: true });
     await fs.writeFile(websiteFile, result.websiteHtml, 'utf-8');
 
-    const websiteUrl = `${process.env.DOMAIN || 'http://localhost:3000'}/demos/${websiteId}.html`;
+    const websiteUrl = `${process.env.DOMAIN || 'https://oatcode.com'}/demos/${websiteId}.html`;
 
     console.log(`   ✅ Website generated: ${websiteUrl}`);
 
@@ -588,7 +588,7 @@ async function generateWebsite(customer, session, domainInfo = null) {
 
     // Return fallback simple website
     const websiteId = `customer_${customer.stripeCustomerId}_fallback`;
-    const websiteUrl = `${process.env.DOMAIN || 'http://localhost:3000'}/demos/${websiteId}.html`;
+    const websiteUrl = `${process.env.DOMAIN || 'https://oatcode.com'}/demos/${websiteId}.html`;
 
     return {
       success: false,
