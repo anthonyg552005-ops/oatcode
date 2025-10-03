@@ -567,7 +567,7 @@ async function generateWebsite(customer, session, domainInfo = null) {
     const demosDir = path.dirname(websiteFile);
 
     await fs.mkdir(demosDir, { recursive: true });
-    await fs.writeFile(websiteFile, result.websiteHtml, 'utf-8');
+    await fs.writeFile(websiteFile, result.files['index.html'], 'utf-8');
 
     const websiteUrl = `${process.env.DOMAIN || 'https://oatcode.com'}/demos/${websiteId}.html`;
 
