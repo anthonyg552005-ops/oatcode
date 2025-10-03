@@ -15,6 +15,9 @@ git pull origin main
 echo "📦 Installing dependencies..."
 npm install --production
 
+echo "🔄 Running database migration..."
+node migrate-add-delivery-scheduled.js || echo "Migration already applied or failed"
+
 echo "🔄 Restarting PM2 services..."
 pm2 restart all
 
