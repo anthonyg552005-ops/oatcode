@@ -301,9 +301,7 @@ AI-Powered Website Management`,
                 </a>
             </p>
 
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
-
-            <div style="text-align: center; margin: 40px 0;">
+            <div style="text-align: center; margin: 50px 0 40px 0;">
                 <h3 style="font-size: 22px; color: #1e40af; margin-bottom: 10px;">👉 Want to see more demos?</h3>
                 <p style="font-size: 16px; color: #1e293b; line-height: 1.6; margin-bottom: 25px;">
                     This demo is just an example! We create a <strong>100% custom website</strong> based on your specific business.<br>
@@ -343,15 +341,15 @@ AI-Powered Website Management`,
                 </div>
             </div>
 
-            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
+            <div style="margin: 50px 0 30px 0;">
+                <p><strong>Compare the cost:</strong></p>
+                <ul style="color: #64748b; line-height: 1.8;">
+                    <li>Traditional web design: $8,000-15,000 upfront + $150/month maintenance</li>
+                    <li><strong>OatCode: $197/month total</strong> (everything included, no setup fee)</li>
+                </ul>
 
-            <p><strong>Compare the cost:</strong></p>
-            <ul style="color: #64748b; line-height: 1.8;">
-                <li>Traditional web design: $8,000-15,000 upfront + $150/month maintenance</li>
-                <li><strong>OatCode: $197/month total</strong> (everything included, no setup fee)</li>
-            </ul>
-
-            <p><strong>Questions?</strong> Just reply to this email - I read every response personally.</p>
+                <p><strong>Questions?</strong> Just reply to this email - I read every response personally.</p>
+            </div>
 
             <p>
                 Best,<br>
