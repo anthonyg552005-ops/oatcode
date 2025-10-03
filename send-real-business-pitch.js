@@ -270,10 +270,29 @@ AI-Powered Website Management`,
                 </a>
             </p>
 
-            <p style="color: #64748b; font-size: 14px; text-align: center; margin-top: 30px;">
-                <strong>Want premium features?</strong> $297/month includes AI-generated custom images, advanced SEO, and priority support<br>
-                <a href="https://buy.stripe.com/dRm9AVdx99wn4sWcXr7Re01" style="color: #1e40af;">Upgrade to Premium →</a>
-            </p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
+
+            <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0284c7; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">
+                <div style="font-size: 20px; font-weight: bold; color: #0c4a6e; margin-bottom: 15px;">
+                    ⭐ Want Your Own Custom Domain?
+                </div>
+                <div style="font-size: 16px; color: #334155; margin-bottom: 20px; line-height: 1.6;">
+                    Most clients choose Standard - it's perfect for local businesses. Premium is for those who want their own custom domain (like <strong>ThompsonLawFirm.com</strong>) and unique AI-generated visuals.
+                </div>
+                <div style="background: white; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                    <div style="font-size: 14px; color: #64748b; margin-bottom: 5px;">✨ Premium Plan</div>
+                    <div style="font-size: 32px; font-weight: bold; color: #7c3aed; margin: 10px 0;">
+                        $297<span style="font-size: 18px; color: #64748b;">/month</span>
+                    </div>
+                    <div style="font-size: 14px; color: #64748b; margin-bottom: 15px;">Custom domain + AI visuals + priority support</div>
+                    <a href="https://buy.stripe.com/dRm9AVdx99wn4sWcXr7Re01" style="display: inline-block; padding: 14px 35px; background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                        View Premium Demo →
+                    </a>
+                </div>
+                <div style="font-size: 13px; color: #64748b; margin-top: 15px;">
+                    💡 <em>Most clients start with Standard and upgrade later when they want a custom domain</em>
+                </div>
+            </div>
 
             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
 
