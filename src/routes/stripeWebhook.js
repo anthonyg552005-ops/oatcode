@@ -565,36 +565,85 @@ async function generateWebsite(customer, session, domainInfo = null) {
     const forcePremium = typeof domainInfo === 'boolean' ? domainInfo : false;
     console.log(`   🎨 Generating ${forcePremium || customer.tier === 'premium' ? 'PREMIUM' : 'STANDARD'} website for ${customer.name}...`);
 
-    // AUTONOMOUS BUSINESS RESEARCH
-    console.log(`   🔬 Researching business automatically...`);
-    const BusinessResearchService = require('../services/BusinessResearchService');
-    const researchService = new BusinessResearchService(console);
+    // STEP 1: Try to find their original demo (they already saw it and loved it!)
+    console.log(`   🔍 Looking for original demo sent to ${customer.email}...`);
 
-    const researchData = await researchService.researchBusiness(customer.email, customer.name);
+    let businessData = null;
+    let originalDemo = null;
 
-    console.log(`   ✅ Research complete (${(researchData.confidence * 100).toFixed(0)}% confidence)`);
-    console.log(`      Business: ${researchData.businessName}`);
-    console.log(`      Industry: ${researchData.industry}`);
-    console.log(`      Location: ${researchData.city}${researchData.state ? ', ' + researchData.state : ''}`);
+    // Check database for their demo
+    if (!db.db) await db.connect();
+
+    const demoRecord = await db.get(
+      `SELECT * FROM demos
+       INNER JOIN leads ON demos.lead_id = leads.id
+       WHERE leads.email = ?
+       ORDER BY demos.created_at DESC
+       LIMIT 1`,
+      [customer.email]
+    );
+
+    if (demoRecord) {
+      console.log(`   ✅ Found original demo!`);
+      console.log(`      Demo ID: ${demoRecord.demo_id}`);
+      console.log(`      Business: ${demoRecord.business_name}`);
+
+      // Use data from their original demo
+      const lead = await db.get('SELECT * FROM leads WHERE email = ?', [customer.email]);
+
+      if (lead && lead.intelligence_data) {
+        const intelligence = JSON.parse(lead.intelligence_data);
+
+        businessData = {
+          name: lead.business_name,
+          businessName: lead.business_name,
+          industry: lead.industry,
+          location: `${lead.city}, ${lead.state}`,
+          city: lead.city,
+          state: lead.state,
+          address: lead.address,
+          email: customer.email,
+          phone: lead.phone,
+          description: intelligence.description || `Professional services in ${lead.city}`,
+          services: intelligence.services || []
+        };
+
+        console.log(`      Industry: ${businessData.industry}`);
+        console.log(`      Location: ${businessData.city}, ${businessData.state}`);
+      }
+    }
+
+    // STEP 2: Fallback - Research if no demo found (shouldn't happen, but safety net)
+    if (!businessData) {
+      console.log(`   ⚠️  No demo found - researching business automatically...`);
+
+      const BusinessResearchService = require('../services/BusinessResearchService');
+      const researchService = new BusinessResearchService(console);
+
+      const researchData = await researchService.researchBusiness(customer.email, customer.name);
+
+      businessData = {
+        name: researchData.businessName,
+        businessName: researchData.businessName,
+        industry: researchData.industry,
+        location: researchData.city && researchData.state ? `${researchData.city}, ${researchData.state}` : researchData.city || 'United States',
+        city: researchData.city,
+        state: researchData.state,
+        address: researchData.address,
+        email: customer.email,
+        phone: researchData.phone,
+        description: researchData.description,
+        services: researchData.services
+      };
+
+      console.log(`   ✅ Research complete (${(researchData.confidence * 100).toFixed(0)}% confidence)`);
+    }
 
     // Use AI website generation service
     const AIWebsiteGenerationService = require('../services/AIWebsiteGenerationService');
     const websiteGenerator = new AIWebsiteGenerationService(console);
 
-    // Build business profile from research data
-    const business = {
-      name: researchData.businessName,
-      businessName: researchData.businessName,
-      industry: researchData.industry,
-      location: researchData.city && researchData.state ? `${researchData.city}, ${researchData.state}` : researchData.city || 'United States',
-      city: researchData.city,
-      state: researchData.state,
-      address: researchData.address,
-      email: customer.email,
-      phone: researchData.phone,
-      description: researchData.description,
-      services: researchData.services
-    };
+    const business = businessData;
 
     const strategy = {
       tier: forcePremium ? 'premium' : customer.tier,
