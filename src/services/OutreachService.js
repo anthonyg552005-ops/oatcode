@@ -138,6 +138,11 @@ Return JSON with: { subject, body }`;
 
       // Step 2: Create BOTH Standard + Premium demos for comparison
       this.logger.info(`   🎨 Creating Standard + Premium demo comparison...`);
+
+      // Generate business-appropriate email for demo (NOT the prospect's real email)
+      const businessSlug = business.name.toLowerCase().replace(/[^a-z0-9]+/g, '');
+      const demoBusinessEmail = `contact@${businessSlug}.com`;
+
       const demoComparison = await this.demoComparison.getDemoForOutreach({
         businessName: business.name,
         name: business.name,
@@ -146,7 +151,7 @@ Return JSON with: { subject, body }`;
         city: business.city,
         address: business.address,
         phone: business.phone,
-        email: business.email,
+        email: demoBusinessEmail, // Use generated business email, not prospect's email
         description: `Professional website for ${business.name}`
       });
 
