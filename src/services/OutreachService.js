@@ -65,17 +65,24 @@ ${intelligence.personalizedInsights.map(i => `- ${i}`).join('\n')}
 ` : ''}
 
 Write a HYPER-PERSONALIZED, conversational outreach email that:
-1. Uses 1-2 of the email hooks above (if available) to show you researched them
+1. SUBJECT LINE: Use format "${business.name} - [personal note]" (e.g. "Sunrise Dental - created something for you" or "Joe's Pizza - noticed you need a site"). NEVER use words like "free", "offer", "deal", "promo". Keep it personal.
 2. ${intelligence.ownerName ? `Addresses ${intelligence.ownerName} by name` : 'Addresses the business owner'}
-3. References something SPECIFIC (their great reviews, award, years in business, etc.)
-4. Identifies their pain point (no website, hard to find online, outdated site)
-5. Offers a free demo website as solution
-6. Explains clear benefit (more customers finding them)
-7. Keeps it warm, conversational, and SHORT (3-5 sentences max)
-8. Includes clear call-to-action
+3. Uses 1-2 of the email hooks above (if available) to show you researched them
+4. References something SPECIFIC (their great reviews, award, years in business, etc.)
+5. Identifies their pain point (no website, hard to find online, outdated site)
+6. Offers a demo website as solution
+7. MUST mention these key features:
+   - Website delivered in 24-48 hours
+   - UNLIMITED revisions - they can make ANY changes they want
+   - Simply reply to any email with changes (updated within 24 hours)
+   - Email support@oatcode.com anytime for help
+8. Include demo links at end: Standard ($197/month) and Premium ($297/month) with note that "most clients choose Standard"
+9. Keeps it warm, conversational, and SHORT (4-6 sentences max for intro)
+10. Plain text style - NO HTML formatting needed, will be added automatically
 
 TONE: Friendly, helpful, like a local business owner helping another business owner
-AVOID: Corporate speak, sales jargon, generic templates
+AVOID: Corporate speak, sales jargon, generic templates, words like "free/offer/deal"
+IMPORTANT: Emphasize "unlimited revisions" and "reply with changes" - this removes all risk
 
 Return JSON with: { subject, body }`;
 
@@ -97,9 +104,15 @@ Return JSON with: { subject, body }`;
 
     const result = await this.sendGrid.send({
       to: business.email || 'test@example.com',
+      from: 'hello@oatcode.com', // Dedicated outreach sender (not support@)
       subject: testPrefix + email.subject,
       text: email.body,
-      html: `<p>${email.body.replace(/\n/g, '<br>')}</p>`
+      html: `<p>${email.body.replace(/\n/g, '<br>')}</p>`,
+      trackingSettings: {
+        clickTracking: {
+          enable: false // Prevent SendGrid SSL redirect issues
+        }
+      }
     });
 
     this.logger.info(`   📧 Sent outreach to ${business.name} ${this.testMode ? '(TEST MODE)' : ''}`);
