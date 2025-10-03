@@ -63,6 +63,18 @@ async function sendRealBusinessPitch() {
     await fs.mkdir(demosDir, { recursive: true });
     await fs.writeFile(websiteFile, result.files['index.html'], 'utf-8');
 
+    // Upload demo to production server
+    const { execSync } = require('child_process');
+    try {
+      console.log('   📤 Uploading demo to production...');
+      execSync(`scp ${websiteFile} root@24.144.89.17:/var/www/automatedwebsitescraper/public/demos/`, {
+        stdio: 'inherit'
+      });
+      console.log('   ✅ Demo uploaded to production');
+    } catch (uploadError) {
+      console.warn('   ⚠️  Failed to upload to production (running locally?):', uploadError.message);
+    }
+
     const demoUrl = `https://oatcode.com/demos/${demoId}.html`;
     console.log(`   ✅ Demo created: ${demoUrl}\n`);
 
