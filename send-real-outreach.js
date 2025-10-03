@@ -60,93 +60,27 @@ P.S. - The demo is 100% free to view. No credit card required, no pressure. And 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 600px;
-            margin: 0 auto;
+            margin: 0;
             padding: 0;
-            background: #f5f5f5;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .logo {
-            display: inline-block;
-            width: 60px;
-            height: 60px;
-            background: #1E293B;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 60px;
-            font-size: 36px;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 15px;
-        }
-        .content {
-            background: white;
-            padding: 30px 20px;
-        }
-        .highlight {
-            background: #f0fdf4;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 4px solid #10b981;
-        }
-        .plan-box {
-            padding: 20px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            margin: 15px 0;
-            background: #fafafa;
-        }
-        .plan-box.popular {
-            border: 3px solid #667eea;
-            background: rgba(102, 126, 234, 0.05);
-            position: relative;
-        }
-        .popular-badge {
-            background: #10b981;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        .cta-button {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 14px 28px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .reviews {
-            background: #fef3c7;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
+            background: #ffffff;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">O</div>
-        <h1 style="margin: 0; font-size: 24px;">🎁 Your Demo Website is Ready!</h1>
-    </div>
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff;">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center;">
+            <div style="display: inline-block; width: 60px; height: 60px; background: #1E293B; border-radius: 50%; text-align: center; line-height: 60px; font-size: 36px; font-weight: bold; color: white; margin-bottom: 15px;">O</div>
+            <h1 style="margin: 0; font-size: 24px;">🎁 Your Demo Website is Ready!</h1>
+        </div>
 
-    <div class="content">
+        <!-- Content -->
+        <div style="background: white; padding: 30px 20px;">
         <p>Hi <strong>Dr. Johnson</strong>,</p>
 
         <p>I was researching top-rated dental practices in Austin and came across <strong>Sunrise Dental Care</strong>. Your <span style="color: #f59e0b;">★ 4.5-star rating</span> and <strong>48 glowing reviews</strong> really stood out—it's clear you're providing exceptional care to your patients!</p>
 
-        <div class="reviews">
+        <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
             ⭐⭐⭐⭐⭐ <strong>4.5/5 stars</strong> (48 reviews)<br>
             <em>"Patients love your service in Austin!"</em>
         </div>
@@ -155,7 +89,7 @@ P.S. - The demo is 100% free to view. No credit card required, no pressure. And 
 
         <p>I'd love to help by creating a demo website for Sunrise Dental Care. No strings attached—just want to show you what's possible.</p>
 
-        <div class="highlight">
+        <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
             <h3 style="margin: 0 0 15px 0; color: #059669;">✨ What's Included:</h3>
             <ul style="margin: 0; padding-left: 20px;">
                 <li style="margin: 8px 0;">✅ Website delivered in 24-48 hours</li>
@@ -170,19 +104,19 @@ P.S. - The demo is 100% free to view. No credit card required, no pressure. And 
 
         <p style="text-align: center; font-size: 14px; color: #666; margin: 0 0 20px 0;"><em>💡 Most of our clients choose Standard - it's perfect for local businesses. Premium is great if you want your own custom domain (like SunriseDentalCare.com) and unique AI-generated visuals.</em></p>
 
-        <div class="plan-box popular">
-            <span class="popular-badge">MOST POPULAR</span>
+        <div style="padding: 20px; border: 3px solid #667eea; border-radius: 8px; margin: 15px 0; background: rgba(102, 126, 234, 0.05);">
+            <span style="background: #10b981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 10px;">MOST POPULAR</span>
             <h4 style="margin: 0 0 10px 0; color: #667eea;">📄 Standard Plan</h4>
             <p style="margin: 0 0 5px 0; color: #666;">Professional website with stock photos</p>
             <p style="margin: 0 0 15px 0; color: #667eea; font-weight: bold; font-size: 20px;">$197/month</p>
-            <a href="https://oatcode.com/demo-standard.html" class="cta-button">View Standard Demo →</a>
+            <a href="https://oatcode.com/demo-standard.html" style="display: inline-block; background: #667eea; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px;">View Standard Demo →</a>
         </div>
 
-        <div class="plan-box">
+        <div style="padding: 20px; border: 2px solid #e5e7eb; border-radius: 8px; margin: 15px 0; background: #fafafa;">
             <h4 style="margin: 0 0 10px 0; color: #764ba2;">✨ Premium Plan</h4>
             <p style="margin: 0 0 5px 0; color: #666;">AI visuals + custom domain</p>
             <p style="margin: 0 0 15px 0; color: #764ba2; font-weight: bold; font-size: 20px;">$297/month</p>
-            <a href="https://oatcode.com/demo-premium.html" class="cta-button" style="background: #764ba2;">View Premium Demo →</a>
+            <a href="https://oatcode.com/demo-premium.html" style="display: inline-block; background: #764ba2; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px;">View Premium Demo →</a>
         </div>
 
         <p style="text-align: center; margin-top: 20px;">If you like what you see, we can have you <strong>live online within 24-48 hours</strong>!</p>
@@ -196,12 +130,14 @@ P.S. - The demo is 100% free to view. No credit card required, no pressure. And 
         <p style="font-size: 14px; color: #6b7280; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <strong>P.S.</strong> - No credit card required to view the demos. And remember: <strong>unlimited revisions</strong> means you can customize EVERYTHING until it's perfect!
         </p>
-    </div>
+        </div>
 
-    <div style="background: #f9fafb; padding: 20px; text-align: center; color: #6b7280; font-size: 14px;">
-        <p style="margin: 0 0 10px 0;">This demo was created specifically for Sunrise Dental Care</p>
-        <p style="margin: 0 0 10px 0;">Questions? Reply to this email or contact us at support@oatcode.com</p>
-        <p style="margin: 0; font-size: 13px; color: #9ca3af;">Learn more at <a href="https://oatcode.com" style="color: #667eea; text-decoration: none;">oatcode.com</a></p>
+        <!-- Footer -->
+        <div style="background: #f9fafb; padding: 20px; text-align: center; color: #6b7280; font-size: 14px;">
+            <p style="margin: 0 0 10px 0;">This demo was created specifically for Sunrise Dental Care</p>
+            <p style="margin: 0 0 10px 0;">Questions? Reply to this email or contact us at support@oatcode.com</p>
+            <p style="margin: 0; font-size: 13px; color: #9ca3af;">Learn more at <a href="https://oatcode.com" style="color: #667eea; text-decoration: none;">oatcode.com</a></p>
+        </div>
     </div>
 </body>
 </html>`,
