@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Successful - OatCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        .checkmark svg {
+            width: 50px;
+            height: 50px;
+            stroke: white;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            animation: drawCheck 0.5s ease-out 0.3s forwards;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes drawCheck {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        h1 {
+            color: #1e293b;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        .timeline {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .timeline h2 {
+            color: #1e293b;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: #1e293b;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .step-content p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .time-estimate {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .support {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .support a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="checkmark">
+            <svg viewBox="0 0 52 52">
+                <path d="M14 27l10 10 20-20" />
+            </svg>
+        </div>
+
+        <h1>🎉 Payment Successful!</h1>
+        <p class="subtitle">Welcome to OatCode - Your website is being built</p>
+
+        <div class="timeline">
+            <h2>What Happens Next</h2>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>📧 Check Your Email</h3>
+                    <p>You'll receive a confirmation email within 5 minutes with your order details and next steps.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>🎨 We Build Your Website</h3>
+                    <p>Our AI is creating your professional website right now using the latest design trends and best practices.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>🚀 Website Delivered</h3>
+                    <p>Your website will be live and accessible within 24-48 hours. You'll get an email with the link.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>✨ Unlimited Revisions</h3>
+                    <p>Don't love something? Just reply to any of our emails and tell us what to change. We'll update it within 24 hours!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="time-estimate">
+            ⏰ <strong>Expected Delivery:</strong> Within 24-48 hours
+        </div>
+
+        <a href="mailto:support@oatcode.com" class="cta-button">
+            📨 Contact Support
+        </a>
+
+        <div class="support">
+            <p><strong>Need help?</strong> Reply to your confirmation email or contact us at <a href="mailto:support@oatcode.com">support@oatcode.com</a></p>
+            <p style="margin-top: 10px;">Billing: Check your email for receipt and subscription details</p>
+        </div>
+    </div>
+
+    <script>
+        // Get email from URL parameter if available
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+
+        if (email) {
+            console.log('Customer email:', email);
+        }
+
+        // Optional: Track successful purchase
+        if (window.gtag) {
+            gtag('event', 'purchase', {
+                transaction_id: urlParams.get('session_id'),
+                value: urlParams.get('amount') || 197,
+                currency: 'USD'
+            });
+        }
+    </script>
+</body>
+</html>
