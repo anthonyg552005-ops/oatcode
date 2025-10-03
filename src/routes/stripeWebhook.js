@@ -26,7 +26,8 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
   try {
     // Verify webhook signature (when Stripe SDK is installed)
     // For now, just parse the event
-    event = JSON.parse(req.body);
+    // NOTE: express.raw() returns a Buffer, must convert to string first
+    event = JSON.parse(req.body.toString());
 
     console.log('🔔 Stripe webhook received:', event.type);
 
