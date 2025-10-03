@@ -166,6 +166,10 @@ class WebsiteDeliveryScheduler {
         name: 'OatCode'
       },
       subject: `🎉 Your Website is Ready!`,
+      trackingSettings: {
+        clickTracking: { enable: false },
+        openTracking: { enable: true }
+      },
       html: `
 <!DOCTYPE html>
 <html>

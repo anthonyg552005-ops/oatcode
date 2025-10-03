@@ -656,6 +656,10 @@ async function sendOrderConfirmationEmail(customer) {
         name: 'OatCode'
       },
       subject: `✅ Order Confirmed - Your Website is Being Built!`,
+      trackingSettings: {
+        clickTracking: { enable: false },
+        openTracking: { enable: true }
+      },
       html: `
 <!DOCTYPE html>
 <html>
@@ -762,6 +766,10 @@ async function sendWelcomeEmail(customer, websiteResult) {
         name: 'OatCode'
       },
       subject: `🎉 Welcome to OatCode - Your Website is Ready!`,
+      trackingSettings: {
+        clickTracking: { enable: false },
+        openTracking: { enable: true }
+      },
       html: `
 <!DOCTYPE html>
 <html>
