@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OatCode Logo - Right Click to Save</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        canvas {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        .instructions {
+            margin-top: 20px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            margin-top: 10px;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="logoCanvas" width="512" height="512"></canvas>
+    <div class="instructions">
+        <h2>OatCode Logo (512x512)</h2>
+        <p>Right-click the image above and "Save Image As..." → logo.png</p>
+        <button onclick="downloadLogo()">Or Click Here to Download</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('logoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Dark circle background
+        ctx.fillStyle = '#1E293B';
+        ctx.beginPath();
+        ctx.arc(256, 256, 256, 0, 2 * Math.PI);
+        ctx.fill();
+
+        // White "O" letter
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 320px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('O', 256, 256);
+
+        function downloadLogo() {
+            const link = document.createElement('a');
+            link.download = 'oatcode-logo.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>

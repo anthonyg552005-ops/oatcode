@@ -181,6 +181,22 @@ class SmartVisualService {
           'https://images.unsplash.com/photo-1504307651254-35680f356dfd'
         ]
       },
+      'legal': {
+        hero: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f',
+        gallery: [
+          'https://images.unsplash.com/photo-1589994965851-a8f479c573a9',
+          'https://images.unsplash.com/photo-1589829085413-56de8ae18c73',
+          'https://images.unsplash.com/photo-1505664194779-8beaceb93744'
+        ]
+      },
+      'law': {
+        hero: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f',
+        gallery: [
+          'https://images.unsplash.com/photo-1589994965851-a8f479c573a9',
+          'https://images.unsplash.com/photo-1589829085413-56de8ae18c73',
+          'https://images.unsplash.com/photo-1505664194779-8beaceb93744'
+        ]
+      },
       'default': {
         hero: 'https://images.unsplash.com/photo-1497366216548-37526070297c',
         gallery: [
@@ -204,6 +220,8 @@ class SmartVisualService {
       'professional': '💼',
       'healthcare': '⚕️',
       'construction': '🏗️',
+      'legal': '⚖️',
+      'law': '⚖️',
       'default': '🏢'
     };
 
@@ -251,6 +269,20 @@ class SmartVisualService {
         primary: '#F59E0B',
         secondary: '#D97706',
         accent: '#FCD34D',
+        background: '#FFFFFF',
+        text: '#1F2937'
+      },
+      'legal': {
+        primary: '#1e40af',
+        secondary: '#0284c7',
+        accent: '#b45309',
+        background: '#FFFFFF',
+        text: '#1F2937'
+      },
+      'law': {
+        primary: '#1e40af',
+        secondary: '#0284c7',
+        accent: '#b45309',
         background: '#FFFFFF',
         text: '#1F2937'
       },

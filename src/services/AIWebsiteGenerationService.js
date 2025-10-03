@@ -384,11 +384,100 @@ NO TEXT, NO LOGOS.`;
   }
 
   /**
+   * Transform content sections array into flat object for template
+   */
+  transformContentForTemplate(content) {
+    const transformed = {
+      seo: content.seo || {}
+    };
+
+    // Convert sections array to flat object
+    if (content.sections && Array.isArray(content.sections)) {
+      content.sections.forEach(section => {
+        switch (section.type) {
+          case 'hero':
+            transformed.hero = {
+              headline: section.headline,
+              subheadline: section.subheadline,
+              cta: section.cta
+            };
+            break;
+
+          case 'about':
+            transformed.about = {
+              title: section.title || 'About Us',
+              paragraphs: section.content ?
+                section.content.split('\n\n').filter(p => p.trim()) :
+                []
+            };
+            break;
+
+          case 'services':
+            transformed.services = {
+              subtitle: section.subtitle || 'Everything you need, all in one place',
+              items: (section.items || []).map(item => ({
+                title: item.name || item.title,
+                description: item.description,
+                icon: item.icon || '⭐'
+              }))
+            };
+            break;
+
+          case 'why_choose':
+            transformed.whyChooseUs = {
+              reasons: (section.items || []).map(item => {
+                if (typeof item === 'string') {
+                  return { title: item, description: `We pride ourselves on ${item.toLowerCase()}` };
+                } else if (item.title || item.name) {
+                  // Extract title and description separately
+                  const fullText = item.title || item.name;
+                  const colonIndex = fullText.indexOf(':');
+                  if (colonIndex > 0) {
+                    // Split on first colon
+                    return {
+                      title: fullText.substring(0, colonIndex).trim(),
+                      description: fullText.substring(colonIndex + 1).trim()
+                    };
+                  }
+                  return { title: fullText, description: item.description || '' };
+                }
+                return { title: '', description: '' };
+              })
+            };
+            break;
+
+          case 'testimonials':
+            transformed.testimonials = {
+              items: (section.items || []).map(item => ({
+                quote: item.text || item.quote,
+                name: item.author || item.name,
+                role: item.role || 'Verified Customer'
+              }))
+            };
+            break;
+
+          case 'contact':
+            transformed.contact = {
+              title: section.title || 'Get In Touch',
+              subtitle: section.cta || section.content || 'Ready to get started? Contact us today!'
+            };
+            break;
+        }
+      });
+    }
+
+    return transformed;
+  }
+
+  /**
    * ASSEMBLE WEBSITE WITH TAILWIND CSS
    * Creates beautiful, responsive HTML using modern design
    */
   async assembleWebsite(business, content, images, strategy) {
     this.logger.info(`   🏗️  Assembling website with Tailwind CSS...`);
+
+    // Transform sections array to flat object structure for easier template access
+    const transformedContent = this.transformContentForTemplate(content);
 
     const colors = strategy.colorDetails;
 
@@ -412,9 +501,9 @@ NO TEXT, NO LOGOS.`;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${content.seo?.title || business.name}</title>
-    <meta name="description" content="${content.seo?.description || ''}">
-    <meta name="keywords" content="${content.seo?.keywords || ''}">
+    <title>${transformedContent.seo?.title || business.name}</title>
+    <meta name="description" content="${transformedContent.seo?.description || ''}">
+    <meta name="keywords" content="${transformedContent.seo?.keywords || ''}">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -477,15 +566,15 @@ NO TEXT, NO LOGOS.`;
 
         <div class="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
             <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                ${content.hero?.headline || `Welcome to ${business.name}`}
+                ${transformedContent.hero?.headline || `Welcome to ${business.name}`}
             </h1>
             <p class="text-xl md:text-2xl mb-8 text-gray-200">
-                ${content.hero?.subheadline || `Professional ${business.industry} services in ${business.city}`}
+                ${transformedContent.hero?.subheadline || `Professional ${business.industry} services in ${business.city}`}
             </p>
             <a href="#contact"
                class="inline-block px-8 py-4 text-lg font-semibold rounded-lg hover:opacity-90 transition transform hover:scale-105"
                style="background-color: ${colors.accent};">
-                ${content.hero?.cta || 'Get Started Today'}
+                ${transformedContent.hero?.cta || 'Get Started Today'}
             </a>
         </div>
 
@@ -503,10 +592,10 @@ NO TEXT, NO LOGOS.`;
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
                     <h2 class="text-4xl font-bold mb-6" style="color: ${colors.primary};">
-                        ${content.about?.title || 'About Us'}
+                        ${transformedContent.about?.title || 'About Us'}
                     </h2>
                     <div class="space-y-4 text-lg leading-relaxed">
-                        ${(content.about?.paragraphs || []).map(p => `<p>${p}</p>`).join('\n                        ')}
+                        ${(transformedContent.about?.paragraphs || []).map(p => `<p>${p}</p>`).join('\n                        ')}
                     </div>
                 </div>
                 <div class="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
@@ -519,26 +608,26 @@ NO TEXT, NO LOGOS.`;
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-20 px-4" style="background-color: ${colors.background === '#ffffff' ? '#f9fafb' : colors.secondary};">
+    <section id="services" class="py-20 px-4" style="background-color: ${colors.background === '#ffffff' ? '#f9fafb' : '#1f2937'};">
         <div class="max-w-6xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-4" style="color: ${colors.primary};">
+            <h2 class="text-4xl font-bold text-center mb-4" style="color: ${colors.background === '#ffffff' ? colors.primary : '#ffffff'};">
                 Our Services
             </h2>
-            <p class="text-center text-xl mb-12 opacity-80">
-                ${content.services?.subtitle || 'Everything you need, all in one place'}
+            <p class="text-center text-xl mb-12" style="color: ${colors.background === '#ffffff' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)'};">
+                ${transformedContent.services?.subtitle || 'Everything you need, all in one place'}
             </p>
 
             <div class="grid md:grid-cols-3 gap-8">
-                ${(content.services?.items || []).map(service => `
-                <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-2xl transition transform hover:-translate-y-2">
+                ${(transformedContent.services?.items || []).map(service => `
+                <div class="rounded-xl shadow-lg p-8 hover:shadow-2xl transition transform hover:-translate-y-2" style="background-color: ${colors.background === '#ffffff' ? '#ffffff' : '#374151'};">
                     <div class="w-16 h-16 rounded-lg flex items-center justify-center mb-6"
-                         style="background-color: ${colors.primary}20;">
+                         style="background-color: ${colors.primary}40;">
                         <span class="text-3xl">${service.icon || '⭐'}</span>
                     </div>
                     <h3 class="text-2xl font-bold mb-4" style="color: ${colors.primary};">
                         ${service.title}
                     </h3>
-                    <p class="text-gray-600 leading-relaxed">
+                    <p class="leading-relaxed" style="color: ${colors.background === '#ffffff' ? '#4b5563' : '#d1d5db'};">
                         ${service.description}
                     </p>
                 </div>
@@ -550,12 +639,12 @@ NO TEXT, NO LOGOS.`;
     <!-- Why Choose Us Section -->
     <section class="py-20 px-4">
         <div class="max-w-6xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-16" style="color: ${colors.primary};">
+            <h2 class="text-4xl font-bold text-center mb-16" style="color: ${colors.background === '#ffffff' ? colors.primary : '#ffffff'};">
                 Why Choose Us
             </h2>
 
             <div class="grid md:grid-cols-2 gap-8">
-                ${(content.whyChooseUs?.reasons || []).map(reason => `
+                ${(transformedContent.whyChooseUs?.reasons || []).map(reason => `
                 <div class="flex gap-4">
                     <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
                          style="background-color: ${colors.accent};">
@@ -564,10 +653,10 @@ NO TEXT, NO LOGOS.`;
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-2" style="color: ${colors.primary};">
+                        <h3 class="text-xl font-bold mb-2" style="color: ${colors.background === '#ffffff' ? colors.primary : '#ffffff'};">
                             ${reason.title}
                         </h3>
-                        <p class="text-gray-600">
+                        <p style="color: ${colors.background === '#ffffff' ? '#4b5563' : '#d1d5db'};">
                             ${reason.description}
                         </p>
                     </div>
@@ -589,7 +678,7 @@ NO TEXT, NO LOGOS.`;
             </p>
 
             <div class="grid md:grid-cols-3 gap-8">
-                ${(content.testimonials?.items || []).map(testimonial => `
+                ${(transformedContent.testimonials?.items || []).map(testimonial => `
                 <div class="bg-white rounded-xl shadow-lg p-8">
                     <div class="flex mb-4">
                         ${'⭐'.repeat(5)}
@@ -614,10 +703,10 @@ NO TEXT, NO LOGOS.`;
     <section id="contact" class="py-20 px-4">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-4xl font-bold mb-6" style="color: ${colors.primary};">
-                ${content.contact?.title || 'Get In Touch'}
+                ${transformedContent.contact?.title || 'Get In Touch'}
             </h2>
             <p class="text-xl mb-12 opacity-80">
-                ${content.contact?.subtitle || `Ready to get started? Contact us today!`}
+                ${transformedContent.contact?.subtitle || `Ready to get started? Contact us today!`}
             </p>
 
             <div class="grid md:grid-cols-3 gap-8 mb-12">
@@ -653,7 +742,7 @@ NO TEXT, NO LOGOS.`;
                         <span class="text-2xl">📍</span>
                     </div>
                     <div class="font-semibold mb-2">Location</div>
-                    <div>${business.city}, ${business.state}</div>
+                    <div>${business.city}${business.state ? ', ' + business.state : ''}</div>
                 </div>
             </div>
 
@@ -668,7 +757,7 @@ NO TEXT, NO LOGOS.`;
     <!-- Footer -->
     <footer class="py-8 px-4 text-center" style="background-color: ${colors.secondary}; color: ${colors.background};">
         <p>&copy; ${new Date().getFullYear()} ${business.name}. All rights reserved.</p>
-        <p class="mt-2 text-sm opacity-70">${business.city}, ${business.state}</p>
+        <p class="mt-2 text-sm opacity-70">${business.city}${business.state ? ', ' + business.state : ''}</p>
     </footer>
 
     <!-- Smooth scroll script -->
