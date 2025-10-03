@@ -94,6 +94,7 @@ const AutoDatabaseBackupService = require('./services/AutoDatabaseBackupService'
 const AutoEmailDeliverabilityService = require('./services/AutoEmailDeliverabilityService');
 const AutonomousHealthCheckService = require('./services/AutonomousHealthCheckService');
 const AutoRepairService = require('./services/AutoRepairService');
+const WebsiteDeliveryScheduler = require('./services/WebsiteDeliveryScheduler');
 
 class AutonomousEngine {
   constructor() {
@@ -226,6 +227,7 @@ class AutonomousEngine {
     this.services.emailDeliverability = new AutoEmailDeliverabilityService(this.logger, this.services.sendGrid);
     this.services.healthCheck = new AutonomousHealthCheckService(this.logger);
     this.services.autoRepair = new AutoRepairService(this.logger);
+    this.services.websiteDelivery = new WebsiteDeliveryScheduler(this.logger);
 
     // Performance metrics
     this.metrics = {
@@ -514,6 +516,12 @@ class AutonomousEngine {
         }
       } else {
         this.logger.warn('   ⚠️  Email Sequence Service not available (initialization failed)');
+      }
+
+      // Start Website Delivery Scheduler (24-48 hour delayed delivery)
+      if (this.services.websiteDelivery) {
+        await this.services.websiteDelivery.start();
+        this.logger.info('   ✓ Website Delivery Scheduler ready (checks hourly for pending deliveries)');
       }
 
       // Load existing knowledge
