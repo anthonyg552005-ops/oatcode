@@ -47,9 +47,9 @@ class SendGridService {
           'List-Unsubscribe': `<mailto:unsubscribe@oatcode.com?subject=Unsubscribe>, <https://oatcode.com/unsubscribe>`,
           'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
         },
-        trackingSettings: {
+        trackingSettings: options.trackingSettings || {
           clickTracking: {
-            enable: true,
+            enable: false,  // DISABLED: Prevents SendGrid from rewriting URLs to url*.oatcode.com subdomains which cause SSL errors
             enableText: false
           },
           openTracking: {
