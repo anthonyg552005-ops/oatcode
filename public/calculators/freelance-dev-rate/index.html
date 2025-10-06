@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance Web Developer Rate Calculator 2025 | Hourly & Project Pricing - OatCode</title>
+    <meta name="description" content="Free freelance web developer rate calculator. Calculate your hourly rate, project pricing, and annual income based on experience level, location, and desired salary.">
+    <meta name="keywords" content="freelance developer rates, web developer hourly rate, freelance pricing calculator, developer salary calculator">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .calculator-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold">OatCode</a>
+                <div class="space-x-2">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/calculators" class="nav-link">Calculators</a>
+                    <a href="/#contact" class="nav-link">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Freelance Web Developer Rate Calculator
+            </h1>
+            <p class="text-xl text-gray-600">
+                Calculate your ideal hourly rate and project pricing based on your experience, expenses, and income goals
+            </p>
+        </div>
+
+        <!-- Calculator Card -->
+        <div class="calculator-card p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Calculate Your Rate</h2>
+
+            <form id="rateCalculator" class="space-y-6">
+                <!-- Desired Annual Income -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Desired Annual Income (Take-Home)
+                    </label>
+                    <input type="number" id="desiredIncome" class="input-field" placeholder="e.g., 100000" required>
+                    <p class="text-sm text-gray-500 mt-1">How much you want to earn after business expenses</p>
+                </div>
+
+                <!-- Billable Hours per Week -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Billable Hours per Week
+                    </label>
+                    <select id="billableHours" class="input-field">
+                        <option value="20">20 hours (Part-time)</option>
+                        <option value="25">25 hours</option>
+                        <option value="30" selected>30 hours</option>
+                        <option value="35">35 hours</option>
+                        <option value="40">40 hours (Full-time)</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Realistic billable time (excludes admin, marketing, breaks)</p>
+                </div>
+
+                <!-- Weeks Worked per Year -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Weeks Worked per Year
+                    </label>
+                    <select id="weeksWorked" class="input-field">
+                        <option value="48">48 weeks (4 weeks vacation)</option>
+                        <option value="50" selected>50 weeks (2 weeks vacation)</option>
+                        <option value="52">52 weeks (No vacation)</option>
+                    </select>
+                </div>
+
+                <!-- Business Expenses -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-4">Annual Business Expenses</h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Software & Tools</label>
+                            <input type="number" id="software" class="input-field" placeholder="e.g., 2000" value="2000">
+                            <p class="text-sm text-gray-500 mt-1">Adobe, hosting, domains, dev tools</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Hardware & Equipment</label>
+                            <input type="number" id="hardware" class="input-field" placeholder="e.g., 1500" value="1500">
+                            <p class="text-sm text-gray-500 mt-1">Laptop, monitors, desk setup (amortized annually)</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Marketing & Advertising</label>
+                            <input type="number" id="marketing" class="input-field" placeholder="e.g., 1000" value="1000">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Professional Development</label>
+                            <input type="number" id="education" class="input-field" placeholder="e.g., 1000" value="1000">
+                            <p class="text-sm text-gray-500 mt-1">Courses, books, conferences</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Health Insurance</label>
+                            <input type="number" id="insurance" class="input-field" placeholder="e.g., 6000" value="6000">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Accounting & Legal</label>
+                            <input type="number" id="accounting" class="input-field" placeholder="e.g., 2000" value="2000">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Other Expenses</label>
+                            <input type="number" id="otherExpenses" class="input-field" placeholder="e.g., 1500" value="1500">
+                            <p class="text-sm text-gray-500 mt-1">Coworking, travel, misc business costs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tax Rate -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Estimated Tax Rate
+                    </label>
+                    <select id="taxRate" class="input-field">
+                        <option value="0.25">25% (Lower income)</option>
+                        <option value="0.30" selected>30% (Average)</option>
+                        <option value="0.35">35% (Higher income)</option>
+                        <option value="0.40">40% (High earner)</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Includes federal, state, and self-employment tax</p>
+                </div>
+
+                <!-- Profit Margin -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Target Profit Margin
+                    </label>
+                    <select id="profitMargin" class="input-field">
+                        <option value="0">0% (Breaking even)</option>
+                        <option value="0.10">10%</option>
+                        <option value="0.15" selected>15% (Recommended)</option>
+                        <option value="0.20">20%</option>
+                        <option value="0.25">25%</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Safety margin for growth and savings</p>
+                </div>
+
+                <button type="submit" class="calculate-btn">
+                    Calculate My Rate
+                </button>
+            </form>
+
+            <!-- Results -->
+            <div id="results" style="display: none;">
+                <div class="result-box">
+                    <h3 class="text-2xl font-bold mb-4">Your Recommended Rates</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Minimum Hourly Rate</div>
+                            <div class="text-3xl font-bold" id="hourlyRate">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Recommended Rate (+20%)</div>
+                            <div class="text-3xl font-bold" id="recommendedRate">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Day Rate (8 hours)</div>
+                            <div class="text-3xl font-bold" id="dayRate">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Project Rate (40 hours)</div>
+                            <div class="text-3xl font-bold" id="projectRate">$0</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h4 class="font-semibold mb-2">Annual Breakdown:</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div>Gross Revenue:</div>
+                            <div class="text-right font-semibold" id="grossRevenue">$0</div>
+                            <div>Business Expenses:</div>
+                            <div class="text-right font-semibold" id="totalExpenses">$0</div>
+                            <div>Taxes:</div>
+                            <div class="text-right font-semibold" id="totalTaxes">$0</div>
+                            <div>Net Income:</div>
+                            <div class="text-right font-semibold" id="netIncome">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mt-6">
+                    <h4 class="font-semibold text-gray-900 mb-2">💡 Pricing Tips:</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                        <li>• Use the recommended rate (+20%) for most clients - it gives you negotiation room</li>
+                        <li>• Charge project rates for fixed-scope work to avoid scope creep</li>
+                        <li>• Consider value-based pricing for high-impact projects</li>
+                        <li>• Increase rates 10-15% annually as you gain experience</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="space-y-12">
+            <!-- What Determines Rates -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">What Determines Freelance Developer Rates?</h2>
+                <p class="text-gray-700 mb-4">
+                    Freelance web developer rates vary widely based on several key factors. Understanding these factors helps you price your services competitively while ensuring profitability.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">Experience Level</h3>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• Junior (0-2 years): $25-50/hr</li>
+                            <li>• Mid-level (2-5 years): $50-100/hr</li>
+                            <li>• Senior (5-10 years): $100-175/hr</li>
+                            <li>• Expert (10+ years): $175-300/hr</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">Technical Skills</h3>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• Frontend only: Lower range</li>
+                            <li>• Full-stack: Mid-high range</li>
+                            <li>• Specialized (AI, blockchain): Premium</li>
+                            <li>• Modern frameworks: Higher demand</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">Location</h3>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• Major US cities: Higher rates</li>
+                            <li>• Remote/international: Competitive</li>
+                            <li>• Cost of living affects baseline</li>
+                            <li>• Remote work enables global rates</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">Industry & Niche</h3>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• Enterprise/fintech: Premium rates</li>
+                            <li>• Startups: Mid-range</li>
+                            <li>• Small business: Lower range</li>
+                            <li>• Specialized industries: Higher</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mt-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>⚠️ Important:</strong> Your rate should cover your desired salary PLUS all business expenses, taxes, and profit margin. Many beginners undercharge by forgetting these costs.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Hourly vs Project Pricing -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Hourly vs. Project-Based Pricing</h2>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="border-2 border-purple-200 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-purple-900 mb-3">⏰ Hourly Pricing</h3>
+
+                        <p class="text-gray-700 mb-3"><strong>Best for:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 mb-3">
+                            <li>Ongoing maintenance</li>
+                            <li>Undefined scope projects</li>
+                            <li>Discovery/consulting work</li>
+                            <li>Clients who change requirements frequently</li>
+                        </ul>
+
+                        <p class="text-gray-700 mb-2"><strong>Pros:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 mb-3">
+                            <li>Guaranteed payment for time worked</li>
+                            <li>Easier to track and invoice</li>
+                            <li>Less risk for unclear projects</li>
+                        </ul>
+
+                        <p class="text-gray-700 mb-2"><strong>Cons:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>Income capped by hours available</li>
+                            <li>No reward for efficiency</li>
+                            <li>Clients may micromanage hours</li>
+                        </ul>
+                    </div>
+
+                    <div class="border-2 border-blue-200 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-blue-900 mb-3">📦 Project-Based Pricing</h3>
+
+                        <p class="text-gray-700 mb-3"><strong>Best for:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 mb-3">
+                            <li>Well-defined projects</li>
+                            <li>One-time builds</li>
+                            <li>Redesigns with clear deliverables</li>
+                            <li>When you can work efficiently</li>
+                        </ul>
+
+                        <p class="text-gray-700 mb-2"><strong>Pros:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 mb-3">
+                            <li>Earn more for efficient work</li>
+                            <li>Easier client budgeting</li>
+                            <li>Focus on results, not time</li>
+                        </ul>
+
+                        <p class="text-gray-700 mb-2"><strong>Cons:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>Risk of scope creep</li>
+                            <li>Must estimate accurately</li>
+                            <li>Can lose money if underestimated</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded mt-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>💡 Pro Tip:</strong> Many developers use a hybrid model: project-based pricing for the core build, then hourly rates for revisions and maintenance. This protects both you and the client.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Rate Calculation Method -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">How to Calculate Your Rate (Step-by-Step)</h2>
+
+                <div class="space-y-6">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="font-bold text-gray-900 mb-3">Step 1: Calculate Annual Billable Hours</h3>
+                        <div class="bg-white rounded p-4 border-l-4 border-purple-500">
+                            <p class="text-gray-700 mb-2"><strong>Example:</strong></p>
+                            <p class="text-gray-700">30 billable hours/week × 50 weeks/year = <strong>1,500 billable hours</strong></p>
+                            <p class="text-sm text-gray-500 mt-2">Note: Only ~50-70% of work hours are typically billable (rest is admin, marketing, learning)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="font-bold text-gray-900 mb-3">Step 2: Calculate Total Income Needed</h3>
+                        <div class="bg-white rounded p-4 border-l-4 border-purple-500">
+                            <p class="text-gray-700 mb-2"><strong>Example:</strong></p>
+                            <ul class="text-gray-700 space-y-1">
+                                <li>Desired take-home: $100,000</li>
+                                <li>+ Business expenses: $15,000</li>
+                                <li>+ Taxes (30%): $34,286</li>
+                                <li>+ Profit margin (15%): $22,393</li>
+                                <li>= <strong>$171,679 gross revenue needed</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="font-bold text-gray-900 mb-3">Step 3: Divide by Billable Hours</h3>
+                        <div class="bg-white rounded p-4 border-l-4 border-purple-500">
+                            <p class="text-gray-700 mb-2"><strong>Example:</strong></p>
+                            <p class="text-gray-700">$171,679 ÷ 1,500 hours = <strong>$114/hour minimum rate</strong></p>
+                            <p class="text-sm text-gray-500 mt-2">Recommended rate (with 20% buffer): <strong>$137/hour</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-lg p-6">
+                        <h3 class="font-bold text-gray-900 mb-3">Step 4: Validate Against Market Rates</h3>
+                        <p class="text-gray-700 mb-3">Check if your calculated rate aligns with market expectations:</p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>Too high? You may need to improve marketing or target higher-value clients</li>
+                            <li>Too low? You might be undervaluing your services or missing expenses</li>
+                            <li>Just right? Use this as your baseline and adjust based on client budget and project value</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Common Expenses -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Don't Forget These Business Expenses</h2>
+                <p class="text-gray-700 mb-6">
+                    Many freelancers undercharge because they forget to account for these costs:
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">💻 Software & Tools</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Adobe Creative Cloud: $600/year</li>
+                                <li>• Hosting & domains: $500/year</li>
+                                <li>• Project management: $200/year</li>
+                                <li>• Dev tools & plugins: $500/year</li>
+                                <li>• <strong>Total: ~$1,800/year</strong></li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">🏥 Health Insurance</h4>
+                            <p class="text-gray-700 text-sm">
+                                $300-800/month ($3,600-9,600/year) depending on coverage and location
+                            </p>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">📚 Professional Development</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Online courses: $500/year</li>
+                                <li>• Books & resources: $300/year</li>
+                                <li>• Conference tickets: $1,000/year</li>
+                                <li>• <strong>Total: ~$1,800/year</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">🖥️ Hardware</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Laptop ($2,000 / 3 years): $667/year</li>
+                                <li>• Monitor ($500 / 5 years): $100/year</li>
+                                <li>• Desk, chair, peripherals: $300/year</li>
+                                <li>• <strong>Total: ~$1,067/year</strong></li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">💼 Accounting & Legal</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Accountant/CPA: $1,000-2,000/year</li>
+                                <li>• Business insurance: $500/year</li>
+                                <li>• Contracts & legal: $500/year</li>
+                                <li>• <strong>Total: ~$2,000/year</strong></li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">📣 Marketing</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Portfolio website: $200/year</li>
+                                <li>• Ads (Google, LinkedIn): $500/year</li>
+                                <li>• Networking events: $300/year</li>
+                                <li>• <strong>Total: ~$1,000/year</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded mt-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>⚠️ Reality Check:</strong> Average annual business expenses for freelance developers: <strong>$10,000-20,000</strong>. Don't forget to factor this into your rates!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Real Examples -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Real-World Rate Examples</h2>
+
+                <div class="space-y-6">
+                    <div class="border-l-4 border-purple-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 1: Junior Frontend Developer</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Desired income:</strong> $60,000/year</p>
+                            <p class="text-gray-700"><strong>Billable hours:</strong> 25/week × 50 weeks = 1,250 hours</p>
+                            <p class="text-gray-700"><strong>Business expenses:</strong> $8,000/year</p>
+                            <p class="text-gray-700"><strong>Taxes (25%):</strong> $22,667</p>
+                            <p class="text-gray-700"><strong>Profit margin (10%):</strong> $10,074</p>
+                            <p class="text-gray-700"><strong>Gross revenue needed:</strong> $100,741</p>
+                            <p class="text-gray-700"><strong>Minimum hourly rate:</strong> $81/hour</p>
+                            <p class="text-gray-700"><strong>Recommended rate:</strong> $95-100/hour</p>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-blue-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 2: Mid-Level Full-Stack Developer</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Desired income:</strong> $120,000/year</p>
+                            <p class="text-gray-700"><strong>Billable hours:</strong> 30/week × 48 weeks = 1,440 hours</p>
+                            <p class="text-gray-700"><strong>Business expenses:</strong> $15,000/year</p>
+                            <p class="text-gray-700"><strong>Taxes (30%):</strong> $57,857</p>
+                            <p class="text-gray-700"><strong>Profit margin (15%):</strong> $34,378</p>
+                            <p class="text-gray-700"><strong>Gross revenue needed:</strong> $227,235</p>
+                            <p class="text-gray-700"><strong>Minimum hourly rate:</strong> $158/hour</p>
+                            <p class="text-gray-700"><strong>Recommended rate:</strong> $175-190/hour</p>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-green-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 3: Senior Specialized Developer</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Desired income:</strong> $200,000/year</p>
+                            <p class="text-gray-700"><strong>Billable hours:</strong> 30/week × 50 weeks = 1,500 hours</p>
+                            <p class="text-gray-700"><strong>Business expenses:</strong> $25,000/year</p>
+                            <p class="text-gray-700"><strong>Taxes (35%):</strong> $123,077</p>
+                            <p class="text-gray-700"><strong>Profit margin (20%):</strong> $86,923</p>
+                            <p class="text-gray-700"><strong>Gross revenue needed:</strong> $435,000</p>
+                            <p class="text-gray-700"><strong>Minimum hourly rate:</strong> $290/hour</p>
+                            <p class="text-gray-700"><strong>Recommended rate:</strong> $325-350/hour</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Should I charge different rates for different clients?</h3>
+                        <p class="text-gray-700">
+                            Yes, it's common to adjust rates based on client budget, project complexity, and relationship. Enterprise clients typically pay more than small businesses. Just ensure all rates stay above your minimum.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How do I handle clients who say my rate is too high?</h3>
+                        <p class="text-gray-700">
+                            Either negotiate on scope (fewer features/hours) or walk away. Never lower your rate below your minimum. You can also offer payment plans or phased delivery to make projects more affordable.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">When should I raise my rates?</h3>
+                        <p class="text-gray-700">
+                            Raise rates annually (10-15%) to account for inflation and experience. Also increase rates when you're fully booked, have strong case studies, or learn new high-value skills.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What if my calculated rate is higher than market average?</h3>
+                        <p class="text-gray-700">
+                            Either reduce expenses, increase billable hours, or accept a lower take-home income temporarily. Alternatively, focus on higher-value clients who can afford your rate, or develop specialized skills to justify premium pricing.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Should I show hourly rates to clients?</h3>
+                        <p class="text-gray-700">
+                            For hourly contracts, yes. For projects, consider quoting total project cost instead of breaking down hourly rates. This prevents clients from micromanaging your time and focuses on value delivered.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How do I price retainer agreements?</h3>
+                        <p class="text-gray-700">
+                            Retainers typically offer 10-20% discount from hourly rate in exchange for guaranteed monthly hours. For example, if your rate is $150/hour, a 20-hour/month retainer might be $2,700 ($135/hour effective rate).
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What's value-based pricing?</h3>
+                        <p class="text-gray-700">
+                            Instead of charging by time, charge based on the value you create for the client. For example, if you build an e-commerce site that generates $500K in annual revenue, a $50K project fee (10% of value) is justified, even if it only takes 100 hours of work.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How do I estimate project hours accurately?</h3>
+                        <p class="text-gray-700">
+                            Break the project into small tasks, estimate each task, add 20-30% buffer for unexpected issues, then multiply by your hourly rate. Track actual hours on projects to improve future estimates.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-8 text-center text-white shadow-lg">
+                <h2 class="text-3xl font-bold mb-4">Need a Professional Website for Your Freelance Business?</h2>
+                <p class="text-xl mb-6">
+                    OatCode builds AI-powered websites that convert visitors into high-paying clients.
+                </p>
+                <a href="/" class="inline-block bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Get Your Portfolio Website →
+                </a>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-20 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400">© 2025 OatCode. Professional Internet Services & Tools.</p>
+            <div class="mt-4 space-x-4">
+                <a href="/calculators" class="text-gray-400 hover:text-white">Calculators</a>
+                <a href="/#contact" class="text-gray-400 hover:text-white">Contact</a>
+                <a href="/privacy-policy.html" class="text-gray-400 hover:text-white">Privacy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('rateCalculator');
+        const results = document.getElementById('results');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateRate();
+        });
+
+        function calculateRate() {
+            // Get inputs
+            const desiredIncome = parseFloat(document.getElementById('desiredIncome').value) || 0;
+            const billableHoursWeek = parseFloat(document.getElementById('billableHours').value);
+            const weeksWorked = parseFloat(document.getElementById('weeksWorked').value);
+            const taxRate = parseFloat(document.getElementById('taxRate').value);
+            const profitMargin = parseFloat(document.getElementById('profitMargin').value);
+
+            // Business expenses
+            const software = parseFloat(document.getElementById('software').value) || 0;
+            const hardware = parseFloat(document.getElementById('hardware').value) || 0;
+            const marketing = parseFloat(document.getElementById('marketing').value) || 0;
+            const education = parseFloat(document.getElementById('education').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const accounting = parseFloat(document.getElementById('accounting').value) || 0;
+            const otherExpenses = parseFloat(document.getElementById('otherExpenses').value) || 0;
+
+            const totalExpenses = software + hardware + marketing + education + insurance + accounting + otherExpenses;
+
+            // Calculate annual billable hours
+            const annualBillableHours = billableHoursWeek * weeksWorked;
+
+            // Calculate gross revenue needed
+            // Formula: (Desired Income + Expenses) / (1 - Tax Rate - Profit Margin)
+            const grossRevenue = (desiredIncome + totalExpenses) / (1 - taxRate - profitMargin);
+
+            // Calculate taxes
+            const taxes = grossRevenue * taxRate;
+
+            // Calculate net income (should equal desired income)
+            const netIncome = grossRevenue - totalExpenses - taxes - (grossRevenue * profitMargin);
+
+            // Calculate hourly rate
+            const minHourlyRate = grossRevenue / annualBillableHours;
+            const recommendedRate = minHourlyRate * 1.20; // Add 20% buffer
+
+            // Calculate day and project rates
+            const dayRate = recommendedRate * 8;
+            const projectRate = recommendedRate * 40;
+
+            // Display results
+            document.getElementById('hourlyRate').textContent = '$' + Math.round(minHourlyRate);
+            document.getElementById('recommendedRate').textContent = '$' + Math.round(recommendedRate);
+            document.getElementById('dayRate').textContent = '$' + Math.round(dayRate).toLocaleString();
+            document.getElementById('projectRate').textContent = '$' + Math.round(projectRate).toLocaleString();
+            document.getElementById('grossRevenue').textContent = '$' + Math.round(grossRevenue).toLocaleString();
+            document.getElementById('totalExpenses').textContent = '$' + Math.round(totalExpenses).toLocaleString();
+            document.getElementById('totalTaxes').textContent = '$' + Math.round(taxes).toLocaleString();
+            document.getElementById('netIncome').textContent = '$' + Math.round(netIncome).toLocaleString();
+
+            results.style.display = 'block';
+            results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Detailing Pricing Calculator 2025 | Service Package Rates - OatCode</title>
+    <meta name="description" content="Free car detailing pricing calculator. Calculate competitive rates for wash, wax, interior cleaning, and premium detailing packages based on vehicle size and service level.">
+    <meta name="keywords" content="car detailing prices, auto detailing rates, mobile detailing pricing, car wash calculator">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .calculator-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .service-checkbox {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold">OatCode</a>
+                <div class="space-x-2">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/calculators" class="nav-link">Calculators</a>
+                    <a href="/#contact" class="nav-link">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Car Detailing Pricing Calculator
+            </h1>
+            <p class="text-xl text-gray-600">
+                Calculate competitive prices for your car detailing services based on vehicle size and service level
+            </p>
+        </div>
+
+        <!-- Calculator Card -->
+        <div class="calculator-card p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Build Your Service Package</h2>
+
+            <form id="detailCalculator" class="space-y-6">
+                <!-- Vehicle Size -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Vehicle Size
+                    </label>
+                    <select id="vehicleSize" class="input-field">
+                        <option value="sedan">Sedan / Compact Car</option>
+                        <option value="midsize">Midsize SUV / Truck</option>
+                        <option value="large">Large SUV / Van</option>
+                    </select>
+                </div>
+
+                <!-- Service Level -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Service Level
+                    </label>
+                    <select id="serviceLevel" class="input-field">
+                        <option value="basic">Basic Wash & Vacuum</option>
+                        <option value="standard">Standard Detail</option>
+                        <option value="premium">Premium Detail</option>
+                        <option value="custom">Custom (Select Services Below)</option>
+                    </select>
+                </div>
+
+                <!-- Custom Services -->
+                <div id="customServices" style="display: none;" class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-4">Select Services:</h3>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="space-y-3">
+                            <h4 class="font-semibold text-gray-800">Exterior</h4>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="exteriorWash" data-price-sedan="25" data-price-midsize="35" data-price-large="45">
+                                Exterior Hand Wash
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="clayBar" data-price-sedan="40" data-price-midsize="50" data-price-large="60">
+                                Clay Bar Treatment
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="wax" data-price-sedan="50" data-price-midsize="70" data-price-large="90">
+                                Wax / Sealant
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="polish" data-price-sedan="100" data-price-midsize="150" data-price-large="200">
+                                Paint Correction / Polish
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="ceramic" data-price-sedan="300" data-price-midsize="400" data-price-large="500">
+                                Ceramic Coating
+                            </label>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="font-semibold text-gray-800">Interior</h4>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="vacuum" data-price-sedan="20" data-price-midsize="30" data-price-large="40">
+                                Vacuum & Wipe Down
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="shampoo" data-price-sedan="75" data-price-midsize="100" data-price-large="125">
+                                Carpet / Seat Shampooing
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="leather" data-price-sedan="50" data-price-midsize="60" data-price-large="70">
+                                Leather Conditioning
+                            </label>
+                            <label class="flex items-center text-gray-700">
+                                <input type="checkbox" class="service-checkbox" data-service="odor" data-price-sedan="50" data-price-midsize="60" data-price-large="70">
+                                Odor Removal / Ozone
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Costs -->
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-4">Your Business Costs (Per Job)</h3>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Labor Time (hours)</label>
+                            <input type="number" step="0.5" id="laborTime" class="input-field" placeholder="e.g., 2.5" value="2">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Desired Hourly Rate</label>
+                            <input type="number" step="1" id="hourlyRate" class="input-field" placeholder="e.g., 50" value="50">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Supplies Cost per Job</label>
+                            <input type="number" step="0.01" id="suppliesCost" class="input-field" placeholder="e.g., 15" value="15">
+                            <p class="text-sm text-gray-500 mt-1">Soap, wax, towels, water, etc.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Overhead per Job</label>
+                            <input type="number" step="0.01" id="overhead" class="input-field" placeholder="e.g., 10" value="10">
+                            <p class="text-sm text-gray-500 mt-1">Gas, insurance, equipment depreciation</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target Profit Margin -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Target Profit Margin
+                    </label>
+                    <select id="profitMargin" class="input-field">
+                        <option value="0.20">20%</option>
+                        <option value="0.30" selected>30% (Recommended)</option>
+                        <option value="0.40">40%</option>
+                        <option value="0.50">50%</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="calculate-btn">
+                    Calculate Pricing
+                </button>
+            </form>
+
+            <!-- Results -->
+            <div id="results" style="display: none;">
+                <div class="result-box">
+                    <h3 class="text-2xl font-bold mb-4">Recommended Pricing</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Minimum Price (Break-Even)</div>
+                            <div class="text-3xl font-bold" id="breakEvenPrice">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Recommended Price</div>
+                            <div class="text-3xl font-bold" id="recommendedPrice">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Your Profit per Job</div>
+                            <div class="text-3xl font-bold" id="profitPerJob">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Monthly Income (20 jobs)</div>
+                            <div class="text-3xl font-bold" id="monthlyIncome">$0</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h4 class="font-semibold mb-2">Cost Breakdown:</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div>Labor:</div>
+                            <div class="text-right font-semibold" id="laborCost">$0</div>
+                            <div>Supplies:</div>
+                            <div class="text-right font-semibold" id="suppliesCostDisplay">$0</div>
+                            <div>Overhead:</div>
+                            <div class="text-right font-semibold" id="overheadDisplay">$0</div>
+                            <div>Total Cost:</div>
+                            <div class="text-right font-semibold" id="totalCost">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="marketComparison" class="mt-6 bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                    <h4 class="font-semibold text-gray-900 mb-2">📊 Market Comparison:</h4>
+                    <p class="text-sm text-gray-700" id="marketText"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="space-y-12">
+            <!-- Average Detailing Prices -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Average Car Detailing Prices (2025)</h2>
+                <p class="text-gray-700 mb-6">
+                    Car detailing prices vary based on vehicle size, service level, and location. Here are typical market rates:
+                </p>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full border-collapse">
+                        <thead>
+                            <tr class="bg-purple-100">
+                                <th class="border border-gray-300 px-4 py-2 text-left">Service Package</th>
+                                <th class="border border-gray-300 px-4 py-2">Sedan</th>
+                                <th class="border border-gray-300 px-4 py-2">Midsize SUV</th>
+                                <th class="border border-gray-300 px-4 py-2">Large SUV/Van</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2 font-semibold">Basic Wash & Vacuum</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$30-50</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$40-60</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$50-75</td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td class="border border-gray-300 px-4 py-2 font-semibold">Standard Detail</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$125-175</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$175-225</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$225-300</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2 font-semibold">Premium Detail</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$200-300</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$275-400</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$350-500</td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td class="border border-gray-300 px-4 py-2 font-semibold">Ceramic Coating</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$500-800</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$700-1,200</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$900-1,500</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2 font-semibold">Paint Correction</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$300-600</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$450-800</td>
+                                <td class="border border-gray-300 px-4 py-2 text-center">$600-1,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded mt-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>💡 Note:</strong> Prices are higher in major cities (LA, NYC, SF) and lower in rural areas. Mobile detailing typically charges 10-20% more than shop-based services.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Service Package Ideas -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Profitable Service Packages</h2>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="border-2 border-purple-200 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-purple-900 mb-3">🚗 Basic Package</h3>
+                        <p class="text-2xl font-bold text-gray-900 mb-3">$50-75</p>
+                        <p class="text-gray-700 mb-3 text-sm">Perfect for: Weekly/bi-weekly customers</p>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>✓ Exterior hand wash</li>
+                            <li>✓ Wheel cleaning</li>
+                            <li>✓ Vacuum interior</li>
+                            <li>✓ Windows</li>
+                            <li>✓ Dash wipe</li>
+                        </ul>
+                        <p class="text-gray-600 text-sm mt-3 italic">Time: 1-1.5 hours</p>
+                    </div>
+
+                    <div class="border-2 border-blue-200 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-blue-900 mb-3">✨ Standard Package</h3>
+                        <p class="text-2xl font-bold text-gray-900 mb-3">$175-225</p>
+                        <p class="text-gray-700 mb-3 text-sm">Perfect for: Monthly/seasonal customers</p>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>✓ Everything in Basic</li>
+                            <li>✓ Clay bar treatment</li>
+                            <li>✓ Wax / sealant</li>
+                            <li>✓ Interior deep clean</li>
+                            <li>✓ Leather conditioning</li>
+                            <li>✓ Engine bay cleaning</li>
+                        </ul>
+                        <p class="text-gray-600 text-sm mt-3 italic">Time: 3-4 hours</p>
+                    </div>
+
+                    <div class="border-2 border-green-200 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-green-900 mb-3">💎 Premium Package</h3>
+                        <p class="text-2xl font-bold text-gray-900 mb-3">$350-500</p>
+                        <p class="text-gray-700 mb-3 text-sm">Perfect for: Luxury/special occasion</p>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>✓ Everything in Standard</li>
+                            <li>✓ Paint correction (1-step)</li>
+                            <li>✓ Headlight restoration</li>
+                            <li>✓ Carpet shampooing</li>
+                            <li>✓ Odor removal</li>
+                            <li>✓ Trim restoration</li>
+                        </ul>
+                        <p class="text-gray-600 text-sm mt-3 italic">Time: 6-8 hours</p>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded mt-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>💡 Pro Tip:</strong> Offering 3 package tiers encourages customers to choose the middle option (Standard), which has the best profit margin for time invested.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Startup Costs -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Car Detailing Business Startup Costs</h2>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Mobile Detailing Startup</h3>
+                        <div class="bg-purple-50 rounded-lg p-4 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span>Pressure washer & equipment:</span>
+                                <span class="font-semibold">$500-1,000</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Initial supplies (soap, wax, towels):</span>
+                                <span class="font-semibold">$300-500</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Water tank & generator:</span>
+                                <span class="font-semibold">$400-800</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Vehicle wraps / signage:</span>
+                                <span class="font-semibold">$200-500</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Business license & insurance:</span>
+                                <span class="font-semibold">$500-1,000</span>
+                            </div>
+                            <div class="flex justify-between font-bold border-t-2 border-purple-300 pt-2 mt-2">
+                                <span>TOTAL:</span>
+                                <span>$1,900-3,800</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Shop-Based Detailing</h3>
+                        <div class="bg-blue-50 rounded-lg p-4 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span>Rent deposit + first month:</span>
+                                <span class="font-semibold">$2,000-5,000</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Professional equipment:</span>
+                                <span class="font-semibold">$3,000-7,000</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Initial supplies:</span>
+                                <span class="font-semibold">$500-1,000</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Signage & marketing:</span>
+                                <span class="font-semibold">$1,000-2,000</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Business license & insurance:</span>
+                                <span class="font-semibold">$1,000-2,000</span>
+                            </div>
+                            <div class="flex justify-between font-bold border-t-2 border-blue-300 pt-2 mt-2">
+                                <span>TOTAL:</span>
+                                <span>$7,500-17,000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-gray-700 text-sm">
+                    <strong>Recommendation:</strong> Start mobile with low overhead, build a customer base, then consider a shop location after 12-18 months once you have steady revenue.
+                </p>
+            </section>
+
+            <!-- Tips for Success -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Tips for Profitable Car Detailing</h2>
+
+                <div class="space-y-4">
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-bold text-gray-900 mb-2">1. Offer Membership Programs</h4>
+                        <p class="text-gray-700 text-sm">
+                            Monthly memberships provide recurring revenue. Example: "Unlimited basic washes for $99/month" or "One standard detail per month for $149/month." This guarantees income even in slow months.
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-bold text-gray-900 mb-2">2. Upsell Add-On Services</h4>
+                        <p class="text-gray-700 text-sm">
+                            Offer quick add-ons like headlight restoration (+$40), pet hair removal (+$30), or odor treatment (+$50). These high-margin services take 15-30 minutes and significantly boost per-job revenue.
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-bold text-gray-900 mb-2">3. Target High-End Clients</h4>
+                        <p class="text-gray-700 text-sm">
+                            Luxury car owners (Tesla, BMW, Mercedes) are willing to pay premium prices ($300-500+) and value quality over cost. Market in affluent neighborhoods and partner with luxury dealerships.
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-bold text-gray-900 mb-2">4. Get Reviews & Referrals</h4>
+                        <p class="text-gray-700 text-sm">
+                            Ask every customer for a Google review. Offer $20 off next service for referrals. 80% of new customers come from word-of-mouth and online reviews in this business.
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-bold text-gray-900 mb-2">5. Optimize Your Schedule</h4>
+                        <p class="text-gray-700 text-sm">
+                            Book 2-3 jobs per day max for quality work. Schedule basic washes in the morning (1.5 hrs each) and premium details in afternoon (4-6 hrs). This ensures you're not rushing and maintains high standards.
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-bold text-gray-900 mb-2">6. Build Corporate Accounts</h4>
+                        <p class="text-gray-700 text-sm">
+                            Partner with car dealerships, rental agencies, or corporate fleets for consistent bulk work. Even at discounted rates ($80-100 per car), volume makes up for lower margins.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How much can I make with a car detailing business?</h3>
+                        <p class="text-gray-700">
+                            Mobile detailers average $50,000-75,000/year working solo. Experienced detailers with a shop and employees can earn $100,000-200,000+. Your income depends on pricing, volume, and efficiency.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Should I charge more for mobile detailing?</h3>
+                        <p class="text-gray-700">
+                            Yes, charge 10-20% more for mobile service. You're providing convenience by coming to the customer's home/office, and you have additional costs (gas, water, generator).
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How long does each service take?</h3>
+                        <p class="text-gray-700">
+                            Basic wash: 1-1.5 hours | Standard detail: 3-4 hours | Premium detail: 6-8 hours | Ceramic coating: 1-2 days. Always communicate realistic timeframes to customers to set proper expectations.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What's the profit margin on detailing services?</h3>
+                        <p class="text-gray-700">
+                            Target 50-60% profit margin after costs (labor, supplies, overhead). For example, a $200 detail should cost you $80-100 to perform, leaving $100-120 profit.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Do I need special certifications?</h3>
+                        <p class="text-gray-700">
+                            No formal certifications are required, but IDA (International Detailing Association) certification can justify premium pricing and build credibility. Most important is hands-on experience and quality work.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How do I handle difficult stains or damage?</h3>
+                        <p class="text-gray-700">
+                            Always do a walk-around inspection before starting. Take photos of existing damage. Set realistic expectations - some stains (paint, dye, permanent marker) may not come out completely. Charge extra for heavily soiled vehicles.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What insurance do I need?</h3>
+                        <p class="text-gray-700">
+                            Get general liability insurance ($500-1,500/year) and garage keeper's insurance if you're holding customer vehicles. This protects you from damage claims and accidents.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How do I get my first customers?</h3>
+                        <p class="text-gray-700">
+                            Start with friends/family at discounted rates for testimonials. Post before/after photos on Instagram and Facebook. Create a Google Business profile. Offer first-time customer discounts ($20 off). Join local Facebook groups and Nextdoor.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-8 text-center text-white shadow-lg">
+                <h2 class="text-3xl font-bold mb-4">Need a Website for Your Detailing Business?</h2>
+                <p class="text-xl mb-6">
+                    OatCode builds AI-powered websites with online booking, before/after galleries, and customer reviews.
+                </p>
+                <a href="/" class="inline-block bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Get Your Website →
+                </a>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-20 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400">© 2025 OatCode. Professional Internet Services & Tools.</p>
+            <div class="mt-4 space-x-4">
+                <a href="/calculators" class="text-gray-400 hover:text-white">Calculators</a>
+                <a href="/#contact" class="text-gray-400 hover:text-white">Contact</a>
+                <a href="/privacy-policy.html" class="text-gray-400 hover:text-white">Privacy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const serviceLevel = document.getElementById('serviceLevel');
+        const customServices = document.getElementById('customServices');
+        const form = document.getElementById('detailCalculator');
+        const results = document.getElementById('results');
+
+        // Show/hide custom services
+        serviceLevel.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customServices.style.display = 'block';
+            } else {
+                customServices.style.display = 'none';
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculatePricing();
+        });
+
+        function calculatePricing() {
+            const vehicleSize = document.getElementById('vehicleSize').value;
+            const serviceType = document.getElementById('serviceLevel').value;
+            const laborTime = parseFloat(document.getElementById('laborTime').value) || 0;
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+            const suppliesCost = parseFloat(document.getElementById('suppliesCost').value) || 0;
+            const overhead = parseFloat(document.getElementById('overhead').value) || 0;
+            const profitMargin = parseFloat(document.getElementById('profitMargin').value);
+
+            let basePrice = 0;
+            let estimatedTime = laborTime;
+
+            // Calculate base price based on service level
+            if (serviceType === 'custom') {
+                // Calculate from selected services
+                const checkboxes = document.querySelectorAll('.service-checkbox:checked');
+                checkboxes.forEach(checkbox => {
+                    const priceKey = `data-price-${vehicleSize}`;
+                    basePrice += parseFloat(checkbox.getAttribute(priceKey)) || 0;
+                });
+            } else {
+                // Preset packages
+                const prices = {
+                    basic: { sedan: 50, midsize: 60, large: 75 },
+                    standard: { sedan: 175, midsize: 225, large: 300 },
+                    premium: { sedan: 300, midsize: 400, large: 500 }
+                };
+                basePrice = prices[serviceType][vehicleSize];
+            }
+
+            // Calculate costs
+            const laborCost = laborTime * hourlyRate;
+            const totalCost = laborCost + suppliesCost + overhead;
+
+            // Calculate recommended price with profit margin
+            const recommendedPrice = totalCost / (1 - profitMargin);
+            const profitPerJob = recommendedPrice - totalCost;
+            const monthlyIncome = profitPerJob * 20;
+
+            // Display results
+            document.getElementById('breakEvenPrice').textContent = '$' + Math.round(totalCost);
+            document.getElementById('recommendedPrice').textContent = '$' + Math.round(recommendedPrice);
+            document.getElementById('profitPerJob').textContent = '$' + Math.round(profitPerJob);
+            document.getElementById('monthlyIncome').textContent = '$' + Math.round(monthlyIncome).toLocaleString();
+
+            document.getElementById('laborCost').textContent = '$' + laborCost.toFixed(2);
+            document.getElementById('suppliesCostDisplay').textContent = '$' + suppliesCost.toFixed(2);
+            document.getElementById('overheadDisplay').textContent = '$' + overhead.toFixed(2);
+            document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
+
+            // Market comparison
+            let marketText = '';
+            if (serviceType !== 'custom' && basePrice > 0) {
+                const difference = recommendedPrice - basePrice;
+                const percentDiff = ((difference / basePrice) * 100).toFixed(0);
+
+                if (Math.abs(difference) < 20) {
+                    marketText = `Your price ($${Math.round(recommendedPrice)}) is competitive with market average ($${basePrice}). Good positioning!`;
+                } else if (recommendedPrice > basePrice) {
+                    marketText = `Your price ($${Math.round(recommendedPrice)}) is ${percentDiff}% above market average ($${basePrice}). This is justified if you offer premium service, convenience, or specialized skills.`;
+                } else {
+                    marketText = `Your price ($${Math.round(recommendedPrice)}) is below market average ($${basePrice}). You have room to increase prices or reduce costs to improve profitability.`;
+                }
+                document.getElementById('marketText').textContent = marketText;
+                document.getElementById('marketComparison').style.display = 'block';
+            } else {
+                document.getElementById('marketComparison').style.display = 'none';
+            }
+
+            results.style.display = 'block';
+            results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

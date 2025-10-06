@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etsy Shop Revenue Calculator 2025 | Fees, Profit & Break-Even Analysis - OatCode</title>
+    <meta name="description" content="Free Etsy revenue calculator. Calculate your shop's profits after fees, shipping costs, and material expenses. Includes listing fees, transaction fees, and payment processing.">
+    <meta name="keywords" content="etsy profit calculator, etsy fees calculator, etsy revenue calculator, handmade business calculator">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .calculator-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold">OatCode</a>
+                <div class="space-x-2">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/calculators" class="nav-link">Calculators</a>
+                    <a href="/#contact" class="nav-link">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Etsy Shop Revenue Calculator
+            </h1>
+            <p class="text-xl text-gray-600">
+                Calculate your Etsy shop's real profits after all fees, materials, and shipping costs
+            </p>
+        </div>
+
+        <!-- Calculator Card -->
+        <div class="calculator-card p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Calculate Your Profit</h2>
+
+            <form id="etsyCalculator" class="space-y-6">
+                <!-- Item Price -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Item Price
+                    </label>
+                    <input type="number" step="0.01" id="itemPrice" class="input-field" placeholder="e.g., 29.99" required>
+                    <p class="text-sm text-gray-500 mt-1">Your selling price per item</p>
+                </div>
+
+                <!-- Units Sold per Month -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Units Sold per Month
+                    </label>
+                    <input type="number" id="unitsSold" class="input-field" placeholder="e.g., 50" required>
+                </div>
+
+                <!-- Material Costs -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-4">Cost of Goods Sold (COGS)</h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Materials Cost per Item</label>
+                            <input type="number" step="0.01" id="materialCost" class="input-field" placeholder="e.g., 5.00" required>
+                            <p class="text-sm text-gray-500 mt-1">Raw materials, supplies, packaging</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Labor Time per Item (hours)</label>
+                            <input type="number" step="0.1" id="laborTime" class="input-field" placeholder="e.g., 1.5" value="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Desired Hourly Rate for Labor</label>
+                            <input type="number" step="0.01" id="hourlyRate" class="input-field" placeholder="e.g., 25" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping -->
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-4">Shipping</h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Shipping charged to customer</label>
+                            <input type="number" step="0.01" id="shippingCharged" class="input-field" placeholder="e.g., 5.00" value="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Actual shipping cost</label>
+                            <input type="number" step="0.01" id="shippingCost" class="input-field" placeholder="e.g., 6.50" value="0">
+                            <p class="text-sm text-gray-500 mt-1">What you pay to carrier (USPS, UPS, etc.)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etsy Plus (Optional) -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Are you on Etsy Plus?
+                    </label>
+                    <select id="etsyPlus" class="input-field">
+                        <option value="no">No ($0.20 listing fee)</option>
+                        <option value="yes">Yes - Etsy Plus ($10/month)</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Etsy Plus costs $10/month but has benefits</p>
+                </div>
+
+                <!-- Offsite Ads -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        % of Sales from Offsite Ads
+                    </label>
+                    <select id="offsiteAdsPercent" class="input-field">
+                        <option value="0">0% (No offsite ads)</option>
+                        <option value="10">10%</option>
+                        <option value="20">20%</option>
+                        <option value="30">30%</option>
+                        <option value="40">40%</option>
+                        <option value="50">50%</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Offsite ads have 12-15% fee (mandatory for $10K+/year shops)</p>
+                </div>
+
+                <button type="submit" class="calculate-btn">
+                    Calculate Etsy Profit
+                </button>
+            </form>
+
+            <!-- Results -->
+            <div id="results" style="display: none;">
+                <div class="result-box">
+                    <h3 class="text-2xl font-bold mb-4">Your Monthly Profit Breakdown</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Gross Revenue</div>
+                            <div class="text-3xl font-bold" id="grossRevenue">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Total Etsy Fees</div>
+                            <div class="text-3xl font-bold" id="totalFees">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Cost of Goods Sold</div>
+                            <div class="text-3xl font-bold" id="totalCOGS">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Net Profit</div>
+                            <div class="text-3xl font-bold" id="netProfit">$0</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4 mb-4">
+                        <h4 class="font-semibold mb-3">Fee Breakdown:</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div>Listing Fees:</div>
+                            <div class="text-right font-semibold" id="listingFees">$0</div>
+                            <div>Transaction Fee (6.5%):</div>
+                            <div class="text-right font-semibold" id="transactionFee">$0</div>
+                            <div>Payment Processing (3% + $0.25):</div>
+                            <div class="text-right font-semibold" id="paymentFee">$0</div>
+                            <div>Offsite Ads Fee:</div>
+                            <div class="text-right font-semibold" id="offsiteAdsFee">$0</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h4 class="font-semibold mb-2">Profit Margins:</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div>Profit Margin:</div>
+                            <div class="text-right font-semibold" id="profitMargin">0%</div>
+                            <div>Annual Profit (projected):</div>
+                            <div class="text-right font-semibold" id="annualProfit">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="recommendation" class="mt-6"></div>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="space-y-12">
+            <!-- Understanding Etsy Fees -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Understanding Etsy Fees (2024-2025)</h2>
+                <p class="text-gray-700 mb-6">
+                    Etsy charges multiple fees that can significantly impact your profitability. Here's a complete breakdown of all costs you'll incur as an Etsy seller:
+                </p>
+
+                <div class="space-y-4">
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">1. Listing Fee: $0.20 per item</h3>
+                        <p class="text-gray-700 text-sm">
+                            Charged when you create or renew a listing. Listings auto-renew after 4 months or when an item sells. This fee is charged regardless of whether the item sells.
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">2. Transaction Fee: 6.5% of item price + shipping</h3>
+                        <p class="text-gray-700 text-sm">
+                            Charged when an item sells. Calculated on the total sale amount including shipping charged to the customer (even if you offer free shipping).
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">3. Payment Processing: 3% + $0.25 per transaction</h3>
+                        <p class="text-gray-700 text-sm">
+                            Charged for processing customer payments through Etsy Payments. Applied to the total order amount including item price, shipping, gift wrap, and sales tax.
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">4. Offsite Ads Fee: 12-15% (when applicable)</h3>
+                        <p class="text-gray-700 text-sm">
+                            Charged when you make a sale from an Etsy ad on Google, Facebook, Instagram, etc. 15% for shops under $10,000/year, 12% for shops over $10,000/year. <strong>Mandatory for shops earning $10,000+/year.</strong>
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-yellow-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">5. Etsy Plus (Optional): $10/month</h3>
+                        <p class="text-gray-700 text-sm">
+                            Optional subscription that includes 15 listing credits ($3/month value), advanced shop customization, and restock requests. Worth it if you list 15+ items per month.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mt-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>Example:</strong> You sell an item for $30 with $5 shipping. Here's what you pay:
+                    </p>
+                    <ul class="text-sm text-gray-700 mt-2 space-y-1">
+                        <li>• Listing fee: $0.20</li>
+                        <li>• Transaction fee: ($30 + $5) × 6.5% = $2.28</li>
+                        <li>• Payment processing: ($30 + $5) × 3% + $0.25 = $1.30</li>
+                        <li>• <strong>Total Etsy fees: $3.78 (10.8% of sale price)</strong></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Maximizing Profit -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">How to Maximize Etsy Profit</h2>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">💰 Price Strategically</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Calculate true cost (materials + labor + fees)</li>
+                                <li>• Add desired profit margin (aim for 40-50%)</li>
+                                <li>• Research competitor pricing</li>
+                                <li>• Don't undervalue handmade work</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">📦 Optimize Shipping</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Use calculated shipping vs flat rate</li>
+                                <li>• Buy commercial shipping labels (cheaper)</li>
+                                <li>• Offer free shipping but increase item price</li>
+                                <li>• Lightweight packaging reduces costs</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">📸 Invest in Photography</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Better photos = higher conversion rates</li>
+                                <li>• Use all 10 photo slots</li>
+                                <li>• Show item at different angles</li>
+                                <li>• Include lifestyle/in-use shots</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">🔍 SEO Optimization</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Use all 13 tags per listing</li>
+                                <li>• Research keywords with eRank or Marmalead</li>
+                                <li>• Write detailed, keyword-rich descriptions</li>
+                                <li>• Update listings regularly for freshness</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">⚡ Reduce Material Costs</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Buy materials in bulk</li>
+                                <li>• Find wholesale suppliers</li>
+                                <li>• Reduce waste through better planning</li>
+                                <li>• Reuse packaging materials when possible</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">🎯 Focus on Bestsellers</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Track which items sell best</li>
+                                <li>• Create variations of popular items</li>
+                                <li>• Discontinue slow sellers</li>
+                                <li>• Test pricing on high-margin items</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pricing Formula -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Etsy Pricing Formula</h2>
+                <p class="text-gray-700 mb-6">
+                    Use this formula to ensure profitability on every item you sell:
+                </p>
+
+                <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mb-6">
+                    <h3 class="font-bold text-gray-900 mb-4 text-xl">Total Cost Calculation:</h3>
+                    <div class="space-y-2 text-gray-700">
+                        <p><strong>Materials:</strong> Raw materials + packaging</p>
+                        <p><strong>Labor:</strong> Hours to make × Desired hourly wage</p>
+                        <p><strong>Overhead:</strong> Portion of monthly expenses (tools, workspace, utilities)</p>
+                        <p><strong>Etsy Fees:</strong> ~11-13% of sale price (listing + transaction + payment processing)</p>
+                        <p><strong>Shipping:</strong> If you're absorbing shipping costs</p>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-white rounded border-2 border-purple-300">
+                        <p class="text-lg font-bold text-gray-900">
+                            Sale Price = (Materials + Labor + Overhead) ÷ (1 - Etsy Fees% - Profit Margin%)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h4 class="font-bold text-gray-900 mb-3">Example Calculation:</h4>
+                    <div class="space-y-2 text-gray-700">
+                        <p>• Materials: $8</p>
+                        <p>• Labor (2 hours × $20/hr): $40</p>
+                        <p>• Overhead: $2</p>
+                        <p>• <strong>Total Cost: $50</strong></p>
+                        <p class="mt-3">• Target profit margin: 30%</p>
+                        <p>• Etsy fees: 11%</p>
+                        <p class="mt-3 text-lg font-bold">• <strong>Minimum Sale Price: $50 ÷ (1 - 0.11 - 0.30) = $84.75</strong></p>
+                        <p class="text-sm text-gray-600 mt-2">Round to $85-90 for cleaner pricing</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Common Mistakes -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Common Etsy Seller Mistakes</h2>
+
+                <div class="space-y-4">
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">❌ Not Valuing Your Time</h3>
+                        <p class="text-gray-700">
+                            Many sellers only calculate material costs and forget labor. If you spend 3 hours making an item and sell it for $20, you're working for less than minimum wage. Always include a fair hourly rate in your pricing.
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">❌ Forgetting Offsite Ads Fee</h3>
+                        <p class="text-gray-700">
+                            The 12-15% offsite ads fee is mandatory for shops earning over $10,000/year. This can destroy your profit margins if you haven't priced for it. Always assume some sales will come from offsite ads.
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">❌ Offering Free Shipping Without Adjusting Price</h3>
+                        <p class="text-gray-700">
+                            Etsy rewards shops that offer free shipping, but don't absorb the cost yourself. Instead, increase your item price by the average shipping cost so you don't lose money.
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">❌ Racing to the Bottom on Price</h3>
+                        <p class="text-gray-700">
+                            Competing solely on price is a losing strategy on Etsy. Customers buy handmade items for uniqueness and quality, not lowest price. Focus on value, branding, and customer experience instead.
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-red-500 pl-4">
+                        <h3 class="font-bold text-gray-900 mb-2">❌ Not Tracking Expenses</h3>
+                        <p class="text-gray-700">
+                            Keep detailed records of all business expenses including materials, tools, shipping supplies, Etsy fees, and monthly subscriptions. You'll need these for taxes and to calculate true profitability.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real Examples -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Real Etsy Shop Profit Examples</h2>
+
+                <div class="space-y-6">
+                    <div class="border-l-4 border-purple-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 1: Sticker Shop (Digital Print)</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Item price:</strong> $4.00</p>
+                            <p class="text-gray-700"><strong>Units sold/month:</strong> 500</p>
+                            <p class="text-gray-700"><strong>Material cost:</strong> $0.15 (sticker paper + ink)</p>
+                            <p class="text-gray-700"><strong>Shipping:</strong> $1.50 (stamp), customer pays $1.25</p>
+                            <p class="text-gray-700"><strong>Listing fees:</strong> $0.20 × 20 listings = $4/month</p>
+                            <p class="text-gray-700"><strong>Etsy fees per sale:</strong> ~11% = $0.44</p>
+                            <p class="text-gray-700"><strong>Net per item:</strong> $4.00 - $0.15 - $0.44 - $0.25 (shipping loss) = $3.16</p>
+                            <p class="text-gray-700"><strong>Monthly profit:</strong> $3.16 × 500 - $4 = <strong>$1,576/month</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-blue-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 2: Handmade Jewelry</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Item price:</strong> $45.00</p>
+                            <p class="text-gray-700"><strong>Units sold/month:</strong> 30</p>
+                            <p class="text-gray-700"><strong>Material cost:</strong> $12 (beads, wire, findings)</p>
+                            <p class="text-gray-700"><strong>Labor:</strong> 1 hour × $25/hr = $25</p>
+                            <p class="text-gray-700"><strong>Shipping:</strong> Free (included in price)</p>
+                            <p class="text-gray-700"><strong>Etsy fees:</strong> ~11% = $4.95</p>
+                            <p class="text-gray-700"><strong>Net per item:</strong> $45 - $12 - $25 - $4.95 = $3.05</p>
+                            <p class="text-gray-700"><strong>Monthly profit:</strong> $3.05 × 30 = <strong>$91.50/month</strong></p>
+                            <p class="text-sm text-red-600 mt-2">⚠️ This seller needs to increase prices or reduce labor time!</p>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-green-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 3: Printable Digital Downloads</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Item price:</strong> $8.99</p>
+                            <p class="text-gray-700"><strong>Units sold/month:</strong> 200</p>
+                            <p class="text-gray-700"><strong>Material cost:</strong> $0 (digital product)</p>
+                            <p class="text-gray-700"><strong>Labor:</strong> 5 hours upfront, then automated</p>
+                            <p class="text-gray-700"><strong>Shipping:</strong> $0 (instant download)</p>
+                            <p class="text-gray-700"><strong>Etsy fees:</strong> ~10% = $0.90</p>
+                            <p class="text-gray-700"><strong>Net per item:</strong> $8.99 - $0.90 = $8.09</p>
+                            <p class="text-gray-700"><strong>Monthly profit:</strong> $8.09 × 200 = <strong>$1,618/month</strong></p>
+                            <p class="text-sm text-green-600 mt-2">✅ Digital products have highest profit margins!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How much does the average Etsy seller make?</h3>
+                        <p class="text-gray-700">
+                            According to Etsy data, most sellers make $200-500/month in profit. Top 10% of sellers earn $2,000+/month. Success depends on product quality, pricing, SEO, and time invested.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Can I turn off offsite ads?</h3>
+                        <p class="text-gray-700">
+                            Yes, if your shop earns less than $10,000/year. However, shops earning $10,000+ per year are automatically enrolled and cannot opt out. The fee is 15% for smaller shops, 12% for $10K+ shops.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Should I offer free shipping?</h3>
+                        <p class="text-gray-700">
+                            Etsy's search algorithm favors listings with free shipping on orders $35+. However, you should increase your item price to cover shipping costs rather than absorbing the expense. For example, if an item is $25 and shipping is $5, price it at $30 with free shipping.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What profit margin should I aim for?</h3>
+                        <p class="text-gray-700">
+                            A healthy profit margin for handmade goods is 40-50% after all costs (materials, labor, fees, shipping). Lower margins (20-30%) are acceptable for high-volume, low-cost items like stickers or digital products.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How do I calculate labor cost?</h3>
+                        <p class="text-gray-700">
+                            Time yourself making an item from start to finish, then multiply by your desired hourly wage. Beginners often use $15-20/hour, intermediate $25-40/hour, experienced $50+/hour. Don't undervalue your skilled labor.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Are Etsy fees tax deductible?</h3>
+                        <p class="text-gray-700">
+                            Yes! All Etsy fees (listing, transaction, payment processing, offsite ads) are deductible business expenses. Keep detailed records for tax filing. You can also deduct materials, shipping supplies, workspace costs, and equipment.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">When should I get Etsy Plus?</h3>
+                        <p class="text-gray-700">
+                            Etsy Plus ($10/month) is worth it if you list 15+ items per month (you get $3 in listing credits), want advanced customization features, or need restock request notifications for high-demand items.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-8 text-center text-white shadow-lg">
+                <h2 class="text-3xl font-bold mb-4">Need a Website for Your Etsy Business?</h2>
+                <p class="text-xl mb-6">
+                    Expand beyond Etsy with a professional website. OatCode builds AI-powered sites that convert.
+                </p>
+                <a href="/" class="inline-block bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Get Your Website →
+                </a>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-20 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400">© 2025 OatCode. Professional Internet Services & Tools.</p>
+            <div class="mt-4 space-x-4">
+                <a href="/calculators" class="text-gray-400 hover:text-white">Calculators</a>
+                <a href="/#contact" class="text-gray-400 hover:text-white">Contact</a>
+                <a href="/privacy-policy.html" class="text-gray-400 hover:text-white">Privacy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('etsyCalculator');
+        const results = document.getElementById('results');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateProfit();
+        });
+
+        function calculateProfit() {
+            // Get inputs
+            const itemPrice = parseFloat(document.getElementById('itemPrice').value) || 0;
+            const unitsSold = parseFloat(document.getElementById('unitsSold').value) || 0;
+            const materialCost = parseFloat(document.getElementById('materialCost').value) || 0;
+            const laborTime = parseFloat(document.getElementById('laborTime').value) || 0;
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+            const shippingCharged = parseFloat(document.getElementById('shippingCharged').value) || 0;
+            const shippingCost = parseFloat(document.getElementById('shippingCost').value) || 0;
+            const etsyPlus = document.getElementById('etsyPlus').value;
+            const offsiteAdsPercent = parseFloat(document.getElementById('offsiteAdsPercent').value) / 100;
+
+            // Calculate labor cost
+            const laborCostPerItem = laborTime * hourlyRate;
+
+            // Calculate total COGS per item
+            const cogsPerItem = materialCost + laborCostPerItem + (shippingCost - shippingCharged);
+
+            // Calculate Etsy fees
+            const listingFeePerItem = etsyPlus === 'yes' ? 0 : 0.20; // $0.20 unless Etsy Plus
+            const saleAmount = itemPrice + shippingCharged;
+            const transactionFee = saleAmount * 0.065; // 6.5%
+            const paymentFee = saleAmount * 0.03 + 0.25; // 3% + $0.25
+
+            // Offsite ads fee (only on percentage of sales)
+            const offsiteAdsFeeRate = unitsSold >= 333 ? 0.12 : 0.15; // 12% if $10K+/year, else 15%
+            const offsiteAdsFee = (saleAmount * offsiteAdsFeeRate * offsiteAdsPercent);
+
+            const feesPerItem = listingFeePerItem + transactionFee + paymentFee + offsiteAdsFee;
+
+            // Monthly calculations
+            const monthlyEtsyPlus = etsyPlus === 'yes' ? 10 : 0;
+            const grossRevenue = saleAmount * unitsSold;
+            const totalFees = (feesPerItem * unitsSold) + monthlyEtsyPlus;
+            const totalCOGS = cogsPerItem * unitsSold;
+            const netProfit = grossRevenue - totalFees - totalCOGS;
+
+            // Profit margin
+            const profitMargin = grossRevenue > 0 ? (netProfit / grossRevenue * 100) : 0;
+            const annualProfit = netProfit * 12;
+
+            // Display results
+            document.getElementById('grossRevenue').textContent = '$' + grossRevenue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            document.getElementById('totalFees').textContent = '$' + totalFees.toFixed(2);
+            document.getElementById('totalCOGS').textContent = '$' + totalCOGS.toFixed(2);
+            document.getElementById('netProfit').textContent = '$' + netProfit.toFixed(2);
+
+            document.getElementById('listingFees').textContent = '$' + (listingFeePerItem * unitsSold + monthlyEtsyPlus).toFixed(2);
+            document.getElementById('transactionFee').textContent = '$' + (transactionFee * unitsSold).toFixed(2);
+            document.getElementById('paymentFee').textContent = '$' + (paymentFee * unitsSold).toFixed(2);
+            document.getElementById('offsiteAdsFee').textContent = '$' + (offsiteAdsFee * unitsSold).toFixed(2);
+
+            document.getElementById('profitMargin').textContent = profitMargin.toFixed(1) + '%';
+            document.getElementById('annualProfit').textContent = '$' + annualProfit.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+            // Recommendations
+            let recommendation = '';
+            if (profitMargin < 20) {
+                recommendation = `
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                        <h4 class="font-semibold text-gray-900 mb-2">⚠️ Low Profit Margin</h4>
+                        <p class="text-gray-700 text-sm">Your profit margin is ${profitMargin.toFixed(1)}%, which is below healthy levels (40-50% for handmade). Consider:</p>
+                        <ul class="text-gray-700 text-sm mt-2 space-y-1">
+                            <li>• Increasing your item price by 20-30%</li>
+                            <li>• Reducing material costs through bulk purchasing</li>
+                            <li>• Streamlining production to reduce labor time</li>
+                            <li>• Focusing on higher-margin products</li>
+                        </ul>
+                    </div>
+                `;
+            } else if (profitMargin < 40) {
+                recommendation = `
+                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                        <h4 class="font-semibold text-gray-900 mb-2">💡 Moderate Profit Margin</h4>
+                        <p class="text-gray-700 text-sm">Your profit margin is ${profitMargin.toFixed(1)}%, which is acceptable but could be improved. You're making a profit, but there's room to optimize pricing or reduce costs.</p>
+                    </div>
+                `;
+            } else {
+                recommendation = `
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                        <h4 class="font-semibold text-gray-900 mb-2">✅ Healthy Profit Margin</h4>
+                        <p class="text-gray-700 text-sm">Your profit margin is ${profitMargin.toFixed(1)}%, which is excellent! This gives you room for sales, discounts, and business growth. Keep track of costs and adjust prices annually.</p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('recommendation').innerHTML = recommendation;
+
+            results.style.display = 'block';
+            results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

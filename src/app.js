@@ -117,6 +117,30 @@ app.get('/calculators/substack-pricing', (req, res) => {
 app.get('/calculators/substack-pricing/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/calculators/substack-pricing/index.html'));
 });
+app.get('/calculators/freelance-dev-rate', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/freelance-dev-rate/index.html'));
+});
+app.get('/calculators/freelance-dev-rate/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/freelance-dev-rate/index.html'));
+});
+app.get('/calculators/rideshare-tax', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/rideshare-tax/index.html'));
+});
+app.get('/calculators/rideshare-tax/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/rideshare-tax/index.html'));
+});
+app.get('/calculators/etsy-revenue', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/etsy-revenue/index.html'));
+});
+app.get('/calculators/etsy-revenue/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/etsy-revenue/index.html'));
+});
+app.get('/calculators/car-detailing-pricing', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/car-detailing-pricing/index.html'));
+});
+app.get('/calculators/car-detailing-pricing/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/car-detailing-pricing/index.html'));
+});
 
 // CUSTOM DOMAIN MIDDLEWARE - Routes premium customer domains to their websites
 app.use(async (req, res, next) => {

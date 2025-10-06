@@ -31,6 +31,30 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://oatcode.com/calculators/freelance-dev-rate/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://oatcode.com/calculators/rideshare-tax/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://oatcode.com/calculators/etsy-revenue/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://oatcode.com/calculators/car-detailing-pricing/</loc>
+    <lastmod>2025-10-05</lastmod>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://oatcode.com/dashboard.html</loc>
     <lastmod>2025-10-05</lastmod>
     <priority>0.6</priority>

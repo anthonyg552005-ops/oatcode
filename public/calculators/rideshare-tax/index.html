@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rideshare Tax Deduction Calculator 2025 | Uber & Lyft Mileage Write-Offs - OatCode</title>
+    <meta name="description" content="Free rideshare tax deduction calculator for Uber and Lyft drivers. Calculate mileage deductions, business expenses, and maximize your tax savings with IRS-compliant tracking.">
+    <meta name="keywords" content="rideshare tax calculator, uber tax deductions, lyft mileage tracker, gig economy taxes, 1099 deductions">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .calculator-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold">OatCode</a>
+                <div class="space-x-2">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/calculators" class="nav-link">Calculators</a>
+                    <a href="/#contact" class="nav-link">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Rideshare Tax Deduction Calculator
+            </h1>
+            <p class="text-xl text-gray-600">
+                Calculate your Uber & Lyft tax deductions and maximize your savings with IRS mileage rates
+            </p>
+        </div>
+
+        <!-- Calculator Card -->
+        <div class="calculator-card p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Calculate Your Deductions</h2>
+
+            <form id="taxCalculator" class="space-y-6">
+                <!-- Business Miles -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Business Miles Driven (Annual)
+                    </label>
+                    <input type="number" id="businessMiles" class="input-field" placeholder="e.g., 20000" required>
+                    <p class="text-sm text-gray-500 mt-1">Miles driven while app is on and during pickups/dropoffs</p>
+                </div>
+
+                <!-- Personal Miles -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Total Miles Driven (Annual)
+                    </label>
+                    <input type="number" id="totalMiles" class="input-field" placeholder="e.g., 25000" required>
+                    <p class="text-sm text-gray-500 mt-1">All miles driven on your vehicle this year</p>
+                </div>
+
+                <!-- Deduction Method -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Deduction Method
+                    </label>
+                    <select id="deductionMethod" class="input-field">
+                        <option value="standard">Standard Mileage ($0.67/mile - 2024)</option>
+                        <option value="actual">Actual Expenses</option>
+                    </select>
+                </div>
+
+                <!-- Actual Expenses (shown only if selected) -->
+                <div id="actualExpensesSection" style="display: none;">
+                    <div class="bg-gray-50 p-4 rounded-lg space-y-4">
+                        <h3 class="font-semibold text-gray-900">Actual Vehicle Expenses</h3>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Gas & Oil</label>
+                            <input type="number" id="gasOil" class="input-field" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Repairs & Maintenance</label>
+                            <input type="number" id="repairs" class="input-field" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Insurance</label>
+                            <input type="number" id="insurance" class="input-field" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Car Payments (Interest Only)</label>
+                            <input type="number" id="carPayments" class="input-field" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Registration & License</label>
+                            <input type="number" id="registration" class="input-field" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Depreciation</label>
+                            <input type="number" id="depreciation" class="input-field" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Business Expenses -->
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-gray-900 mb-4">Additional Business Expenses</h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Bill (Business %)</label>
+                            <input type="number" id="phoneBill" class="input-field" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Car Washes & Cleaning</label>
+                            <input type="number" id="carWashes" class="input-field" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Snacks & Water for Passengers</label>
+                            <input type="number" id="supplies" class="input-field" placeholder="0">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Parking & Tolls</label>
+                            <input type="number" id="parkingTolls" class="input-field" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tax Bracket -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Estimated Tax Bracket
+                    </label>
+                    <select id="taxBracket" class="input-field">
+                        <option value="0.10">10%</option>
+                        <option value="0.12" selected>12%</option>
+                        <option value="0.22">22%</option>
+                        <option value="0.24">24%</option>
+                        <option value="0.32">32%</option>
+                        <option value="0.35">35%</option>
+                        <option value="0.37">37%</option>
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Plus ~15.3% self-employment tax</p>
+                </div>
+
+                <button type="submit" class="calculate-btn">
+                    Calculate Tax Savings
+                </button>
+            </form>
+
+            <!-- Results -->
+            <div id="results" style="display: none;">
+                <div class="result-box">
+                    <h3 class="text-2xl font-bold mb-4">Your Tax Deduction Results</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Vehicle Deduction</div>
+                            <div class="text-3xl font-bold" id="vehicleDeduction">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Other Business Expenses</div>
+                            <div class="text-3xl font-bold" id="otherExpenses">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Total Deductions</div>
+                            <div class="text-3xl font-bold" id="totalDeductions">$0</div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-sm opacity-90">Estimated Tax Savings</div>
+                            <div class="text-3xl font-bold" id="taxSavings">$0</div>
+                        </div>
+                    </div>
+
+                    <div id="recommendation" class="bg-white bg-opacity-20 rounded-lg p-4 mt-4">
+                        <div class="font-semibold mb-2">💡 Recommendation:</div>
+                        <div id="recommendationText"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="space-y-12">
+            <!-- What is Rideshare Tax Deduction -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Understanding Rideshare Tax Deductions</h2>
+                <p class="text-gray-700 mb-4">
+                    As an Uber or Lyft driver, you're classified as an independent contractor, which means you're responsible for paying self-employment taxes. However, this also means you can deduct legitimate business expenses from your taxable income, potentially saving thousands of dollars per year.
+                </p>
+                <p class="text-gray-700 mb-4">
+                    The IRS allows rideshare drivers to deduct expenses that are "ordinary and necessary" for operating their business. The two most significant deductions are:
+                </p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                    <li><strong>Vehicle expenses</strong> - Either standard mileage rate or actual expenses method</li>
+                    <li><strong>Business-related expenses</strong> - Phone bills, car washes, supplies, etc.</li>
+                </ul>
+                <p class="text-gray-700">
+                    The standard mileage rate for 2024 is $0.67 per mile for business use. This rate is updated annually by the IRS and covers gas, depreciation, insurance, and maintenance. Alternatively, you can track actual expenses and deduct the business-use percentage.
+                </p>
+            </section>
+
+            <!-- Standard vs Actual Expenses -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Standard Mileage vs. Actual Expenses Method</h2>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="border-2 border-purple-200 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-purple-900 mb-3">✅ Standard Mileage</h3>
+                        <p class="text-gray-700 mb-3">
+                            <strong>Rate:</strong> $0.67 per mile (2024)
+                        </p>
+                        <p class="text-gray-700 mb-3"><strong>Pros:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 mb-3">
+                            <li>Simple to track</li>
+                            <li>No need to save receipts</li>
+                            <li>Usually higher deduction for newer cars</li>
+                            <li>Can switch to actual expenses later</li>
+                        </ul>
+                        <p class="text-gray-700"><strong>Best for:</strong> Drivers with newer, fuel-efficient cars</p>
+                    </div>
+
+                    <div class="border-2 border-blue-200 rounded-lg p-6">
+                        <h3 class="text-xl font-bold text-blue-900 mb-3">📊 Actual Expenses</h3>
+                        <p class="text-gray-700 mb-3">
+                            <strong>Includes:</strong> Gas, repairs, insurance, depreciation
+                        </p>
+                        <p class="text-gray-700 mb-3"><strong>Pros:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 mb-3">
+                            <li>Can be higher for older cars</li>
+                            <li>Better if you have major repairs</li>
+                            <li>Includes depreciation</li>
+                        </ul>
+                        <p class="text-gray-700 mb-3"><strong>Cons:</strong></p>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 mb-3">
+                            <li>Must track all receipts</li>
+                            <li>More complex calculations</li>
+                            <li>Once chosen, can't switch back to standard</li>
+                        </ul>
+                        <p class="text-gray-700"><strong>Best for:</strong> Drivers with older cars or high repair costs</p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                    <p class="text-sm text-gray-700">
+                        <strong>⚠️ Important:</strong> You must choose the standard mileage method in the first year you use your car for business. If you use actual expenses in year one, you cannot switch to standard mileage later for that vehicle.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Tracking Requirements -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">How to Track Mileage for IRS Compliance</h2>
+                <p class="text-gray-700 mb-4">
+                    The IRS requires "contemporaneous" mileage logs, meaning you must track mileage as you drive, not reconstruct it later from memory. Here's what you need to record:
+                </p>
+
+                <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                    <h3 class="font-bold text-gray-900 mb-3">Required Mileage Log Information:</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li><strong>Date</strong> of each trip</li>
+                        <li><strong>Starting and ending odometer readings</strong></li>
+                        <li><strong>Total miles</strong> driven</li>
+                        <li><strong>Purpose</strong> of the trip (business vs. personal)</li>
+                        <li><strong>Destination</strong> or route</li>
+                    </ul>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Best Mileage Tracking Apps for Rideshare</h3>
+                <div class="space-y-3">
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <p class="font-semibold text-gray-900">Stride</p>
+                        <p class="text-gray-700">Free automatic tracking, integrates with Uber/Lyft</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <p class="font-semibold text-gray-900">MileIQ</p>
+                        <p class="text-gray-700">Auto-detect drives, swipe to classify as business/personal</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <p class="font-semibold text-gray-900">Everlance</p>
+                        <p class="text-gray-700">GPS tracking, expense categorization, tax reports</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <p class="font-semibold text-gray-900">QuickBooks Self-Employed</p>
+                        <p class="text-gray-700">Complete tax solution with mileage tracking</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Additional Deductions -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Other Tax Deductions for Rideshare Drivers</h2>
+                <p class="text-gray-700 mb-6">
+                    Beyond vehicle expenses, rideshare drivers can deduct these business-related costs:
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">📱 Phone & Internet</h4>
+                            <p class="text-gray-700">Deduct the business-use percentage of your phone bill (typically 50-75% for full-time drivers)</p>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">🧼 Car Washes & Cleaning</h4>
+                            <p class="text-gray-700">Regular cleaning to maintain vehicle presentation</p>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">💧 Supplies</h4>
+                            <p class="text-gray-700">Water bottles, mints, phone chargers, tissues for passengers</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">🅿️ Parking & Tolls</h4>
+                            <p class="text-gray-700">Fees paid while waiting for rides or during business trips</p>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">📋 Roadside Assistance</h4>
+                            <p class="text-gray-700">AAA membership or similar services</p>
+                        </div>
+
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-bold text-gray-900 mb-2">💼 Business Insurance</h4>
+                            <p class="text-gray-700">Rideshare insurance add-ons beyond personal policy</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded mt-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>💡 Pro Tip:</strong> Keep all receipts organized digitally using apps like Expensify or Shoeboxed. Take photos of receipts immediately after purchase to avoid losing them.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Real Examples -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Real-World Examples</h2>
+
+                <div class="space-y-6">
+                    <div class="border-l-4 border-purple-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 1: Part-Time Driver (Standard Mileage)</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Annual business miles:</strong> 12,000</p>
+                            <p class="text-gray-700"><strong>Standard mileage deduction:</strong> 12,000 × $0.67 = $8,040</p>
+                            <p class="text-gray-700"><strong>Other expenses:</strong> $1,200 (phone, supplies, car washes)</p>
+                            <p class="text-gray-700"><strong>Total deductions:</strong> $9,240</p>
+                            <p class="text-gray-700"><strong>Tax savings (27.3% combined rate):</strong> ~$2,522</p>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-blue-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 2: Full-Time Driver (Actual Expenses)</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Business miles:</strong> 30,000 | <strong>Total miles:</strong> 35,000 (85.7% business use)</p>
+                            <p class="text-gray-700"><strong>Actual expenses:</strong></p>
+                            <ul class="list-disc list-inside text-gray-700 ml-4">
+                                <li>Gas: $6,000 × 85.7% = $5,142</li>
+                                <li>Insurance: $2,400 × 85.7% = $2,057</li>
+                                <li>Repairs: $1,500 × 85.7% = $1,286</li>
+                                <li>Depreciation: $4,000 × 85.7% = $3,428</li>
+                                <li>Registration: $200 × 85.7% = $171</li>
+                            </ul>
+                            <p class="text-gray-700"><strong>Vehicle deduction:</strong> $12,084</p>
+                            <p class="text-gray-700"><strong>Other expenses:</strong> $2,400</p>
+                            <p class="text-gray-700"><strong>Total deductions:</strong> $14,484</p>
+                            <p class="text-gray-700"><strong>Tax savings (27.3%):</strong> ~$3,954</p>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-green-600 pl-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Example 3: Weekend Driver</h3>
+                        <div class="bg-gray-50 rounded p-4 space-y-2">
+                            <p class="text-gray-700"><strong>Annual business miles:</strong> 8,000</p>
+                            <p class="text-gray-700"><strong>Standard mileage:</strong> 8,000 × $0.67 = $5,360</p>
+                            <p class="text-gray-700"><strong>Other expenses:</strong> $600</p>
+                            <p class="text-gray-700"><strong>Total deductions:</strong> $5,960</p>
+                            <p class="text-gray-700"><strong>Tax savings (27.3%):</strong> ~$1,627</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="bg-white rounded-lg p-8 shadow">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Can I deduct mileage from home to my first pickup?</h3>
+                        <p class="text-gray-700">
+                            No. The IRS considers your home your principal place of business for rideshare driving. Mileage is only deductible once you turn on the app and are available for rides, or during a pickup/dropoff. Driving home after your last ride is also not deductible.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What if I drive for both Uber and Lyft?</h3>
+                        <p class="text-gray-700">
+                            All business miles count, regardless of which platform you're using. You can combine mileage from all rideshare platforms (Uber, Lyft, DoorDash, etc.) into one mileage log.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Do I need to track mileage if I use actual expenses?</h3>
+                        <p class="text-gray-700">
+                            Yes! You still need to track business vs. personal miles to calculate the business-use percentage of your vehicle. This percentage is applied to all your actual expenses.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Can I deduct car washes and detailing?</h3>
+                        <p class="text-gray-700">
+                            Yes, car washes and detailing are fully deductible business expenses for rideshare drivers, as maintaining a clean vehicle is necessary for your business.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What happens if I get audited?</h3>
+                        <p class="text-gray-700">
+                            The IRS may request your mileage logs and receipts. This is why it's critical to use a GPS tracking app or maintain detailed manual logs. Apps like Stride, MileIQ, or Everlance provide IRS-compliant reports that include GPS timestamps.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Can I switch from standard mileage to actual expenses?</h3>
+                        <p class="text-gray-700">
+                            You can switch from standard mileage to actual expenses in future years, but once you use actual expenses for a vehicle, you cannot switch back to standard mileage for that vehicle. Choose carefully in year one!
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">What's the self-employment tax rate?</h3>
+                        <p class="text-gray-700">
+                            Self-employment tax is 15.3% (12.4% for Social Security and 2.9% for Medicare). This is in addition to your regular income tax bracket. Deductions reduce both your income tax and self-employment tax.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Do I need to make quarterly estimated tax payments?</h3>
+                        <p class="text-gray-700">
+                            If you expect to owe $1,000 or more in taxes for the year, the IRS requires quarterly estimated payments (April 15, June 15, September 15, and January 15). Use IRS Form 1040-ES to calculate your payments.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Can I deduct the business % of my lease payment?</h3>
+                        <p class="text-gray-700">
+                            Yes, if you use the actual expense method, you can deduct the business-use percentage of your lease payments. However, you cannot deduct lease payments if using the standard mileage rate (it's already included in the $0.67/mile).
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Where do I report rideshare income and deductions?</h3>
+                        <p class="text-gray-700">
+                            Report rideshare income on Schedule C (Form 1040) as self-employment income. Vehicle expenses go on Line 9 (car and truck expenses) or Line 13 (depreciation). Other business expenses are listed in their respective categories.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-8 text-center text-white shadow-lg">
+                <h2 class="text-3xl font-bold mb-4">Need a Professional Website for Your Business?</h2>
+                <p class="text-xl mb-6">
+                    OatCode builds AI-powered websites that convert visitors into customers.
+                </p>
+                <a href="/" class="inline-block bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Get Your Website →
+                </a>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-20 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400">© 2025 OatCode. Professional Internet Services & Tools.</p>
+            <div class="mt-4 space-x-4">
+                <a href="/calculators" class="text-gray-400 hover:text-white">Calculators</a>
+                <a href="/#contact" class="text-gray-400 hover:text-white">Contact</a>
+                <a href="/privacy-policy.html" class="text-gray-400 hover:text-white">Privacy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const deductionMethod = document.getElementById('deductionMethod');
+        const actualExpensesSection = document.getElementById('actualExpensesSection');
+        const form = document.getElementById('taxCalculator');
+        const results = document.getElementById('results');
+
+        // Show/hide actual expenses section
+        deductionMethod.addEventListener('change', function() {
+            if (this.value === 'actual') {
+                actualExpensesSection.style.display = 'block';
+            } else {
+                actualExpensesSection.style.display = 'none';
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateTaxSavings();
+        });
+
+        function calculateTaxSavings() {
+            const businessMiles = parseFloat(document.getElementById('businessMiles').value) || 0;
+            const totalMiles = parseFloat(document.getElementById('totalMiles').value) || 0;
+            const method = document.getElementById('deductionMethod').value;
+            const taxBracket = parseFloat(document.getElementById('taxBracket').value);
+
+            // Business use percentage
+            const businessUsePercent = totalMiles > 0 ? (businessMiles / totalMiles) : 0;
+
+            let vehicleDeduction = 0;
+
+            if (method === 'standard') {
+                // Standard mileage: $0.67 per mile (2024)
+                vehicleDeduction = businessMiles * 0.67;
+            } else {
+                // Actual expenses
+                const gasOil = parseFloat(document.getElementById('gasOil').value) || 0;
+                const repairs = parseFloat(document.getElementById('repairs').value) || 0;
+                const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+                const carPayments = parseFloat(document.getElementById('carPayments').value) || 0;
+                const registration = parseFloat(document.getElementById('registration').value) || 0;
+                const depreciation = parseFloat(document.getElementById('depreciation').value) || 0;
+
+                const totalActualExpenses = gasOil + repairs + insurance + carPayments + registration + depreciation;
+                vehicleDeduction = totalActualExpenses * businessUsePercent;
+            }
+
+            // Additional business expenses
+            const phoneBill = parseFloat(document.getElementById('phoneBill').value) || 0;
+            const carWashes = parseFloat(document.getElementById('carWashes').value) || 0;
+            const supplies = parseFloat(document.getElementById('supplies').value) || 0;
+            const parkingTolls = parseFloat(document.getElementById('parkingTolls').value) || 0;
+
+            const otherExpenses = phoneBill + carWashes + supplies + parkingTolls;
+            const totalDeductions = vehicleDeduction + otherExpenses;
+
+            // Tax savings (income tax + self-employment tax)
+            const combinedRate = taxBracket + 0.153; // Add 15.3% self-employment tax
+            const taxSavings = totalDeductions * combinedRate;
+
+            // Display results
+            document.getElementById('vehicleDeduction').textContent = '$' + vehicleDeduction.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            document.getElementById('otherExpenses').textContent = '$' + otherExpenses.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            document.getElementById('totalDeductions').textContent = '$' + totalDeductions.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            document.getElementById('taxSavings').textContent = '$' + taxSavings.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+            // Recommendation
+            let recommendation = '';
+            if (method === 'standard') {
+                // Calculate what actual expenses would be (estimate)
+                const estimatedActualPerMile = 0.60; // Conservative estimate
+                const estimatedActualDeduction = businessMiles * estimatedActualPerMile * businessUsePercent;
+
+                if (estimatedActualDeduction > vehicleDeduction * 1.1) {
+                    recommendation = 'Consider tracking actual expenses - you may get a higher deduction with an older vehicle or high repair costs. However, remember you cannot switch back to standard mileage once you choose actual expenses.';
+                } else {
+                    recommendation = 'Standard mileage is likely your best option. It\'s simpler to track and provides a solid deduction for your miles driven.';
+                }
+            } else {
+                const standardDeduction = businessMiles * 0.67;
+                if (vehicleDeduction < standardDeduction * 0.9) {
+                    recommendation = 'Based on your inputs, standard mileage ($' + standardDeduction.toFixed(0) + ') might give you a better deduction. Consider switching in future years if you haven\'t already committed to actual expenses.';
+                } else {
+                    recommendation = 'Actual expenses are working well for you! Keep detailed records and receipts for all vehicle-related costs.';
+                }
+            }
+
+            document.getElementById('recommendationText').textContent = recommendation;
+            results.style.display = 'block';
+
+            // Scroll to results
+            results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
