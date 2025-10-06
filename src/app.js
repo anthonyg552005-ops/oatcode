@@ -8,6 +8,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 const basicAuth = require('express-basic-auth');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const demoRoutes = require('./routes/demoRoutes');
@@ -19,9 +20,14 @@ const stripeWebhookRoutes = require('./routes/stripeWebhook');
 const inboundEmailRoutes = require('./routes/inboundEmail');
 const autonomousControlRoutes = require('./routes/autonomous-control');
 const customerRoutes = require('./routes/customer');
+const requestChangesRoutes = require('./routes/requestChanges');
+const adminApprovalRoutes = require('./routes/adminApproval');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Trust proxy for rate limiting when behind nginx/cloudflare
+app.set('trust proxy', true);
 
 // Password protection for dashboard
 const dashboardAuth = basicAuth({
@@ -38,12 +44,132 @@ app.use(helmet({
   contentSecurityPolicy: false, // Allow inline scripts for demos
   crossOriginEmbedderPolicy: false
 }));
+
+// Stripe webhook needs raw body BEFORE express.json()
+app.use('/webhook/stripe', express.raw({ type: 'application/json' }));
+
+// Parse JSON for all other routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rate limiting - protect against abuse
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  validate: false, // Disable trust proxy validation (we handle it ourselves)
+  skip: (req) => {
+    // Skip rate limiting for health checks, static files, admin routes, and dashboard
+    return req.path === '/health' ||
+           req.path.startsWith('/demos/') ||
+           req.path.startsWith('/admin/') ||
+           req.path.startsWith('/dashboard') ||
+           req.path.startsWith('/api/public/') ||
+           req.path.startsWith('/api/dashboard/');
+  }
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // Stricter limit for API endpoints
+  message: 'Too many API requests from this IP, please try again later.',
+  validate: false // Disable trust proxy validation
+});
+
+const demoLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Max 10 demo requests per hour per IP
+  message: 'Too many demo requests, please try again later.',
+  validate: false // Disable trust proxy validation
+});
+
+// Apply general rate limiting to all routes
+app.use(generalLimiter);
 
 // Serve static files (landing page, legal pages, demos)
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/demos', express.static(path.join(__dirname, '../demos')));
+
+// CALCULATOR ROUTES - Explicitly serve calculator index.html files
+app.get('/calculators', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/index.html'));
+});
+app.get('/calculators/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/index.html'));
+});
+app.get('/calculators/discord-boost', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/discord-boost/index.html'));
+});
+app.get('/calculators/discord-boost/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/discord-boost/index.html'));
+});
+app.get('/calculators/podcast-sponsorship', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/podcast-sponsorship/index.html'));
+});
+app.get('/calculators/podcast-sponsorship/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/podcast-sponsorship/index.html'));
+});
+app.get('/calculators/substack-pricing', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/substack-pricing/index.html'));
+});
+app.get('/calculators/substack-pricing/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/calculators/substack-pricing/index.html'));
+});
+
+// CUSTOM DOMAIN MIDDLEWARE - Routes premium customer domains to their websites
+app.use(async (req, res, next) => {
+  const hostname = req.hostname;
+
+  // Skip oatcode.com, localhost, and direct IP access
+  if (hostname.includes('oatcode.com') ||
+      hostname.includes('localhost') ||
+      hostname.includes('127.0.0.1') ||
+      hostname.includes('24.144.89.17')) {
+    return next();
+  }
+
+  // Check if this is a custom domain for a premium customer
+  try {
+    const db = require('./database/DatabaseService');
+    if (!db.db) await db.connect();
+
+    const customer = await db.get(
+      'SELECT id, custom_domain, website_url, stripe_customer_id FROM customers WHERE custom_domain = ?',
+      [hostname]
+    );
+
+    if (customer) {
+      // Found premium customer with this custom domain
+      console.log(`🌐 Custom domain request: ${hostname} → Customer ID ${customer.id}`);
+
+      // Try to find their website file
+      const glob = require('glob');
+      const demoFiles = glob.sync(path.join(__dirname, '../public/demos', `${customer.id}.html`));
+
+      if (demoFiles.length > 0) {
+        console.log(`   ✅ Serving website: ${demoFiles[0]}`);
+        return res.sendFile(demoFiles[0]);
+      }
+
+      // Try alternative naming pattern (customer_stripeid_timestamp.html)
+      const altFiles = glob.sync(path.join(__dirname, '../public/demos', `customer_${customer.stripe_customer_id}*.html`));
+
+      if (altFiles.length > 0) {
+        console.log(`   ✅ Serving website: ${altFiles[0]}`);
+        return res.sendFile(altFiles[0]);
+      }
+
+      console.log(`   ⚠️  Custom domain ${hostname} found but no website file exists`);
+    }
+  } catch (error) {
+    console.error('Custom domain lookup error:', error);
+  }
+
+  // Not a custom domain or website not found - continue to normal routing
+  next();
+});
 
 // Legal pages
 app.get('/terms-of-service', (req, res) => {
@@ -63,16 +189,150 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+// Purchase success page
+app.get('/purchase-success', (req, res) => {
+  const sessionId = req.query.session_id;
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Purchase Successful - OatCode</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-50">
+        <div class="min-h-screen flex items-center justify-center px-4">
+            <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+                <div class="mb-6">
+                    <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">Payment Successful!</h1>
+                <p class="text-gray-600 mb-6">Thank you for your purchase. We're setting up your website now.</p>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-blue-800">
+                        <strong>📧 Check your email!</strong><br>
+                        You'll receive your custom website within the next 24-48 hours. We'll send you an email with the link once it's ready.
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <a href="${process.env.DOMAIN || 'http://localhost:3000'}" class="block w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition">
+                        Return to Home
+                    </a>
+                </div>
+                <p class="text-xs text-gray-500 mt-6">Session ID: ${sessionId || 'N/A'}</p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `);
+});
+
 // Routes
-app.use('/demo', demoRoutes);
+app.use('/demo', demoLimiter, demoRoutes); // Demo generation - stricter limit
 app.use('/api/dashboard', dashboardAuth, dashboardRoutes);
 app.use('/api/monitoring', dashboardAuth, monitoringRoutes);
-app.use('/health', healthRoutes); // Public health checks
+app.use('/health', healthRoutes); // Public health checks (no rate limit)
+
+// Public scraper stats (no auth required for dashboard display)
+app.get('/api/public/scraper-stats', async (req, res) => {
+  try {
+    const db = require('./database/DatabaseService');
+    if (!db.db) await db.connect();
+
+    const result = await db.all(`
+      SELECT COUNT(*) as count
+      FROM leads
+      WHERE source = 'autonomous_scraper'
+      AND website = 'none'
+    `);
+
+    const leadCount = result[0]?.count || 0;
+
+    // Check if scraper is running (has leads from last 10 minutes)
+    const recentLeads = await db.all(`
+      SELECT COUNT(*) as count
+      FROM leads
+      WHERE source = 'autonomous_scraper'
+      AND datetime(createdAt) >= datetime('now', '-10 minutes')
+    `);
+
+    const isRunning = recentLeads[0]?.count > 0;
+
+    res.json({
+      leadCount,
+      isRunning,
+      target: 10000,
+      percent: Math.min((leadCount / 10000) * 100, 100).toFixed(1)
+    });
+
+  } catch (error) {
+    console.error('Error fetching scraper stats:', error);
+    res.status(500).json({
+      error: 'Failed to fetch scraper stats',
+      leadCount: 0,
+      isRunning: false,
+      target: 10000,
+      percent: 0
+    });
+  }
+});
+
+// Get all leads for dashboard
+app.get('/api/public/leads', async (req, res) => {
+  try {
+    const { limit = 100, offset = 0, status = null } = req.query;
+    const db = require('./database/DatabaseService');
+    if (!db.db) await db.connect();
+
+    let query = 'SELECT * FROM leads WHERE source = ? AND name != ?';
+    const params = ['autonomous_scraper', 'Results'];
+
+    if (status) {
+      query += ' AND status = ?';
+      params.push(status);
+    }
+
+    query += ' ORDER BY createdAt DESC LIMIT ? OFFSET ?';
+    params.push(parseInt(limit), parseInt(offset));
+
+    const leads = await db.all(query, params);
+
+    // Get total count
+    let countQuery = 'SELECT COUNT(*) as total FROM leads WHERE source = ? AND name != ?';
+    const countParams = ['autonomous_scraper', 'Results'];
+    if (status) {
+      countQuery += ' AND status = ?';
+      countParams.push(status);
+    }
+
+    const countResult = await db.all(countQuery, countParams);
+    const total = countResult[0]?.total || 0;
+
+    res.json({
+      leads,
+      total,
+      limit: parseInt(limit),
+      offset: parseInt(offset)
+    });
+
+  } catch (error) {
+    console.error('Error fetching leads:', error);
+    res.status(500).json({ error: 'Failed to fetch leads' });
+  }
+});
+
 app.use('/webhook/sendgrid', webhookRoutes); // SendGrid webhook (public - no auth)
 app.use('/webhook/stripe', stripeWebhookRoutes); // Stripe webhook (public - verified by signature)
 app.use('/webhook/inbound-email', inboundEmailRoutes); // Inbound email support (public - SendGrid Inbound Parse)
 app.use('/api/autonomous-control', autonomousControlRoutes); // Autonomous control API (token auth)
-app.use('/api/customer', customerRoutes); // Customer retention and feedback
+app.use('/api/customer', apiLimiter, customerRoutes); // Customer retention and feedback - API limit
+app.use('/api/request-changes', apiLimiter, requestChangesRoutes); // Customer change requests - API limit
+app.use('/admin', adminApprovalRoutes); // Admin approval system (no auth for simplicity - add later if needed)
 
 // Dashboard route (protected)
 app.get('/dashboard', dashboardAuth, (req, res) => {
