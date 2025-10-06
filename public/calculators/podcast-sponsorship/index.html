@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podcast Sponsorship Rate Calculator - CPM & Revenue Calculator | OatCode</title>
+    <meta name="description" content="Calculate podcast sponsorship rates and revenue. Pre-roll, mid-roll, post-roll CPM calculator. Estimate monthly podcast ad earnings for free.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366F1;
+            --secondary: #EC4899;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        nav {
+            background: white;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .breadcrumb {
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .header {
+            background: var(--gradient-1);
+            color: white;
+            padding: 60px 40px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .calculator-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+        }
+
+        .calc-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .results {
+            padding: 32px;
+            background: var(--gradient-1);
+            border-radius: 16px;
+            color: white;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 900;
+            margin-top: 4px;
+        }
+
+        .result-detail {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 8px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .content-section h2 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .content-section h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+
+        .content-section p {
+            color: #475569;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .content-section ul {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        .content-section li {
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        th {
+            background: var(--gradient-1);
+            color: white;
+            font-weight: 700;
+        }
+
+        .faq-item {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .faq-question {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">OatCode</a>
+            <div class="breadcrumb">
+                <a href="/">Home</a> ›
+                <a href="/calculators">Calculators</a> ›
+                Podcast Sponsorship Calculator
+            </div>
+        </div>
+    </nav>
+
+    <div class="header">
+        <h1>🎙️ Podcast Sponsorship Rate Calculator</h1>
+        <p>Calculate CPM rates and monthly podcast advertising revenue</p>
+    </div>
+
+    <div class="container">
+        <div class="calculator-wrapper">
+            <div class="calculator-box">
+                <h2 class="calc-title">Calculate Sponsorship Revenue</h2>
+
+                <div class="form-group">
+                    <label for="downloads">Downloads Per Episode</label>
+                    <input type="number" id="downloads" value="5000" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="preRollCPM">Pre-Roll CPM ($15-25 typical)</label>
+                    <input type="number" id="preRollCPM" value="20" step="0.01" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="midRollCPM">Mid-Roll CPM ($25-40 typical)</label>
+                    <input type="number" id="midRollCPM" value="30" step="0.01" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="postRollCPM">Post-Roll CPM ($10-20 typical)</label>
+                    <input type="number" id="postRollCPM" value="15" step="0.01" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="episodesPerMonth">Episodes Per Month</label>
+                    <input type="number" id="episodesPerMonth" value="4" min="0">
+                </div>
+
+                <button class="calculate-btn" onclick="calculateRevenue()">Calculate Revenue</button>
+            </div>
+
+            <div class="calculator-box">
+                <div class="results">
+                    <div class="result-item">
+                        <div class="result-label">Per Episode Revenue</div>
+                        <div class="result-value" id="perEpisode">$0.00</div>
+                        <div class="result-detail" id="episodeBreakdown">-</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Monthly Revenue</div>
+                        <div class="result-value" id="monthlyRevenue">$0.00</div>
+                        <div class="result-detail" id="monthlyDetail">-</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Annual Revenue</div>
+                        <div class="result-value" id="annualRevenue">$0.00</div>
+                        <div class="result-detail">Based on current rates and episode frequency</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>How Podcast Sponsorship Works</h2>
+            <p>
+                Podcast sponsorships are typically priced using CPM (Cost Per Mille), which means cost per 1,000 downloads.
+                Advertisers pay podcasters based on how many people listen to their show, making it a performance-based
+                advertising model that scales with audience size.
+            </p>
+
+            <h3>Understanding CPM Rates</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ad Placement</th>
+                        <th>Typical CPM Range</th>
+                        <th>Why It Works</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Pre-Roll</strong> (0-15 seconds)</td>
+                        <td>$15-$25</td>
+                        <td>First impression, 100% retention rate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mid-Roll</strong> (30-60 seconds)</td>
+                        <td>$25-$40</td>
+                        <td>Engaged listeners, host-read, highest value</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Post-Roll</strong> (15-30 seconds)</td>
+                        <td>$10-$20</td>
+                        <td>End of episode, lower retention but still effective</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Factors That Affect Your CPM</h3>
+            <ul>
+                <li><strong>Niche/Topic</strong> - B2B and finance podcasts command higher CPMs ($40-100)</li>
+                <li><strong>Audience Demographics</strong> - High-income listeners = higher CPMs</li>
+                <li><strong>Engagement Rate</strong> - Loyal, engaged audiences attract premium sponsors</li>
+                <li><strong>Download Numbers</strong> - Larger shows typically negotiate better rates</li>
+                <li><strong>Host-Read vs Dynamic</strong> - Host-read ads earn 2-3x more than programmatic</li>
+                <li><strong>Ad Length</strong> - 60-second spots earn more than 30-second spots</li>
+            </ul>
+
+            <h3>How to Calculate Your Rate</h3>
+            <p>The formula for podcast sponsorship revenue per episode:</p>
+            <p><strong>Revenue = (Downloads ÷ 1,000) × CPM</strong></p>
+            <p>Example: 5,000 downloads × $30 CPM = (5,000 ÷ 1,000) × $30 = <strong>$150 per episode</strong></p>
+
+            <h3>How to Get Podcast Sponsors</h3>
+            <p>To attract sponsors for your podcast:</p>
+            <ol>
+                <li><strong>Build Audience First</strong> - Most networks want 1,000+ downloads per episode minimum</li>
+                <li><strong>Join Ad Networks</strong> - AdvertiseCast, Podcorn, Midroll handle sponsor matchmaking</li>
+                <li><strong>Create Media Kit</strong> - Show demographics, download stats, listener testimonials</li>
+                <li><strong>Direct Outreach</strong> - Contact brands that align with your niche</li>
+                <li><strong>Offer Proof</strong> - Track conversions with promo codes and affiliate links</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>Example Revenue Calculations</h2>
+
+            <h3>Example 1: Small Podcast (2,000 downloads/episode)</h3>
+            <p>
+                <strong>Downloads:</strong> 2,000 per episode<br>
+                <strong>Mid-Roll CPM:</strong> $25<br>
+                <strong>Episodes/Month:</strong> 4<br>
+                <strong>Per Episode:</strong> (2,000 ÷ 1,000) × $25 = <strong>$50</strong><br>
+                <strong>Monthly Revenue:</strong> $50 × 4 = <strong>$200/month</strong>
+            </p>
+
+            <h3>Example 2: Growing Show (10,000 downloads/episode)</h3>
+            <p>
+                <strong>Downloads:</strong> 10,000 per episode<br>
+                <strong>Pre-Roll:</strong> $20 CPM<br>
+                <strong>Mid-Roll:</strong> $30 CPM<br>
+                <strong>Episodes/Month:</strong> 8 (twice weekly)<br>
+                <strong>Per Episode:</strong> (10 × $20) + (10 × $30) = <strong>$500</strong><br>
+                <strong>Monthly Revenue:</strong> $500 × 8 = <strong>$4,000/month</strong>
+            </p>
+
+            <h3>Example 3: Established Podcast (50,000 downloads/episode)</h3>
+            <p>
+                <strong>Downloads:</strong> 50,000 per episode<br>
+                <strong>Pre-Roll:</strong> $25 CPM<br>
+                <strong>2× Mid-Roll:</strong> $35 CPM each<br>
+                <strong>Post-Roll:</strong> $15 CPM<br>
+                <strong>Episodes/Month:</strong> 4<br>
+                <strong>Per Episode:</strong> (50 × $25) + (50 × $35 × 2) + (50 × $15) = <strong>$5,250</strong><br>
+                <strong>Monthly Revenue:</strong> $5,250 × 4 = <strong>$21,000/month</strong>
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">How many downloads do I need to get sponsors?</div>
+                <div class="faq-answer">
+                    Most podcast ad networks require a minimum of 1,000-5,000 downloads per episode. However, niche podcasts
+                    with highly engaged audiences can attract direct sponsors with even fewer downloads if the audience matches
+                    the sponsor's target demographic.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What's a good CPM for podcasts?</div>
+                <div class="faq-answer">
+                    Average CPMs range from $15-40 depending on placement. Mid-roll host-read ads typically command $25-40 CPM.
+                    Niche shows (business, finance, tech) can earn $40-100 CPM, while general entertainment shows earn $15-30 CPM.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Should I do host-read or dynamic ad insertion?</div>
+                <div class="faq-answer">
+                    Host-read ads earn 2-3x more ($25-40 CPM) than dynamically inserted ads ($8-15 CPM) because they feel more
+                    authentic and have better conversion rates. If you're under 10,000 downloads/episode, host-read is almost
+                    always better for revenue.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">How do I track if sponsors are getting ROI?</div>
+                <div class="faq-answer">
+                    Use unique promo codes or affiliate links for each sponsor. Track redemptions and conversions. Most sponsors
+                    expect 1-3% conversion rate. Share performance data monthly to retain sponsors and justify rate increases.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can I have multiple sponsors per episode?</div>
+                <div class="faq-answer">
+                    Yes! Most shows have 2-3 sponsors: one pre-roll, 1-2 mid-rolls, and optionally one post-roll. Just ensure
+                    total ad time stays under 20% of episode length to maintain listener experience (8 minutes of ads max for
+                    a 40-minute show).
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" style="text-align: center; background: var(--gradient-1); color: white;">
+            <h2 style="color: white; margin-bottom: 16px;">Need a Professional Podcast Website?</h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 24px;">
+                OatCode builds AI-powered websites with Runway video, DALL-E visuals, and autonomous management.
+                Perfect for podcasters, creators, and media businesses.
+            </p>
+            <a href="/" style="display: inline-block; background: white; color: var(--primary); padding: 16px 40px; border-radius: 50px; text-decoration: none; font-weight: 700;">
+                Learn More About Our Websites →
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function calculateRevenue() {
+            const downloads = parseFloat(document.getElementById('downloads').value) || 0;
+            const preRollCPM = parseFloat(document.getElementById('preRollCPM').value) || 0;
+            const midRollCPM = parseFloat(document.getElementById('midRollCPM').value) || 0;
+            const postRollCPM = parseFloat(document.getElementById('postRollCPM').value) || 0;
+            const episodesPerMonth = parseFloat(document.getElementById('episodesPerMonth').value) || 0;
+
+            // Calculate per episode revenue
+            const downloadsInThousands = downloads / 1000;
+            const preRollRevenue = downloadsInThousands * preRollCPM;
+            const midRollRevenue = downloadsInThousands * midRollCPM;
+            const postRollRevenue = downloadsInThousands * postRollCPM;
+            const totalPerEpisode = preRollRevenue + midRollRevenue + postRollRevenue;
+
+            // Calculate monthly and annual
+            const monthlyTotal = totalPerEpisode * episodesPerMonth;
+            const annualTotal = monthlyTotal * 12;
+
+            // Update UI
+            document.getElementById('perEpisode').textContent = `$${totalPerEpisode.toFixed(2)}`;
+            document.getElementById('episodeBreakdown').textContent =
+                `Pre: $${preRollRevenue.toFixed(2)} + Mid: $${midRollRevenue.toFixed(2)} + Post: $${postRollRevenue.toFixed(2)}`;
+
+            document.getElementById('monthlyRevenue').textContent = `$${monthlyTotal.toFixed(2)}`;
+            document.getElementById('monthlyDetail').textContent = `${episodesPerMonth} episodes × $${totalPerEpisode.toFixed(2)}`;
+
+            document.getElementById('annualRevenue').textContent = `$${annualTotal.toFixed(2)}`;
+        }
+
+        // Calculate on page load
+        window.addEventListener('DOMContentLoaded', calculateRevenue);
+    </script>
+</body>
+</html>

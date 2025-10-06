@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Professional Calculators | OatCode Tools</title>
+    <meta name="description" content="Free professional calculators for creators, freelancers, and businesses. Discord boost costs, podcast sponsorship rates, Substack pricing, and more.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #EC4899;
+            --accent: #F59E0B;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-glow: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: var(--gradient-glow);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 8s ease infinite;
+            letter-spacing: -1px;
+            text-decoration: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Header */
+        .header {
+            padding: 140px 40px 80px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .header h1 {
+            font-size: clamp(36px, 6vw, 64px);
+            font-weight: 900;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            font-size: clamp(18px, 2.5vw, 24px);
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 60px 18px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+        }
+
+        /* Calculator Grid */
+        .calculators-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .category-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+
+        .calculators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .calculator-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .calculator-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .calculator-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .calculator-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .calculator-description {
+            font-size: 15px;
+            color: #64748B;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .calculator-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #94A3B8;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .badge-new {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .badge-popular {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 40px 40px;
+            text-align: center;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .calculators-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">OatCode</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/calculators">Calculators</a>
+                <a href="/#features">Services</a>
+                <a href="mailto:hello@oatcode.com">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <h1>Free Professional Calculators</h1>
+        <p>Powerful tools for creators, freelancers, and businesses. Always free, no sign-up required.</p>
+        <div class="search-box">
+            <input
+                type="text"
+                class="search-input"
+                id="searchInput"
+                placeholder="Search calculators..."
+                autocomplete="off"
+            >
+            <span class="search-icon">🔍</span>
+        </div>
+    </header>
+
+    <!-- Calculators Section -->
+    <section class="calculators-section">
+        <!-- Creator Tools -->
+        <h2 class="category-title">🎨 Creator & Influencer Tools</h2>
+        <div class="calculators-grid" id="creatorTools">
+            <a href="/calculators/discord-boost/" class="calculator-card">
+                <span class="badge badge-new">New</span>
+                <div class="calculator-icon">💎</div>
+                <h3 class="calculator-title">Discord Nitro Server Boost Calculator</h3>
+                <p class="calculator-description">
+                    Calculate the exact cost to reach Discord server boost levels 1, 2, and 3.
+                    Includes Nitro discounts and perks breakdown.
+                </p>
+                <div class="calculator-meta">
+                    <span class="meta-item">⚡ Instant</span>
+                    <span class="meta-item">📊 Detailed</span>
+                </div>
+            </a>
+
+            <a href="/calculators/podcast-sponsorship/" class="calculator-card">
+                <span class="badge badge-new">New</span>
+                <div class="calculator-icon">🎙️</div>
+                <h3 class="calculator-title">Podcast Sponsorship Rate Calculator</h3>
+                <p class="calculator-description">
+                    Calculate CPM rates for pre-roll, mid-roll, and post-roll podcast ads.
+                    Get accurate sponsorship pricing for your show.
+                </p>
+                <div class="calculator-meta">
+                    <span class="meta-item">⚡ Instant</span>
+                    <span class="meta-item">💰 Revenue</span>
+                </div>
+            </a>
+
+            <a href="/calculators/substack-pricing/" class="calculator-card">
+                <span class="badge badge-new">New</span>
+                <div class="calculator-icon">📧</div>
+                <h3 class="calculator-title">Substack Newsletter Pricing Calculator</h3>
+                <p class="calculator-description">
+                    Calculate newsletter revenue after Substack fees. Estimate earnings from paid subscribers
+                    with different pricing tiers.
+                </p>
+                <div class="calculator-meta">
+                    <span class="meta-item">⚡ Instant</span>
+                    <span class="meta-item">📈 Growth</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Coming Soon -->
+        <h2 class="category-title">🚀 Coming Soon</h2>
+        <div class="calculators-grid">
+            <div class="calculator-card" style="opacity: 0.6; cursor: default;">
+                <span class="badge" style="background: #94A3B8;">Soon</span>
+                <div class="calculator-icon">🚗</div>
+                <h3 class="calculator-title">Rideshare Tax Deduction Calculator</h3>
+                <p class="calculator-description">
+                    Calculate tax deductions for Uber and Lyft drivers. Standard mileage vs actual expenses.
+                </p>
+            </div>
+
+            <div class="calculator-card" style="opacity: 0.6; cursor: default;">
+                <span class="badge" style="background: #94A3B8;">Soon</span>
+                <div class="calculator-icon">💼</div>
+                <h3 class="calculator-title">Freelance Web Developer Rate Calculator</h3>
+                <p class="calculator-description">
+                    Calculate your optimal hourly rate based on expenses, desired salary, and billable hours.
+                </p>
+            </div>
+
+            <div class="calculator-card" style="opacity: 0.6; cursor: default;">
+                <span class="badge" style="background: #94A3B8;">Soon</span>
+                <div class="calculator-icon">🎨</div>
+                <h3 class="calculator-title">Graphic Designer Project Pricing Calculator</h3>
+                <p class="calculator-description">
+                    Price your design projects accurately with cost-based and value-based pricing models.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p style="margin-bottom: 20px;">
+            <strong>OatCode</strong> - Professional Internet Services & Tools
+        </p>
+        <p>
+            <a href="/">Home</a>
+            <a href="/calculators">Calculators</a>
+            <a href="/#features">Services</a>
+            <a href="/privacy-policy.html">Privacy</a>
+            <a href="mailto:hello@oatcode.com">Contact</a>
+        </p>
+        <p style="margin-top: 30px; color: #94A3B8; font-size: 14px;">
+            © 2025 OatCode. All calculators are free to use. No sign-up required.
+        </p>
+    </footer>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const calculatorCards = document.querySelectorAll('.calculator-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+
+            calculatorCards.forEach(card => {
+                const title = card.querySelector('.calculator-title').textContent.toLowerCase();
+                const description = card.querySelector('.calculator-description').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

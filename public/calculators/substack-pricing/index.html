@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Substack Newsletter Pricing Calculator - Revenue & Earnings Estimator | OatCode</title>
+    <meta name="description" content="Calculate Substack newsletter revenue after fees. Estimate earnings from paid subscribers with different pricing tiers. Free calculator tool.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366F1;
+            --secondary: #EC4899;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --substack-orange: #FF6719;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        nav {
+            background: white;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .breadcrumb {
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .header {
+            background: var(--gradient-1);
+            color: white;
+            padding: 60px 40px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .calculator-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+        }
+
+        .calc-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .label-helper {
+            font-weight: 400;
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .results {
+            padding: 32px;
+            background: var(--gradient-1);
+            border-radius: 16px;
+            color: white;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 900;
+            margin-top: 4px;
+        }
+
+        .result-detail {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 8px;
+        }
+
+        .breakdown-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .breakdown-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-list li:last-child {
+            border-bottom: none;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .content-section h2 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .content-section h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+
+        .content-section p {
+            color: #475569;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .content-section ul, .content-section ol {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        .content-section li {
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        th {
+            background: var(--gradient-1);
+            color: white;
+            font-weight: 700;
+        }
+
+        .highlight-box {
+            background: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 8px;
+        }
+
+        .faq-item {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .faq-question {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">OatCode</a>
+            <div class="breadcrumb">
+                <a href="/">Home</a> ›
+                <a href="/calculators">Calculators</a> ›
+                Substack Pricing Calculator
+            </div>
+        </div>
+    </nav>
+
+    <div class="header">
+        <h1>📧 Substack Newsletter Pricing Calculator</h1>
+        <p>Calculate your newsletter revenue after Substack fees</p>
+    </div>
+
+    <div class="container">
+        <div class="calculator-wrapper">
+            <div class="calculator-box">
+                <h2 class="calc-title">Calculate Your Revenue</h2>
+
+                <div class="form-group">
+                    <label for="totalSubs">Total Subscribers</label>
+                    <input type="number" id="totalSubs" value="1000" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="paidSubs">
+                        Paid Subscribers
+                        <span class="label-helper">(or enter conversion rate below)</span>
+                    </label>
+                    <input type="number" id="paidSubs" value="100" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="conversionRate">
+                        Conversion Rate %
+                        <span class="label-helper">(5-10% is typical)</span>
+                    </label>
+                    <input type="number" id="conversionRate" value="10" step="0.1" min="0" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="monthlyPrice">Monthly Subscription Price</label>
+                    <select id="monthlyPrice">
+                        <option value="5">$5/month</option>
+                        <option value="7">$7/month</option>
+                        <option value="10" selected>$10/month</option>
+                        <option value="15">$15/month</option>
+                        <option value="20">$20/month</option>
+                        <option value="custom">Custom...</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="customPriceGroup" style="display: none;">
+                    <label for="customPrice">Custom Monthly Price ($)</label>
+                    <input type="number" id="customPrice" value="10" step="0.01" min="0">
+                </div>
+
+                <button class="calculate-btn" onclick="calculateRevenue()">Calculate Revenue</button>
+            </div>
+
+            <div class="calculator-box">
+                <div class="results">
+                    <div class="result-item">
+                        <div class="result-label">Gross Monthly Revenue</div>
+                        <div class="result-value" id="grossRevenue">$0.00</div>
+                        <div class="result-detail" id="grossDetail">-</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">After Substack Fees</div>
+                        <div class="result-value" id="netRevenue">$0.00</div>
+                        <ul class="breakdown-list">
+                            <li>Substack Fee (10%): <span id="substackFee">$0.00</span></li>
+                            <li>Payment Processing (3.9%): <span id="paymentFee">$0.00</span></li>
+                            <li><strong>Your Net Income: <span id="netIncome">$0.00</span></strong></li>
+                        </ul>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Annual Projection</div>
+                        <div class="result-value" id="annualRevenue">$0.00</div>
+                        <div class="result-detail">Based on current subscriber count</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>How Substack Pricing & Fees Work</h2>
+            <p>
+                Substack is a newsletter platform that makes it easy to launch a paid newsletter. It's free to use,
+                but Substack takes a cut of your subscription revenue. Understanding these fees is crucial for
+                setting your pricing and revenue expectations.
+            </p>
+
+            <h3>Substack Fee Structure</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fee Type</th>
+                        <th>Percentage</th>
+                        <th>What It Covers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Platform Fee</strong></td>
+                        <td>10%</td>
+                        <td>Substack's cut for hosting, infrastructure, and features</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Payment Processing</strong></td>
+                        <td>2.9% + $0.30</td>
+                        <td>Stripe credit card processing fees</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Billing Fee</strong></td>
+                        <td>0.7%</td>
+                        <td>Recurring subscription management (as of 2024)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box">
+                <strong>Total Fees:</strong> Approximately 13.6% - 14% of your subscription revenue goes to fees,
+                meaning you keep about 86% of what subscribers pay.
+            </div>
+
+            <h3>Recommended Pricing Strategies</h3>
+            <p>The most common and successful pricing structure on Substack is:</p>
+            <ul>
+                <li><strong>$5/month</strong> or <strong>$50/year</strong> (save $10) - Entry-level, high conversion</li>
+                <li><strong>$7-10/month</strong> or <strong>$70-100/year</strong> - Sweet spot for most newsletters</li>
+                <li><strong>$15-20/month</strong> or <strong>$150-200/year</strong> - Premium, specialized content</li>
+            </ul>
+
+            <p>Substack's default recommendation is <strong>$5/month or $50/year</strong>, which works well for new newsletters.</p>
+
+            <h3>Typical Conversion Rates</h3>
+            <p>The percentage of free subscribers who convert to paid typically ranges:</p>
+            <ul>
+                <li><strong>5-7%</strong> - Average conversion rate across most newsletters</li>
+                <li><strong>8-12%</strong> - Well-established newsletters with loyal audiences</li>
+                <li><strong>15%+</strong> - Top-performing newsletters in specialized niches</li>
+            </ul>
+
+            <p>With consistent high-quality content, most newsletters should aim for a <strong>10% conversion rate</strong> as a realistic goal.</p>
+
+            <h3>How to Maximize Your Revenue</h3>
+            <ol>
+                <li><strong>Build Your Free List First</strong> - Get to 1,000+ subscribers before going paid</li>
+                <li><strong>Offer Clear Value</strong> - Explain exactly what paid subscribers get</li>
+                <li><strong>Annual Discounts</strong> - Offer annual subscriptions at 15-20% off (2 months free)</li>
+                <li><strong>Founding Member Tier</strong> - Offer higher-priced tier ($200-500/year) for super fans</li>
+                <li><strong>Free Trials</strong> - Offer 7-day free trial to reduce friction</li>
+                <li><strong>Consistent Publishing</strong> - Weekly publishing schedule builds trust</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>Revenue Examples</h2>
+
+            <h3>Example 1: New Newsletter (1,000 subscribers, 5% conversion)</h3>
+            <p>
+                <strong>Total Subscribers:</strong> 1,000<br>
+                <strong>Paid Subscribers:</strong> 50 (5% conversion)<br>
+                <strong>Price:</strong> $5/month<br>
+                <strong>Gross Revenue:</strong> 50 × $5 = $250/month<br>
+                <strong>After Fees (86%):</strong> <strong>$215/month</strong> or <strong>$2,580/year</strong>
+            </p>
+
+            <h3>Example 2: Growing Newsletter (5,000 subscribers, 10% conversion)</h3>
+            <p>
+                <strong>Total Subscribers:</strong> 5,000<br>
+                <strong>Paid Subscribers:</strong> 500 (10% conversion)<br>
+                <strong>Price:</strong> $10/month<br>
+                <strong>Gross Revenue:</strong> 500 × $10 = $5,000/month<br>
+                <strong>After Fees (86%):</strong> <strong>$4,300/month</strong> or <strong>$51,600/year</strong>
+            </p>
+
+            <h3>Example 3: Established Newsletter (20,000 subscribers, 12% conversion)</h3>
+            <p>
+                <strong>Total Subscribers:</strong> 20,000<br>
+                <strong>Paid Subscribers:</strong> 2,400 (12% conversion)<br>
+                <strong>Price:</strong> $15/month<br>
+                <strong>Gross Revenue:</strong> 2,400 × $15 = $36,000/month<br>
+                <strong>After Fees (86%):</strong> <strong>$30,960/month</strong> or <strong>$371,520/year</strong>
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">How much does Substack take from subscriptions?</div>
+                <div class="faq-answer">
+                    Substack takes 10% of your subscription revenue, plus payment processing fees of about 2.9% + $0.30
+                    and a 0.7% billing fee. In total, you keep approximately 86% of your subscription revenue.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What's the best price for a paid newsletter?</div>
+                <div class="faq-answer">
+                    $5-10/month is the sweet spot for most newsletters. $5/month ($50/year) has the highest conversion
+                    rate, while $10/month ($100/year) balances revenue and conversions well. Premium newsletters can
+                    charge $15-20/month if they deliver specialized, high-value content.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">How many free subscribers do I need before going paid?</div>
+                <div class="faq-answer">
+                    Most successful paid newsletters have 1,000-5,000 free subscribers first. This builds proof of
+                    value and ensures you have enough conversions. With 1,000 free subscribers and a 10% conversion
+                    rate, you'd get 100 paid subscribers ($500-1,000/month at $5-10 pricing).
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Should I offer a free trial?</div>
+                <div class="faq-answer">
+                    Yes! 7-day free trials can increase conversions by 30-50%. Readers get to experience your paid
+                    content risk-free. Just make sure you deliver high value during the trial period to encourage
+                    subscription continuation.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can I change my pricing later?</div>
+                <div class="faq-answer">
+                    Yes, but existing subscribers keep their current price (grandfathered). You can increase prices
+                    for new subscribers anytime. Many successful newsletters start at $5/month and increase to
+                    $7-10/month as they grow their audience and improve content quality.
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" style="text-align: center; background: var(--gradient-1); color: white;">
+            <h2 style="color: white; margin-bottom: 16px;">Need a Professional Newsletter Website?</h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 24px;">
+                OatCode builds AI-powered websites with Runway video, DALL-E visuals, and autonomous management.
+                Perfect for newsletter creators, writers, and content businesses.
+            </p>
+            <a href="/" style="display: inline-block; background: white; color: var(--primary); padding: 16px 40px; border-radius: 50px; text-decoration: none; font-weight: 700;">
+                Learn More About Our Websites →
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Show/hide custom price input
+        document.getElementById('monthlyPrice').addEventListener('change', function() {
+            const customGroup = document.getElementById('customPriceGroup');
+            if (this.value === 'custom') {
+                customGroup.style.display = 'block';
+            } else {
+                customGroup.style.display = 'none';
+            }
+            calculateRevenue();
+        });
+
+        // Update paid subs when conversion rate changes
+        document.getElementById('conversionRate').addEventListener('input', function() {
+            const total = parseFloat(document.getElementById('totalSubs').value) || 0;
+            const rate = parseFloat(this.value) || 0;
+            const paidSubs = Math.round(total * (rate / 100));
+            document.getElementById('paidSubs').value = paidSubs;
+            calculateRevenue();
+        });
+
+        // Update conversion rate when paid subs changes
+        document.getElementById('paidSubs').addEventListener('input', function() {
+            const total = parseFloat(document.getElementById('totalSubs').value) || 0;
+            const paid = parseFloat(this.value) || 0;
+            if (total > 0) {
+                const rate = (paid / total) * 100;
+                document.getElementById('conversionRate').value = rate.toFixed(1);
+            }
+            calculateRevenue();
+        });
+
+        function calculateRevenue() {
+            const totalSubs = parseFloat(document.getElementById('totalSubs').value) || 0;
+            const paidSubs = parseFloat(document.getElementById('paidSubs').value) || 0;
+
+            let monthlyPrice;
+            const priceSelect = document.getElementById('monthlyPrice').value;
+            if (priceSelect === 'custom') {
+                monthlyPrice = parseFloat(document.getElementById('customPrice').value) || 0;
+            } else {
+                monthlyPrice = parseFloat(priceSelect);
+            }
+
+            // Calculate gross revenue
+            const grossMonthly = paidSubs * monthlyPrice;
+
+            // Calculate fees (Substack 10% + payment processing ~2.9% + billing 0.7% = ~13.6%)
+            const substackFee = grossMonthly * 0.10;
+            const paymentFee = grossMonthly * 0.029 + (paidSubs * 0.30); // 2.9% + $0.30 per transaction
+            const billingFee = grossMonthly * 0.007;
+            const totalFees = substackFee + paymentFee + billingFee;
+            const netMonthly = grossMonthly - totalFees;
+
+            // Annual projection
+            const annualNet = netMonthly * 12;
+
+            // Update UI
+            document.getElementById('grossRevenue').textContent = `$${grossMonthly.toFixed(2)}`;
+            document.getElementById('grossDetail').textContent = `${paidSubs} subscribers × $${monthlyPrice.toFixed(2)}/month`;
+
+            document.getElementById('netRevenue').textContent = `$${netMonthly.toFixed(2)}`;
+            document.getElementById('substackFee').textContent = `$${substackFee.toFixed(2)}`;
+            document.getElementById('paymentFee').textContent = `$${paymentFee.toFixed(2)}`;
+            document.getElementById('netIncome').textContent = `$${netMonthly.toFixed(2)}`;
+
+            document.getElementById('annualRevenue').textContent = `$${annualNet.toFixed(2)}`;
+        }
+
+        // Calculate on page load
+        window.addEventListener('DOMContentLoaded', calculateRevenue);
+    </script>
+</body>
+</html>

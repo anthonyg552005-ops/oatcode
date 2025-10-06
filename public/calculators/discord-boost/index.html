@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Nitro Server Boost Calculator - Free Cost Estimator | OatCode</title>
+    <meta name="description" content="Calculate Discord server boost costs for Level 1, 2, and 3. Includes Nitro discounts, perks breakdown, and monthly cost estimates. Free calculator tool.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366F1;
+            --secondary: #EC4899;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --discord: #5865F2;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        /* Navigation */
+        nav {
+            background: white;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .breadcrumb {
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-1);
+            color: white;
+            padding: 60px 40px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .header p {
+            font-size: clamp(16px, 2vw, 20px);
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .calculator-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+        }
+
+        .calc-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Results */
+        .results {
+            padding: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            color: white;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 900;
+        }
+
+        .result-detail {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 8px;
+        }
+
+        .perks-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .perks-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .perks-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .content-section h2 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--dark);
+        }
+
+        .content-section h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 32px;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .content-section p {
+            color: #475569;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .content-section ul {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        .content-section li {
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        .boost-levels-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        .boost-levels-table th,
+        .boost-levels-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .boost-levels-table th {
+            background: var(--gradient-1);
+            color: white;
+            font-weight: 700;
+        }
+
+        .faq-item {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .faq-answer {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+
+            .calculator-box, .content-section {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">OatCode</a>
+            <div class="breadcrumb">
+                <a href="/">Home</a> ›
+                <a href="/calculators">Calculators</a> ›
+                Discord Boost Calculator
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>💎 Discord Nitro Server Boost Calculator</h1>
+        <p>Calculate the exact cost to boost your Discord server to Level 1, 2, or 3</p>
+    </div>
+
+    <!-- Calculator -->
+    <div class="container">
+        <div class="calculator-wrapper">
+            <!-- Calculator Form -->
+            <div class="calculator-box">
+                <h2 class="calc-title">Calculate Boost Costs</h2>
+
+                <div class="form-group">
+                    <label for="targetLevel">Target Boost Level</label>
+                    <select id="targetLevel">
+                        <option value="1">Level 1 (2 boosts)</option>
+                        <option value="2">Level 2 (7 boosts)</option>
+                        <option value="3" selected>Level 3 (14 boosts)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="currentBoosts">Current Boosts</label>
+                    <input type="number" id="currentBoosts" value="0" min="0" max="14">
+                </div>
+
+                <div class="form-group">
+                    <label for="hasNitro">Do you have Discord Nitro?</label>
+                    <select id="hasNitro">
+                        <option value="no">No ($4.99 per boost)</option>
+                        <option value="yes">Yes (2 free boosts + 30% off extra)</option>
+                    </select>
+                </div>
+
+                <button class="calculate-btn" onclick="calculateBoosts()">Calculate Costs</button>
+            </div>
+
+            <!-- Results -->
+            <div class="calculator-box">
+                <div class="results">
+                    <div class="result-item">
+                        <div class="result-label">Boosts Needed</div>
+                        <div class="result-value" id="boostsNeeded">-</div>
+                        <div class="result-detail" id="boostDetail">Enter values to calculate</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Monthly Cost</div>
+                        <div class="result-value" id="monthlyCost">$0.00</div>
+                        <div class="result-detail" id="costBreakdown">-</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Perks Unlocked</div>
+                        <ul class="perks-list" id="perksList">
+                            <li>Select a level to see perks</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="content-section">
+            <h2>How Discord Server Boosts Work</h2>
+            <p>
+                Discord Server Boosts allow you to unlock powerful perks for your community server.
+                By boosting a server, members can help unlock features like better audio quality,
+                custom server banners, more emoji slots, and increased upload limits.
+            </p>
+
+            <h3>Boost Level Requirements</h3>
+            <table class="boost-levels-table">
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Boosts Required</th>
+                        <th>Monthly Cost*</th>
+                        <th>Key Perks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Level 1</strong></td>
+                        <td>2 boosts</td>
+                        <td>$9.98</td>
+                        <td>+50 emoji slots, 128kbps audio, custom invite background</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Level 2</strong></td>
+                        <td>7 boosts</td>
+                        <td>$34.93</td>
+                        <td>+100 emoji slots, 256kbps audio, server banner, 50MB uploads</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Level 3</strong></td>
+                        <td>14 boosts</td>
+                        <td>$69.86</td>
+                        <td>+250 emoji slots, 384kbps audio, vanity URL, 100MB uploads</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 14px; color: #64748B; margin-top: 8px;">
+                *Without Nitro subscription. Prices in USD.
+            </p>
+
+            <h3>Discord Nitro Benefits</h3>
+            <p>
+                If you have Discord Nitro ($9.99/month), you get significant savings on server boosts:
+            </p>
+            <ul>
+                <li><strong>2 Free Server Boosts</strong> - Apply to any server you choose</li>
+                <li><strong>30% Discount</strong> - on additional boost purchases ($3.49 instead of $4.99)</li>
+                <li><strong>Moveable Boosts</strong> - Transfer your free boosts to different servers anytime</li>
+            </ul>
+
+            <h3>How to Boost a Discord Server</h3>
+            <p>To boost a Discord server:</p>
+            <ol>
+                <li>Open Discord and navigate to the server you want to boost</li>
+                <li>Click the server name at the top to open the dropdown menu</li>
+                <li>Select "Server Boost" from the menu</li>
+                <li>Choose how many boosts you want to apply</li>
+                <li>Complete the purchase (or apply free Nitro boosts)</li>
+            </ol>
+
+            <h3>Cost-Saving Tips</h3>
+            <ul>
+                <li><strong>Get Discord Nitro</strong> - If you're boosting 3+ servers or need 7+ boosts, Nitro saves money</li>
+                <li><strong>Community Funding</strong> - Ask active members to contribute boosts</li>
+                <li><strong>Boost Events</strong> - Discord sometimes offers promotional boost discounts</li>
+                <li><strong>Prioritize Levels</strong> - Start with Level 1, upgrade to higher levels when needed</li>
+            </ul>
+        </div>
+
+        <!-- Examples -->
+        <div class="content-section">
+            <h2>Example Calculations</h2>
+
+            <h3>Example 1: Small Community (Level 1)</h3>
+            <p>
+                <strong>Goal:</strong> Reach Level 1 for basic perks<br>
+                <strong>Boosts Needed:</strong> 2<br>
+                <strong>Has Nitro:</strong> No<br>
+                <strong>Cost:</strong> 2 × $4.99 = <strong>$9.98/month</strong>
+            </p>
+
+            <h3>Example 2: Growing Server (Level 2 with Nitro)</h3>
+            <p>
+                <strong>Goal:</strong> Reach Level 2 for better audio and banner<br>
+                <strong>Boosts Needed:</strong> 7<br>
+                <strong>Has Nitro:</strong> Yes (2 free boosts + $9.99/month)<br>
+                <strong>Cost:</strong> $9.99 (Nitro) + 5 × $3.49 (extra boosts) = <strong>$27.44/month</strong><br>
+                <strong>Savings:</strong> $7.46/month vs buying boosts without Nitro
+            </p>
+
+            <h3>Example 3: Large Community (Level 3)</h3>
+            <p>
+                <strong>Goal:</strong> Reach Level 3 for maximum perks<br>
+                <strong>Boosts Needed:</strong> 14<br>
+                <strong>Has Nitro:</strong> Yes<br>
+                <strong>Cost:</strong> $9.99 (Nitro) + 12 × $3.49 (extra boosts) = <strong>$51.87/month</strong><br>
+                <strong>Savings:</strong> $17.99/month vs buying without Nitro
+            </p>
+        </div>
+
+        <!-- FAQ -->
+        <div class="content-section">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">How much does a Discord boost cost?</div>
+                <div class="faq-answer">
+                    A single Discord Server Boost costs $4.99/month. However, if you have Discord Nitro ($9.99/month),
+                    you get 2 free boosts and a 30% discount on additional boosts ($3.49 each).
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What happens if I stop boosting?</div>
+                <div class="faq-answer">
+                    If you cancel your boosts, your server will lose the associated perks once the current billing
+                    period ends. The boost level will decrease based on how many boosts remain active.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can I move my boosts to a different server?</div>
+                <div class="faq-answer">
+                    Yes! If you have Discord Nitro, you can move your 2 free boosts to any server at any time.
+                    Purchased boosts are also moveable once per week.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Do boosts stack with Nitro perks?</div>
+                <div class="faq-answer">
+                    Discord Nitro gives you personal perks (like higher upload limits and better streaming).
+                    Server Boosts give perks to everyone on the server. They work together but serve different purposes.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Is it worth getting Nitro just for boosts?</div>
+                <div class="faq-answer">
+                    If you plan to boost 3 or more times, Nitro becomes cost-effective. At 3 boosts: Nitro ($9.99) + 1 boost ($3.49) = $13.48
+                    vs 3 boosts without Nitro = $14.97. Plus you get personal Nitro perks.
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="content-section" style="text-align: center; background: var(--gradient-1); color: white;">
+            <h2 style="color: white; margin-bottom: 16px;">Need a Professional Website?</h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 24px;">
+                OatCode builds AI-powered websites with Runway video, DALL-E visuals, and autonomous management.
+                Perfect for businesses, creators, and communities.
+            </p>
+            <a href="/" style="display: inline-block; background: white; color: var(--primary); padding: 16px 40px; border-radius: 50px; text-decoration: none; font-weight: 700; transition: all 0.3s ease;">
+                Learn More About Our Websites →
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function calculateBoosts() {
+            const targetLevel = parseInt(document.getElementById('targetLevel').value);
+            const currentBoosts = parseInt(document.getElementById('currentBoosts').value);
+            const hasNitro = document.getElementById('hasNitro').value === 'yes';
+
+            // Boost requirements
+            const requirements = {
+                1: 2,
+                2: 7,
+                3: 14
+            };
+
+            const requiredBoosts = requirements[targetLevel];
+            const boostsNeeded = Math.max(0, requiredBoosts - currentBoosts);
+
+            // Calculate cost
+            let monthlyCost = 0;
+            let costBreakdown = '';
+
+            if (hasNitro) {
+                const nitroCost = 9.99;
+                const freeBoosts = Math.min(2, boostsNeeded);
+                const paidBoosts = Math.max(0, boostsNeeded - freeBoosts);
+                const discountedBoostPrice = 3.49;
+
+                monthlyCost = nitroCost + (paidBoosts * discountedBoostPrice);
+                costBreakdown = `Nitro: $${nitroCost.toFixed(2)} + ${paidBoosts} boosts × $${discountedBoostPrice.toFixed(2)}`;
+            } else {
+                const regularBoostPrice = 4.99;
+                monthlyCost = boostsNeeded * regularBoostPrice;
+                costBreakdown = `${boostsNeeded} boosts × $${regularBoostPrice.toFixed(2)}`;
+            }
+
+            // Update UI
+            document.getElementById('boostsNeeded').textContent = boostsNeeded;
+            document.getElementById('boostDetail').textContent = `To reach Level ${targetLevel} (${requiredBoosts} total boosts)`;
+            document.getElementById('monthlyCost').textContent = `$${monthlyCost.toFixed(2)}`;
+            document.getElementById('costBreakdown').textContent = costBreakdown;
+
+            // Update perks
+            const perks = {
+                1: [
+                    '✅ +50 emoji slots (100 total)',
+                    '✅ 128kbps audio quality',
+                    '✅ Custom invite background',
+                    '✅ Animated server icon'
+                ],
+                2: [
+                    '✅ +100 emoji slots (150 total)',
+                    '✅ 256kbps audio quality',
+                    '✅ Server banner',
+                    '✅ 50MB upload limit',
+                    '✅ 1080p 60fps streaming'
+                ],
+                3: [
+                    '✅ +250 emoji slots (250 total)',
+                    '✅ 384kbps audio quality',
+                    '✅ Vanity URL',
+                    '✅ 100MB upload limit',
+                    '✅ Custom sticker slots'
+                ]
+            };
+
+            const perksList = document.getElementById('perksList');
+            perksList.innerHTML = perks[targetLevel].map(perk => `<li>${perk}</li>`).join('');
+        }
+
+        // Calculate on page load
+        window.addEventListener('DOMContentLoaded', calculateBoosts);
+    </script>
+</body>
+</html>
