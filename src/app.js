@@ -22,6 +22,8 @@ const autonomousControlRoutes = require('./routes/autonomous-control');
 const customerRoutes = require('./routes/customer');
 const requestChangesRoutes = require('./routes/requestChanges');
 const adminApprovalRoutes = require('./routes/adminApproval');
+const freeDemoRequestRoutes = require('./routes/freeDemoRequest');
+const quoteRequestRoutes = require('./routes/quoteRequest');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -356,6 +358,8 @@ app.use('/webhook/inbound-email', inboundEmailRoutes); // Inbound email support 
 app.use('/api/autonomous-control', autonomousControlRoutes); // Autonomous control API (token auth)
 app.use('/api/customer', apiLimiter, customerRoutes); // Customer retention and feedback - API limit
 app.use('/api/request-changes', apiLimiter, requestChangesRoutes); // Customer change requests - API limit
+app.use('/api/free-demo', demoLimiter, freeDemoRequestRoutes); // Free demo requests - rate limited (10/hour)
+app.use('/api/quote-request', apiLimiter, quoteRequestRoutes); // Quote requests - rate limited
 app.use('/admin', adminApprovalRoutes); // Admin approval system (no auth for simplicity - add later if needed)
 
 // Dashboard route (protected)
