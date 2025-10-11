@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senor Rooter Plumbing - Professional Plumbing Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hero-bg {
+            background-image: linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url('https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=1200&h=600&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .service-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .service-card {
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .mobile-call-btn {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 40;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Emergency Banner -->
+    <div class="bg-red-600 text-white py-3 text-center font-bold text-lg">
+        🚨 24/7 EMERGENCY SERVICE - CALL NOW: +1 408-607-1643
+    </div>
+
+    <!-- Sticky Header -->
+    <header class="sticky-header bg-gradient-to-r from-blue-700 to-blue-900 text-white py-4 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold">Senor Rooter Plumbing</h1>
+                    <p class="text-yellow-300 text-sm md:text-base">⭐⭐⭐⭐⭐ 5 (37 Reviews) - San Jose, CA</p>
+                </div>
+                <a href="tel:14086071643" class="hidden md:block bg-orange-500 px-6 py-3 rounded-lg font-bold hover:bg-orange-600 transition">
+                    📞 CALL +1 408-607-1643
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Call Button -->
+    <div class="mobile-call-btn md:hidden bg-orange-500 text-white py-4 text-center font-bold text-lg shadow-lg">
+        <a href="tel:14086071643" class="block">
+            📞 CALL NOW: +1 408-607-1643
+        </a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="py-24 md:py-32 hero-bg text-white text-center">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-6xl font-bold mb-6">San Jose's Most Trusted Plumber</h2>
+            <p class="text-xl md:text-3xl mb-8">⚡ Fast, Reliable Service - Same Day Appointments Available</p>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a href="#contact" class="bg-orange-500 px-8 md:px-10 py-3 md:py-4 rounded-lg text-lg md:text-xl font-bold hover:bg-orange-600 transition">
+                    Get Free Estimate
+                </a>
+                <a href="tel:14086071643" class="bg-white text-blue-900 px-8 md:px-10 py-3 md:py-4 rounded-lg text-lg md:text-xl font-bold hover:bg-gray-100 transition">
+                    Call Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Badges -->
+    <section class="py-8 bg-white border-b">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <div class="text-3xl md:text-4xl font-bold text-blue-900">37+</div>
+                    <div class="text-gray-600 text-sm md:text-base">5-Star Reviews</div>
+                </div>
+                <div>
+                    <div class="text-3xl md:text-4xl font-bold text-blue-900">24/7</div>
+                    <div class="text-gray-600 text-sm md:text-base">Emergency Service</div>
+                </div>
+                <div>
+                    <div class="text-3xl md:text-4xl font-bold text-blue-900">Licensed</div>
+                    <div class="text-gray-600 text-sm md:text-base">Bonded & Insured</div>
+                </div>
+                <div>
+                    <div class="text-3xl md:text-4xl font-bold text-blue-900">Same Day</div>
+                    <div class="text-gray-600 text-sm md:text-base">Appointments</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="py-16 container mx-auto px-4 mb-16 md:mb-0">
+        <h3 class="text-4xl md:text-5xl font-bold text-center mb-4">Our Expert Services</h3>
+        <p class="text-center text-gray-600 text-lg md:text-xl mb-12">Professional Plumbing Solutions for Your Home & Business</p>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Drain Cleaning -->
+            <div class="service-card bg-white">
+                <img src="https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=400&h=300&fit=crop" alt="Professional Drain Cleaning" class="service-image">
+                <div class="p-6">
+                    <h4 class="text-2xl font-bold mb-3 text-blue-900">Drain Cleaning & Rooter</h4>
+                    <p class="text-gray-600 mb-4">Professional drain cleaning and rooter services to clear even the toughest clogs. Fast, effective solutions.</p>
+                    <a href="#contact" class="text-orange-500 font-bold hover:text-orange-600">Get Quote →</a>
+                </div>
+            </div>
+
+            <!-- Water Heater -->
+            <div class="service-card bg-white">
+                <img src="/images/plumbing/water-heater/water-heater-1.jpg" alt="Water Heater Installation" class="service-image">
+                <div class="p-6">
+                    <h4 class="text-2xl font-bold mb-3 text-blue-900">Water Heater Services</h4>
+                    <p class="text-gray-600 mb-4">Installation, repair, and maintenance for traditional and tankless water heaters. Same-day service available.</p>
+                    <a href="#contact" class="text-orange-500 font-bold hover:text-orange-600">Get Quote →</a>
+                </div>
+            </div>
+
+            <!-- Emergency Plumbing -->
+            <div class="service-card bg-white">
+                <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=300&fit=crop" alt="24/7 Emergency Plumbing" class="service-image">
+                <div class="p-6">
+                    <h4 class="text-2xl font-bold mb-3 text-blue-900">24/7 Emergency Service</h4>
+                    <p class="text-gray-600 mb-4">Burst pipes? Water leaks? We're available 24/7 for emergency plumbing repairs. Call now for immediate help!</p>
+                    <a href="tel:14086071643" class="text-red-600 font-bold hover:text-red-700">Call Now →</a>
+                </div>
+            </div>
+
+            <!-- Bathroom Remodeling -->
+            <div class="service-card bg-white">
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=400&h=300&fit=crop" alt="Bathroom Renovation" class="service-image">
+                <div class="p-6">
+                    <h4 class="text-2xl font-bold mb-3 text-blue-900">Bathroom Remodeling</h4>
+                    <p class="text-gray-600 mb-4">Transform your bathroom with our expert plumbing renovation services. Quality fixtures and professional installation.</p>
+                    <a href="#contact" class="text-orange-500 font-bold hover:text-orange-600">Get Quote →</a>
+                </div>
+            </div>
+
+            <!-- Kitchen Plumbing -->
+            <div class="service-card bg-white">
+                <img src="https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=400&h=300&fit=crop" alt="Kitchen Plumbing Services" class="service-image">
+                <div class="p-6">
+                    <h4 class="text-2xl font-bold mb-3 text-blue-900">Kitchen Plumbing</h4>
+                    <p class="text-gray-600 mb-4">Sinks, faucets, garbage disposals, and dishwasher installations. Complete kitchen plumbing solutions.</p>
+                    <a href="#contact" class="text-orange-500 font-bold hover:text-orange-600">Get Quote →</a>
+                </div>
+            </div>
+
+            <!-- Pipe Repair -->
+            <div class="service-card bg-white">
+                <img src="https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=400&h=300&fit=crop" alt="Pipe Repair & Replacement" class="service-image">
+                <div class="p-6">
+                    <h4 class="text-2xl font-bold mb-3 text-blue-900">Pipe Repair & Replacement</h4>
+                    <p class="text-gray-600 mb-4">Complete pipe repair and replacement services. We fix leaks and replace old pipes with modern, durable materials.</p>
+                    <a href="#contact" class="text-orange-500 font-bold hover:text-orange-600">Get Quote →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="py-16 bg-blue-50">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-12">Why Choose Senor Rooter Plumbing?</h3>
+            <div class="grid md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl md:text-5xl mb-4">⭐</div>
+                    <h4 class="font-bold text-xl mb-2">5-Star Rated</h4>
+                    <p class="text-gray-600">Trusted by hundreds of Unknown homeowners</p>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl mb-4">⚡</div>
+                    <h4 class="font-bold text-xl mb-2">Fast Response</h4>
+                    <p class="text-gray-600">Same-day service available for emergencies</p>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl mb-4">✅</div>
+                    <h4 class="font-bold text-xl mb-2">Licensed & Insured</h4>
+                    <p class="text-gray-600">Fully licensed, bonded, and insured</p>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl mb-4">💯</div>
+                    <h4 class="font-bold text-xl mb-2">100% Satisfaction</h4>
+                    <p class="text-gray-600">We guarantee quality workmanship</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-12">What Our Customers Say</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-6 rounded-lg shadow">
+                    <div class="text-yellow-500 text-2xl mb-4">⭐⭐⭐⭐⭐</div>
+                    <p class="text-gray-700 mb-4 italic">"Fast, professional service! They fixed our burst pipe within hours. Highly recommend!"</p>
+                    <p class="font-bold">- Sarah M.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow">
+                    <div class="text-yellow-500 text-2xl mb-4">⭐⭐⭐⭐⭐</div>
+                    <p class="text-gray-700 mb-4 italic">"Excellent work on our bathroom remodel. Very professional and reasonably priced."</p>
+                    <p class="font-bold">- John D.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow">
+                    <div class="text-yellow-500 text-2xl mb-4">⭐⭐⭐⭐⭐</div>
+                    <p class="text-gray-700 mb-4 italic">"Called them for an emergency at 2am and they came right away. Amazing service!"</p>
+                    <p class="font-bold">- Maria R.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Area -->
+    <section class="py-16 bg-blue-50">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-3xl md:text-4xl font-bold mb-6">Proudly Serving Unknown</h3>
+            <p class="text-xl text-gray-700 mb-8">Professional plumbing services for residential and commercial properties throughout the area.</p>
+            <a href="tel:14086071643" class="bg-orange-500 text-white px-10 py-4 rounded-lg text-xl font-bold inline-block hover:bg-orange-600 transition">
+                📞 Call +1 408-607-1643
+            </a>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section id="contact" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4 max-w-2xl">
+            <h3 class="text-3xl md:text-4xl font-bold text-center mb-4">Request Free Estimate</h3>
+            <p class="text-center text-gray-600 mb-8 text-base md:text-lg">Get a free quote for your plumbing project. We'll respond within 1 hour!</p>
+            <form id="contactForm" class="space-y-4 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <input type="text" name="name" placeholder="Your Name *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                <input type="tel" name="phone" placeholder="Phone Number *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                <input type="email" name="email" placeholder="Email *" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                <textarea name="message" placeholder="Describe your plumbing needs *" rows="4" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"></textarea>
+                <button type="submit" class="w-full bg-blue-900 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-800 transition">
+                    📧 Get Free Estimate
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-xl md:text-2xl font-bold mb-2">Senor Rooter Plumbing</p>
+            <p class="mb-4 text-gray-400">Serving Unknown with Pride</p>
+            <a href="tel:14086071643" class="text-orange-500 font-bold text-2xl md:text-3xl hover:text-orange-400 transition">
+                📞 +1 408-607-1643
+            </a>
+            <div class="mt-6 text-gray-500 text-sm">
+                <p>Licensed, Bonded & Insured | 24/7 Emergency Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Contact form handling with lead tracking
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const data = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            message: formData.get('message'),
+            customerId: 'senor-rooter-plumbing',
+            business: 'Senor Rooter Plumbing',
+            customerEmail: 'owner@senorrooterplumbing.com'
+        };
+
+        try {
+            const response = await fetch('https://oatcode.com/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('✅ Thank you! We will contact you within 1 hour to discuss your plumbing needs.');
+                e.target.reset();
+            } else {
+                alert('Failed to send message. Please call us directly at +1 408-607-1643');
+            }
+        } catch (error) {
+            alert('Failed to send message. Please call us directly at +1 408-607-1643');
+        }
+    });
+    </script>
+</body>
+</html>
